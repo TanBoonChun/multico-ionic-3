@@ -1,0 +1,222 @@
+page-attendanceotw{
+
+  .select-text {
+    /* overflow: hidden; */
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    min-width: 16px;
+    font-size: inherit;
+    text-overflow: ellipsis;
+    /* white-space: nowrap; */
+    white-space: normal;
+    /* word-break: break-all; */
+  }
+  .left{
+    text-align: left;
+  }
+
+  .a{
+    text-align: center;
+  }
+
+  .button-color {
+    background: #0A3681;
+    // position: absolute;
+    text-align: center;
+  }
+
+  .black {
+    color: white;
+    text-decoration-style: double
+  }
+
+  .error {
+    color: rgb(223, 62, 62);
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  .error1 {
+    color: rgb(75, 75, 75);
+    border-bottom: 1px solid #ff0000;
+    border-radius: 8px;
+  }
+
+  .center {
+    margin: auto;
+    width: 100%;
+    text-align: center;
+    color:red;
+  }
+
+  .b{
+    color: black;
+  }
+
+  // ion-header {
+  //   .toolbar {
+  //     .toolbar-title-md {
+  //     color: black;
+  //     // text-align: center;
+  //     // padding-right: 10%;
+  //     }
+  //   }
+  //   .bar-button-default-md:hover:not(.disable-hover), .bar-button-clear-md-default:hover:not(.disable-hover), .bar-button-md-default:hover:not(.disable-hover) {
+  //     color: white;
+  //   }
+  //   .bar-button-default-ios, .bar-button-default.bar-button-ios-default, .bar-button-clear-ios-default {
+  //     color:rgb(0, 0, 0);
+  //   }
+  //   .bar-button-default-md, .bar-button-clear-md-default, .bar-button-md-default {
+  //     color: black;
+  //   }
+  // }
+
+  .item-md.item-block .item-inner {
+    border-bottom: none;
+  }
+
+  // .ion-content-body {
+  //   // background: linear-gradient(to bottom, #000046f3 0, #240b36fb );
+  //   // background: linear-gradient(to bottom, rgba(75, 107, 183, 0.925) 0%,  rgba(24, 40, 72, 0.925) 100%);
+  //   background: linear-gradient(to bottom, rgba(75, 107, 183, 0.925) 0%,  rgba(24, 40, 72, 0.925) 100%);
+  // }
+   .ion-content-body{
+    background-color: #f1f2f6;
+  }
+  .ion-item-body {
+    margin: 0px;
+    padding-bottom: 5px;
+    padding-top: 10px;
+    // background: white;
+  }
+
+  .ion-item-item {
+    background: white;
+    border-radius: 8px;
+    text-align: center;
+    white-space: pre-line;
+    padding-top: 2px;
+  }
+
+  .ion-item {
+    border-radius: 8px;
+    // padding-top: 3px;
+    // padding-bottom: 3px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: bold;
+    white-space: pre-line;
+    // color: black;
+  }
+
+  .date {
+    font-size: 14px;
+    color: black;
+  }
+
+  .box{
+    padding-top: 40px;
+    padding-bottom: 20px;
+  }
+
+  .box-content {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .text-input::-webkit-input-placeholder {
+    text-indent: 0;
+    color: rgba(0,0,0,0.55);
+  }
+
+  .top-border{
+    // background: #0a3580;
+    border-radius: 8px;
+    // padding-top: 5px;
+  }
+
+  .bottom-border{
+    background: #0a3580;
+    border-radius: 8px;
+    // padding-top: 5px;
+  }
+
+  .bottom-border:hover{
+    background-color: #00256e9c;
+  }
+
+  .required:after {
+    content:" *";
+    color:red;
+  }
+
+  .required2:after {
+    content:" **";
+    color:red;
+  }
+
+
+
+  .thumbnail-container {
+    overflow-x:scroll;
+    width:100%;
+    // padding: 0 15px;
+  }
+
+  .thumbnail-list {
+      white-space:nowrap;
+      list-style: none;
+      padding: 0;
+  }
+  .thumbnail-list li {
+    display: inline-block;
+  }
+  .thumbnail-image {
+      display: block;
+      padding:2px;
+      max-width: 100px;
+      height:auto;
+  }
+
+
+
+}
+
+.green{
+  .toast-md .toast-wrapper {
+    background: green;
+    color:green;
+  }
+  button{
+    color: rgb(9, 247, 9);
+  }
+}
+
+.red{
+  button{
+      color: rgb(255, 7, 7);
+  }
+}
+  .alert-radio-label {
+    white-space: normal !important;
+  }
+
+  @font-face {
+    font-family: 'digi';
+    src: url('http://cssdeck.com/uploads/resources/fonts/digii/DS-DIGII.TTF');
+  }
+  
+  .clock {
+    font-family: 'digi';
+    font-size:70px;
+  }
+
+  
+  canvas {
+    border: 1px solid #069;
+  }

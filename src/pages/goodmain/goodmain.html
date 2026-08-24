@@ -1,0 +1,53 @@
+
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Logistic</ion-title>
+  </ion-navbar>
+</ion-header>
+  
+<ion-content padding class="ion-content-body">
+
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item" no-wrap>
+
+      <div class="row" (click)='GRN()' hidden>
+        <div>
+          <button class="round-button button1">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Good Return Note Form 
+        </div>
+      </div>
+      <br>
+      <div class="row" (click)='GRF()'>
+        <div>
+          <button class="round-button button5">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Good Form 
+          <!-- hjkl -->
+        </div>
+      </div>
+      <br>
+      <div class="row" (click)='goodreceivinglist()'>
+        <div>
+          <button class="round-button button3">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Good Receiving List 
+        </div>
+      </div>
+      <br>
+      <div class="row" (click)='goodreturnedlist()'>
+        <div>
+          <button class="round-button button4">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Good Returned List 
+        </div>
+      </div>
+
+    </ion-item>
+  </div>
+  
+</ion-content>

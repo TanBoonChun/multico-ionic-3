@@ -1,0 +1,38 @@
+
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px;">Notice Details</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding fullscreen #myContent class="ion-item">
+
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+      <div class="notice-body">
+        <h2 class="title">{{Title}}</h2>
+        <p class="details">Date Created: {{Start_Date}}</p>
+        <p class="details">Created By: {{Created_By}}</p>
+      </div>
+      <div class="notice-content">
+        <p>{{Content}}</p>
+        <div *ngIf="Attachment">
+
+        <div *ngFor="let file of Attachment.split('|'); let i = index">
+          <!-- <img-loader *ngIf="file.substr(file.lastIndexOf('.') + 1).toUpperCase() == 'PNG' || file.substr(file.lastIndexOf('.') + 1).toUpperCase() == 'JPG' || file.substr(file.lastIndexOf('.') + 1).toUpperCase() == 'JPEG'; else elseBlock" useImg="true"  [src]="serverUrl + '/' + file" >
+          </img-loader> -->
+          <img *ngIf="file.substr(file.lastIndexOf('.') + 1).toUpperCase() == 'PNG' || file.substr(file.lastIndexOf('.') + 1).toUpperCase() == 'JPG' || file.substr(file.lastIndexOf('.') + 1).toUpperCase() == 'JPEG'; else elseBlock"  [src]="serverUrl + '/' + file" imageViewer >
+
+          <ng-template #elseBlock><button ion-button block (click)="download(file, FileName.split('|')[i])">{{FileName.split('|')[i]}} [Download]</button><br>
+          </ng-template>
+        </div>
+        </div>
+
+      </div>
+    </ion-item>
+  </div>
+
+</ion-content>

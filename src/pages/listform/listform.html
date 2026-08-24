@@ -1,0 +1,92 @@
+<!--
+  Generated template for the ListformPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+
+<ion-header>
+
+    <ion-navbar color="primary">
+      <ion-title>To-Do List Form</ion-title>
+    </ion-navbar>
+  
+  </ion-header>
+  
+  
+  <ion-content padding class="ion-content-body">
+    
+  
+    <ion-list>
+      <form novalidate (ngSubmit)="submitList()" [formGroup]="signupform">
+  
+        <br><br>
+        <ion-item>
+          <ion-label stacked color="primary">Person-In-Charge</ion-label>
+          <ion-select [(ngModel)]="PIC" formControlName="PIC" [class.error1]="!signupform.controls.PIC.valid && signupform.controls.PIC.dirty">
+            <ion-option *ngFor="let pc of item" value="{{pc.Id}}">{{pc.Name}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item no-lines *ngIf="( signupform.get('PIC').hasError('required') ) && signupform.get('PIC').touched">
+          <div class="error" *ngIf="signupform.get('PIC').hasError('required') && signupform.get('PIC').touched">
+            Please select your PIC
+          </div>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label stacked color="primary">Assign Date</ion-label>
+          <ion-datetime pickerFormat="DD MMM YYYY" displayFormat="DD MMM YYYY" placeholder="Choose Assign Date" max="2200" [(ngModel)]="AssignDate" formControlName="AssignDate"></ion-datetime>
+        </ion-item>
+        <!-- <ion-item no-lines *ngIf="( signupform.get('AssignDate').hasError('required') ) && signupform.get('AssignDate').touched">
+          <div class="error" *ngIf="signupform.get('AssignDate').hasError('required') && signupform.get('AssignDate').touched">
+            Please insert your assign date
+          </div>
+        </ion-item> -->
+
+        <ion-item>
+            <ion-label stacked color="primary">Due Date</ion-label>
+            <ion-datetime pickerFormat="DD MMM YYYY" displayFormat="DD MMM YYYY" placeholder="Choose Due Date" max="2200" [(ngModel)]="DueDate"  formControlName="DueDate"></ion-datetime>
+            <!-- <ion-datetime pickerFormat="DD MMMM YYYY" displayFormat="DD MMMM YYYY" placeholder="Choose Due Date" max="2200" [(ngModel)]="DueDate" formControlName="DueDate"></ion-datetime> -->
+        </ion-item>
+        <!-- <ion-item no-lines *ngIf="( signupform.get('DueDate').hasError('required') ) && signupform.get('DueDate').touched">
+            <div class="error" *ngIf="signupform.get('DueDate').hasError('required') && signupform.get('DueDate').touched">
+              Please insert your due date
+            </div>
+        </ion-item> -->
+
+        <ion-item>
+            <ion-label stacked color="primary">Task Description</ion-label>
+            <ion-input type="text" placeholder="State Task Description" [(ngModel)]="Task" formControlName="Task"></ion-input>
+        </ion-item>
+        <ion-item no-lines *ngIf="( signupform.get('Task').hasError('required') ) && signupform.get('Task').touched">
+            <div class="error" *ngIf="signupform.get('Task').hasError('required') && signupform.get('Task').touched">
+              Please insert your task description
+            </div>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Reminder</ion-label>
+            <ion-select placeholder="please select" [(ngModel)]="Reminder" formControlName="Reminder">
+                <ion-option value="">Daily</ion-option>
+                <ion-option value="Weekly">Weekly</ion-option>
+                <ion-option value="Monthly">Monthly</ion-option>
+            </ion-select> 
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Repeat</ion-label>
+            <ion-select placeholder="please select" [(ngModel)]="Repeat" formControlName="Repeat">
+                <ion-option value="">Does Not Repeat</ion-option>
+                <ion-option value="Daily">Daily</ion-option>
+                <ion-option value="Weekly">Weekly</ion-option>
+                <ion-option value="Monthly">Monthly</ion-option>
+            </ion-select> 
+        </ion-item>
+  
+        <br>
+        <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+      </form>
+    </ion-list>
+  
+  </ion-content>
+  

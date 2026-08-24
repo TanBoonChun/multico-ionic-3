@@ -1,0 +1,61 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+      <ion-title>My Sto Status</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <ion-searchbar (ionInput)="getList($event)" [showCancelButton]="shouldShowCancel" [debounce]="500" placeholder="stock no, project code, site name, docket no, request date"></ion-searchbar>
+
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+      <ion-label stacked color="primary">Status Type</ion-label>
+      <ion-select cancelText="Cancel" okText="OK" placeholder="Please Select" (ionChange)="onChange($event)">
+        <ion-option value="All">All</ion-option>
+        <ion-option value="Pending Request">Pending Request</ion-option>
+        <ion-option value="Processing">Processing</ion-option>
+        <ion-option value="Approved">Approved</ion-option>
+        <ion-option value="Cancel Request">Cancel Request</ion-option>
+        <ion-option value="Completed">Completed</ion-option>
+
+      </ion-select>
+    </ion-item>
+  </div>
+
+  <ion-item *ngIf="a == null">Loading ... </ion-item>
+  <ion-item *ngIf="a != null && a.length == 0">No Sto</ion-item>
+
+  <ion-item *ngFor="let item of b;">
+    <ion-col (click)="goToStatusDetail(item)">
+      <!-- <p style="color:blueviolet" ALIGN=RIGHT ><b>{{ notifications[item.Id] ? 'New ': ''}}</b></p> -->
+      <div>Stock No : <b>{{item.stock_no}}</b></div>
+      <div>Purpose : {{item.purpose}} </div>
+      <div>Project Code :  {{item.ProjectCode}}</div>
+      <div>Site Name : {{item.SiteName}} </div>
+      <div>Docket No : {{item.docket_no}} </div>
+      <div>Warehouse : {{item.roomname}} - {{item.warehouse}} </div>
+      <div>To Warehouse : {{item.towarehouseName}} - {{item.towarehouseCode}} </div>
+      <div>Remarks : {{item.remarks}} </div>
+      <div>Approver : {{item.approver_name}} </div>
+      <div>Warehouse Approver : {{item.ware_name}} </div>
+      <div>Request Date : {{item.created_at}} </div>
+
+
+      <div *ngIf="item.status == 'Pending Request'" style="color:rgb(165, 165, 6);">{{item.status}} </div>
+      <div *ngIf="item.status == 'Processing'" style="color:orange;">{{item.status}} </div>
+      <div *ngIf="item.status == 'Approved'" style="color:green;">{{item.status}} </div>
+      <div *ngIf="item.status == 'Cancel Request'" style="color:red;">{{item.status}} </div>
+      <div *ngIf="item.status == 'Completed'" style="color:skyblue;">{{item.status}} </div>
+
+
+
+
+
+    </ion-col>
+    <p style="color:#1aaa56">{{item.Status}}</p>
+  </ion-item>
+
+</ion-content>

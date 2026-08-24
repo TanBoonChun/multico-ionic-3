@@ -1,0 +1,27 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Notes</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <ion-list>
+    <button ion-item *ngFor="let n of notes" (click)="openNote(n)">
+      {{ n.Title || 'Untitled' }} - {{ formatDate(n.created_at) }}
+    </button>
+  </ion-list>
+
+  <div text-center *ngIf="notes.length === 0">
+    <p>No notes yet.</p>
+  </div>
+
+</ion-content>
+
+<ion-fab bottom right>
+  <button ion-fab (click)="addNote()">
+    <ion-icon name="add"></ion-icon>
+  </button>
+</ion-fab>

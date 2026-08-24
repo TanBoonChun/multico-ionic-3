@@ -1,0 +1,135 @@
+
+<ion-header>
+
+  <ion-navbar color="primary">
+      <ion-title>Good Returned Details</ion-title>
+  </ion-navbar>
+  
+</ion-header>
+  
+<ion-content  class="ion-content-body">
+    <ion-list>
+    
+    <!-- <h3>Staff Details</h3> -->
+        <ion-item>
+            <ion-label stacked color="primary">GR No</ion-label>
+            <ion-label>{{ Receiving_No ? Receiving_No : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">From Company</ion-label>
+            <ion-label>{{ Vendor_Name ? Vendor_Name : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Receiving Date</ion-label>
+            <ion-label>{{ Date ? Date : ' - ' }}</ion-label>
+        </ion-item> 
+        
+        <ion-item>
+            <ion-label stacked color="primary">Receiving Time</ion-label>
+            <ion-label>{{ Time ? Time : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">PO No</ion-label>
+            <ion-label>{{ PO_No ? PO_No : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">DO No</ion-label>
+            <ion-label>{{ DO_No ? DO_No : ' - ' }}</ion-label>
+        </ion-item>
+        
+        <ion-item>
+            <ion-label stacked color="primary">Warehouse/Bay</ion-label>
+            <ion-label>{{ location ? location : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Ownership</ion-label>
+            <ion-label>{{ Ownership ? Ownership : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked color="primary">Project</ion-label>
+          <ion-label>{{ project_code ? project_code : ' - ' }}</ion-label>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label stacked color="primary">Site Code</ion-label>
+          <ion-label>{{ site ? site : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked color="primary">Site Name</ion-label>
+          <ion-label>{{ SiteName ? SiteName : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked color="primary">Project No</ion-label>
+          <ion-label>{{ ProjectNo ? ProjectNo : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked color="primary">Company</ion-label>
+          <ion-label>{{ Company ? Company : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked color="primary">Segment</ion-label>
+          <ion-label>{{ Segment ? Segment : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked color="primary">Remarks</ion-label>
+          <ion-label>{{ Remarks ? Remarks : ' - ' }}</ion-label>
+        </ion-item>
+
+    </ion-list>
+    <h3 *ngIf="b !=''">Material List </h3>
+
+    <ion-grid style="width: 100%">
+        <div *ngFor="let item of b">
+            <!-- <ion-row  nowrap >
+                <ion-col col-6></ion-col>
+                <ion-col col-6><div style="text-align: center;"></div></ion-col>
+            </ion-row> -->
+  
+            <ion-row>
+                <ion-col col-6>Material Code/ Description</ion-col>
+                <ion-col col-6>
+                    <div>{{item.Part_Name}} </div>
+                </ion-col>
+            </ion-row>
+  
+            <ion-row>
+                <ion-col col-6>Unit</ion-col>
+                <ion-col col-6>
+                    <div>{{item.Quantity}}</div>
+                    <div>{{item.unit}}</div>
+                </ion-col>
+            </ion-row>
+  
+            <ion-row>
+                <ion-col col-6>Condition</ion-col>
+                <ion-col col-6>
+                    <div>{{item.condition}}</div>
+                </ion-col>
+            </ion-row>
+  
+            <ion-row>
+                <ion-col col-6>Serial No</ion-col>
+                <ion-col col-6>
+                    <div  *ngFor="let t of a">{{t.Serial_No}}</div>
+                </ion-col>
+            </ion-row>
+  
+          <br>
+  
+        </div>
+  
+    </ion-grid>
+  
+
+</ion-content>

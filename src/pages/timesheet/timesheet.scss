@@ -1,0 +1,18 @@
+page-timesheet {
+ .button{
+   margin-top: 20px;
+ }
+ .ion-content{
+   background-color: #f1f2f6;
+ }
+ .ion-item{
+   background-color: white;
+ }
+ .text-input::-moz-placeholder {
+   color: rgba(0,0,0,0.55);
+ }
+ .text-input::-webkit-input-placeholder {
+   text-indent: 0;
+   color: rgba(0,0,0,0.55);
+ }
+}

@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>My Pending Request</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="adv-list">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingText="Pull to refresh" refreshingText="Refreshing..."></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="adv-loading" *ngIf="items == null">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading your advances...</p>
+  </div>
+
+  <div class="adv-empty" *ngIf="items != null && items.length == 0">
+    <ion-icon name="time"></ion-icon>
+    <h3>No pending advances</h3>
+    <p>Advance requests waiting for approval will appear here.</p>
+  </div>
+
+  <div class="adv-card" *ngFor="let item of items" tappable (click)="goToDetail(item)">
+    <div class="adv-card-top">
+      <span class="adv-no">{{ item.Advance_No || 'Advance' }}</span>
+      <span class="adv-chip" [ngClass]="statusClass(item.Status)">{{ item.Status }}</span>
+    </div>
+    <div class="adv-amount">RM {{ item.Total_Requested || '0.00' }}</div>
+    <div class="adv-type">{{ item.Type }}</div>
+    <div class="adv-meta">
+      <div class="adv-meta-row">
+        <ion-icon name="calendar"></ion-icon>
+        <span>{{ item.Date }}</span>
+      </div>
+      <div class="adv-meta-row" *ngIf="item.project_code">
+        <ion-icon name="briefcase"></ion-icon>
+        <span>{{ item.project_code }}</span>
+      </div>
+      <div class="adv-meta-row" *ngIf="item.site_code">
+        <ion-icon name="pin"></ion-icon>
+        <span>{{ item.site_code }}</span>
+      </div>
+      <div class="adv-meta-row" *ngIf="item.Approver">
+        <ion-icon name="person"></ion-icon>
+        <span>Approver: {{ item.Approver }}</span>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

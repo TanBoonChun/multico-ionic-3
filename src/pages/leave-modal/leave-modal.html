@@ -1,0 +1,74 @@
+<!--
+  Generated template for the LeaveModalPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <ion-toolbar>
+      <ion-title>
+        Leave Period
+      </ion-title>
+      <ion-buttons start>
+        <button ion-button (click)="dismiss()">
+          <span ion-text color="danger">Done</span>          
+        </button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  
+  
+  <ion-content padding>
+      <div *ngIf="(Leave_Type == 'Maternity Leave' || Leave_Type == 'Hospitalization Leave'); then thenBlock else elseBlock"></div>
+      <ng-template #thenBlock>
+          <ion-item>
+            <ion-label>From: {{ leavelist[0].Date }}</ion-label>
+            <ion-label>To: {{ leavelist[leavelist.length-1].Date }}</ion-label>
+            <ion-label>Period: Full</ion-label>
+          </ion-item>                                                    
+      </ng-template>
+      <ng-template #elseBlock>
+          <div *ngIf="(Leave_Type != '1 Hour Time Off' && Leave_Type != '2 Hours Time Off'); then thenBlockTwo else elseBlockTwo"></div>
+          <ng-template #thenBlockTwo>                                  
+            <ion-list>
+              <ion-item *ngFor="let l of leavelist; index as i;">
+                <ion-label>{{ l.Date }}</ion-label>                              
+                <ion-input type="text" readonly value="{{ l.Day_Type_Description }}"></ion-input>
+              
+                <ion-label *ngIf="(l.Day_Type == 0 || l.Day_Type == 2 || l.Day_Type == -1)" item-end>{{ l.Period }}</ion-label>
+              
+                <ion-input type="text" hidden [(ngModel)]="Leave_Period[i]" value="{{ l.Period }}" *ngIf="(l.Day_Type == 0 || l.Day_Type == 2 || l.Day_Type == -1)"></ion-input>
+              
+                <ion-select [(ngModel)]="Leave_Period[i]" *ngIf="(l.Day_Type != 0 && l.Day_Type != 2 && l.Day_Type != -1 && l.Day_Type != 0.5)">
+                    <ion-option value="Full">Full</ion-option>
+                    <ion-option value="AM">AM</ion-option>
+                    <ion-option value="PM">PM</ion-option>
+                </ion-select>
+
+                <!-- Saturday half-day work: only morning half can be taken -->
+                <ion-select [(ngModel)]="Leave_Period[i]" *ngIf="(l.Day_Type == 0.5)">
+                    <ion-option value="AM">AM</ion-option>
+                </ion-select>
+              </ion-item>
+            </ion-list>                      
+          </ng-template>
+          <ng-template #elseBlockTwo>
+              <ion-list>
+                  <ion-item *ngFor="let l of leavelist; index as i;">
+                    <ion-label>{{ l.Date }}</ion-label>                              
+                    <ion-input type="text" readonly value="{{ l.Day_Type_Description }}"></ion-input>
+                  
+                    <ion-label *ngIf="(l.Day_Type == 0 || l.Day_Type == 2 || l.Day_Type == -1)" item-end>{{ l.Period }}</ion-label>
+                  
+                    <ion-input type="text" hidden [(ngModel)]="Leave_Period[i]" value="{{ l.Period }}" *ngIf="(l.Day_Type == 0 || l.Day_Type == 2 || l.Day_Type == -1)"></ion-input>
+                    
+                    <ion-label *ngIf="(l.Day_Type != 0 && l.Day_Type != 2 && l.Day_Type != -1)" item-end>{{ Leave_Type == '1 Hour Time Off' ? '1 Hour' : '2 Hours' }}</ion-label>
+                  
+                    <ion-input type="text" hidden [(ngModel)]="Leave_Period[i]" value="{{ Leave_Type == '1 Hour Time Off' ? '1 Hour' : '2 Hours' }}" *ngIf="(l.Day_Type != 0 && l.Day_Type != 2 && l.Day_Type != -1)"></ion-input>
+                    
+                  </ion-item>
+                </ion-list>              
+          </ng-template>
+      
+      </ng-template>      
+  </ion-content>

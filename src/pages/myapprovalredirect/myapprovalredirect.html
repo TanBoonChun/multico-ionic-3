@@ -1,0 +1,23 @@
+<ion-header>
+
+        <ion-navbar color="primary">
+          <ion-title>Admin Leave Redirect</ion-title>
+        </ion-navbar>
+      
+      </ion-header>
+      
+      
+      <ion-content  class="ion-content">      
+      
+        <ion-item>
+            <ion-label stacked color="primary">Approver</ion-label>
+            <ion-select [(ngModel)]="Approver">
+                <ion-option *ngFor="let app of apps" value="{{app.Id}}">{{app.Name}}</ion-option>
+            </ion-select>
+        </ion-item>
+      
+        <br><br>
+
+      <button ion-button block color="primary" type="submit" (click)="redirectApproval()">Submit</button>
+      </ion-content>
+      

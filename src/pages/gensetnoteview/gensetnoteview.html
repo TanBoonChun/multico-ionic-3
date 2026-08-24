@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Note</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="closeModal()">Close</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <div class="row">
+    <div class="col col-title">Title:</div>
+    <div class="col col-details">{{ title || '-' }}</div>
+  </div>
+
+  <div class="row">
+    <div class="col col-title">Remarks:</div>
+    <div class="col col-details">{{ remarks || '-' }}</div>
+  </div>
+
+  <div class="thumbnail-container" *ngIf="images.length > 0">
+    <ul class="thumbnail-list">
+      <li *ngFor="let img of images">
+        <a [href]="img" target="_blank">
+          <img class="thumbnail-image" [src]="img">
+        </a>
+      </li>
+    </ul>
+  </div>
+
+</ion-content>

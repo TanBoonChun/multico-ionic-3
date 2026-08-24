@@ -1,0 +1,95 @@
+<!--
+  Generated template for the SitecodeapprovalPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Site Code Approval</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+
+  <!-- redirect to noticedetails.html -->
+  <!-- notice list -->
+  <div *ngIf="items.length < 1">
+    <p>No Site Code Pending Approval</p>
+  </div>
+  <div *ngFor="let item of items;">
+    <div class="ion-item-body" >
+      <ion-item class="ion-item-item">
+
+        <div class="content">
+          <div class="row">
+            <div class="col col-title" col-5 col-5>Company</div>
+            <div class="col col-details">: {{item.company.Option}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Department</div>
+            <div class="col col-details">: {{item.Department}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Segment</div>
+            <div class="col col-details">: {{item.Segment}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Contract No</div>
+            <div class="col col-details">: {{item.Contract_No}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>PO No</div>
+            <div class="col col-details">: {{item.PO_No}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Site ID/LRD</div>
+            <div class="col col-details">: {{item.Site_ID}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Site Name</div>
+            <div class="col col-details">: {{item.Site_Name}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Project Manager</div>
+            <div class="col col-details">: {{item.pm.Name}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>HOD</div>
+            <div class="col col-details">: {{item.hod.Name}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Project Name</div>
+            <div class="col col-details">: {{item.projectDesc}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Remarks</div>
+            <div class="col col-details">: {{item.Remarks}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Requestor</div>
+            <div class="col col-details">: {{item.creator.Name}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Approver</div>
+            <div class="col col-details">: {{item.hod.Name}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Status</div>
+            <div class="col col-details">: {{item.latest_status.Status}}</div>
+          </div>
+          <div class="row">
+            <button text-wrap block ion-button color="secondary" (click)="gotoEdit(item)">Approve/Reject</button>
+          </div>
+
+        </div>
+      </ion-item>
+    </div>
+    <br>
+  </div>
+
+
+</ion-content>

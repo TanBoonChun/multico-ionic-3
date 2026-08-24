@@ -1,0 +1,25 @@
+<!--
+  Generated template for the VehiclelistPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Vehicle List</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+
+  <div class="ion-item-body" *ngFor="let vehicle of vehicles" [navPush]="'VehicledetailsPage'" [navParams]="{Id:vehicle.Id,type:'click'}">
+    <ion-item class="ion-item-item">
+        <p>Vehicle No : {{vehicle.Car_No}}</p>
+        <p>Availability : {{vehicle.Availability}}</p>
+    </ion-item>
+  </div>
+
+</ion-content>

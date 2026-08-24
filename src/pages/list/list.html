@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px;">To-Do List Assigned</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <div *ngFor="let item of items;">
+    <!-- <div class="ion-item-body" (click)="gotoEdit(item)"> -->
+    <div class="ion-item-body" navPush='TaskDetailsPage' [navParams]="item" >
+      <ion-item class="ion-item-item">
+
+        <div class="content">
+          <div class="row">
+            <div class="col col-title">Task:</div>
+            <div class="col col-details">{{item.Current_Task}}</div>
+          </div>
+          <!-- <div class="row">
+            <div class="col col-title">Project Code:</div>
+            <div class="col col-details">{{item.Project_Code}}</div>
+          </div> -->
+          <div class="row">
+            <div class="col col-title">Assigned Date:</div>
+            <div class="col col-details">{{item.assign_date}}</div>
+          </div>
+
+          <div class="row">
+            <div class="col col-title">Target Date:</div>
+            <div class="col col-details">{{item.target_date}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Completed Date:</div>
+            <div class="col col-details">{{item.complete_date}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Completed Time:</div>
+            <div class="col col-details">{{item.complete_time}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Assigend By:</div>
+            <div class="col col-details">{{item.AssignedName}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Threshold:</div>
+            <div class="col col-details">{{item.Threshold}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Status:</div>
+            <div class="col col-details">{{item.Status}}</div>
+          </div>
+
+        </div>
+      </ion-item>
+    </div>
+  </div>
+
+
+</ion-content>

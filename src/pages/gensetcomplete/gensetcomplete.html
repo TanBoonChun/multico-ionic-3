@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title style="font-size: 12px;">Service Complete</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <div class="filter-panel">
+    <ion-item no-lines>
+      <ion-label>Start Date</ion-label>
+      <ion-datetime displayFormat="DD-MMM-YYYY" [(ngModel)]="startDate" placeholder="Start"></ion-datetime>
+    </ion-item>
+
+    <ion-item no-lines>
+      <ion-label>End Date</ion-label>
+      <ion-datetime displayFormat="DD-MMM-YYYY" [(ngModel)]="endDate" placeholder="End"></ion-datetime>
+    </ion-item>
+
+    <ion-item no-lines>
+      <ion-label>Service Type</ion-label>
+      <ion-select multiple="true" [(ngModel)]="selectedTypes">
+        <ion-option *ngFor="let type of serviceTypeOptions" [value]="type">{{type}}</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <div text-center style="padding-top:10px;">
+      <button ion-button (click)="applyFilter()">OK</button>
+    </div>
+  </div>
+
+  <div *ngIf="items && items.length < 1" class="ion-item-body">
+    <p class="none">No record found</p>
+  </div>
+
+  <div *ngFor="let item of items;" class="ion-item-body" (click)="page(item)">
+    <ion-item class="ion-item-item">
+      <h3 class="title"><b>{{item.service_id}} ({{item.service_type}})</b></h3>
+      <p class="date">{{item.genset_no}}</p>
+      <p class="date">{{item.Loc_Name}}</p>
+      <p class="date">{{item.service_date}}</p>
+    </ion-item>
+  </div>
+
+</ion-content>

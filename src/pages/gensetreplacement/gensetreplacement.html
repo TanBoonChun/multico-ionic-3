@@ -1,0 +1,74 @@
+<!--
+  Generated template for the GensetreplacementPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Genset Replacement</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+
+      <div class="row">
+        <div class="col col-title">Genset No:</div>
+        <div class="col col-details">{{genset_qr}} </div>
+      </div>
+
+      <div class="a" [hidden]='!hide'>      
+        <button text-center class="a" (click)="getCode()" ion-button>
+          <ion-icon style="zoom:2.0;" name="qr-scanner"></ion-icon>
+        </button>
+    </div>
+
+
+      <div class="row" [hidden]='hide'>
+        <div class="col"></div>
+        <div class="col">
+            <button ion-button icon-only (click)='addReplacement()'> Add Replacement </button>
+        </div>
+        <div class="col"></div>
+      </div>
+    </ion-item>
+
+    <br>
+    <ion-item class="ion-item-item">
+      <h4 ALIGN=Left class="title"><b>Inventory Bag</b></h4>
+      <div *ngFor="let m of items" class="ion-item-body">
+        <p class="">Model :{{m.model}}</p>
+        <p class="">Name :{{m.name}}</p>
+        <p class="">Item Code :{{m.barcode}}</p>
+        <p class="">KVA :{{m.capacity}}</p>
+        <p class="">Balance :{{m.Balance}}</p>
+        <!-- <p class="date">Replace Qty: {{m.replace['qty']}}</p>
+        <p class="date">New Qty : {{m.new['qty']}}</p> -->
+      </div>
+    </ion-item>
+
+    <div *ngFor="let m of modalData;let i= index" class="ion-item-body">
+      <ion-item class="ion-item-item">
+        <p ALIGN=RIGHT ><b>
+            <ion-icon name="trash" (click)='remove(m.row)'></ion-icon>
+          </b></p>
+        <h4 class="title">Item Code :{{m.new['item']}}</h4>
+        <h4 class="title">Item Name :{{m.new['name']}}</h4>
+        <h4 class="title">Model :{{m.new['model']}}</h4>
+        <h4 class="title">KVA :{{m.new['capacity']}}</h4>
+        <p class="date">Replace Qty: {{m.replace['qty']}}</p>
+        <p class="date">New Qty : {{m.new['qty']}}</p>
+      </ion-item>
+    </div>
+
+  </div>
+</ion-content>
+
+<ion-footer [hidden]='hide'>
+  <button full ion-button (click)='submit()' [disabled]="disablebutton">Submit</button>
+</ion-footer>

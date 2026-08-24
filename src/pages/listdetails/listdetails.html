@@ -1,0 +1,31 @@
+
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px;">To-Do List Reject</ion-title>
+  </ion-navbar>
+
+  </ion-header>
+
+  <ion-content padding class="ion-content-body">
+    <ion-list>
+      <form novalidate (ngSubmit)="submitReject()" [formGroup]="signupform">
+
+        <ion-item>
+          <ion-label stacked color="primary">Remarks</ion-label>
+          <ion-textarea [(ngModel)]="Remarks" placeholder="Insert your remarks here" formControlName="Remarks" [class.error1]="!signupform.controls.Remarks.valid && signupform.controls.Remarks.dirty"></ion-textarea>
+        </ion-item>
+        <ion-item no-lines *ngIf="( signupform.get('Remarks').hasError('required') ) && signupform.get('Remarks').touched">
+          <div class="error" *ngIf="signupform.get('Remarks').hasError('required') && signupform.get('Remarks').touched">
+            Please insert your remarks
+          </div>
+        </ion-item>
+
+        <br><br>
+        <footer>
+          <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+        </footer>
+      </form>
+    </ion-list>
+
+  </ion-content>

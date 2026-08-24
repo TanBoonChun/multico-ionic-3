@@ -1,0 +1,52 @@
+page-gensetmain{
+  ion-header {
+    .toolbar {
+      .toolbar-title-md {
+      color: black;
+      }
+    }
+    .bar-button-default-md:hover:not(.disable-hover), .bar-button-clear-md-default:hover:not(.disable-hover), .bar-button-md-default:hover:not(.disable-hover) {
+      color: white;
+    }
+    .bar-button-default-ios, .bar-button-default.bar-button-ios-default, .bar-button-clear-ios-default {
+      color:rgb(0, 0, 0);
+    }
+    .bar-button-default-md, .bar-button-clear-md-default, .bar-button-md-default {
+      color: black;
+    }
+  }
+
+  .ion-item-body {
+    margin: 0px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+  }
+
+  .ion-item-item {
+    background: white;
+    border-radius: 8px;
+    text-align: center;
+    white-space: pre-line;
+  }
+
+  .image {
+    max-height: 80px;
+    max-width: 80px;
+  }
+
+  .title {
+    text-align: left;
+  }
+
+  .badge {
+    width:40px;
+    position: absolute;
+    right: 0px;
+    top: -5px;
+  }
+
+  .iconlocation{
+    // padding-left: 15px;
+    margin: auto;
+  }
+}

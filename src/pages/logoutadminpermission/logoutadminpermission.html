@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px; color:inherit" >Logout</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+    <div class="img" margin-top>
+      <button class="round-button button2">
+        <img width="100px" height="100px" src="assets/imgs/logo1.png" />
+      </button>
+    </div>
+
+  <!--ion-card class="ion-card">
+
+    <ion-card-content>
+      <div class="content-login">
+        <ion-item class="content-form">
+          <ion-input type="email" placeholder="Email Address"></ion-input>
+        </ion-item>
+
+        <ion-item class="content-form">
+          <ion-input type="email" placeholder="Password"></ion-input>
+        </ion-item>
+      </div>
+      <button ion-button full color="lightblue" (click)='goToHomePage()'>Login</button>
+    </ion-card-content>
+  </ion-card-->
+  <p ion-text color="danger" class="para">Please Contact Your Administrator</p>
+
+  <form [formGroup]="credentials" (ngSubmit)="login()" >
+
+  <ion-item>
+    <ion-label stacked>Admin Id</ion-label>
+    <ion-input type="text" [(ngModel)]="StaffId" formControlName="StaffId"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label stacked>Admin Password</ion-label>
+    <ion-input type="password" [(ngModel)]="Password" formControlName="Password"></ion-input>
+  </ion-item>
+  <div >
+  <button ion-button color="danger" block type="submit" [disabled]="!credentials.valid">Logout</button>
+  </div>
+  </form>
+
+  </ion-content>

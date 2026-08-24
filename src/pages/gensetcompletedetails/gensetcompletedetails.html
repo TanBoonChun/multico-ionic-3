@@ -1,0 +1,109 @@
+
+<ion-header>
+
+  <ion-navbar>
+    <ion-title style="font-size: 12px;">Service Complete Details</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <div class="ion-item-body">
+    <ion-list no-lines>
+      <ion-item class="ion-item-item" no-lines style="border: none;">
+        <div class="body">
+          <h4 class="apply">{{ service_id }}</h4>
+        </div>
+        <div >
+          <div class="row">
+            <div class="col col-title">Service Type:</div>
+            <div class="col col-details">{{ type }}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Status:</div>
+            <div class="col col-details">{{ status }}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Service Date:</div>
+            <div class="col col-details">{{ serviceDate }}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Genset No:</div>
+            <div class="col col-details">{{ genset }}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Site Name:</div>
+            <div class="col col-details">{{ siteName }}</div>
+          </div>
+
+          <div class="row">
+            <div class="col col-title">Site Latitude:  </div>
+            <div class="col col-details">{{ latitude }}</div>
+          </div>
+
+          <div class="row">
+            <div class="col col-title">Site Longitude:  </div>
+            <div class="col col-details">{{ longitude }}</div>
+          </div>
+
+          <!-- <div class="row">
+            <div class="col col-title">Model :   </div>
+            <div class="col col-details">{{ model }}</div>
+          </div>
+
+          <div class="row">
+            <div class="col col-title">KVA :   </div>
+            <div class="col col-details">{{ capacity }}</div>
+          </div> -->
+        </div>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div class="ion-item-body buttons" *ngIf="atask.length > 0">
+    <ion-item class="ion-item-item">
+      <div class="row">
+        <div class="col col-display title">Start Task</div>
+        <div class="col col-display title">End Task</div>
+      </div>
+      <hr>
+      <div *ngFor="let a of atask">
+        <div class="row">
+          <div class="col col-display" style="border-right: rgb(211, 211, 211) solid 1px;">{{a.Time_In}}</div>
+          <div class="col col-display">{{a.Time_Out}}</div>
+        </div>
+      </div>
+    </ion-item>
+  </div>
+
+  <div class="ion-item-body buttons" *ngIf="atraveltask.length > 0">
+    <ion-item class="ion-item-item">
+      <div class="row">
+        <div class="col col-display title">Start Travel</div>
+        <div class="col col-display title">End Travel</div>
+      </div>
+      <hr>
+      <div *ngFor="let t of atraveltask">
+        <div class="row">
+          <div class="col col-display" style="border-right: rgb(211, 211, 211) solid 1px;">{{formatDate(t.Start_Time)}}</div>
+          <div class="col col-display">{{formatDate(t.End_Time)}}</div>
+        </div>
+      </div>
+    </ion-item>
+  </div>
+
+  <div class="ion-item-body buttons">
+    <ion-item class="ion-item-item">
+      <div class="row">
+        <div class="col col-display title">Notes</div>
+      </div>
+      <hr>
+      <div *ngIf="notes.length < 1">
+        <p class="none">No notes found</p>
+      </div>
+      <button ion-item *ngFor="let n of notes" (click)="openNote(n)">
+        {{ n.Title || 'Untitled' }} - {{ formatDate(n.created_at) }}
+      </button>
+    </ion-item>
+  </div>
+</ion-content>

@@ -1,0 +1,65 @@
+<!--
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px;">Stock Receiving</ion-title>
+  </ion-navbar>
+</ion-header>
+  
+<!-- <ion-content class="ion-content-body">
+
+  <section class = "home-container">
+
+    <ion-list>
+
+      <ion-item (click)='Purchased()'>
+        <button class="round-button button1" >
+          <img src="assets/img/calendar (2).png" height="30px" width="30px">
+        </button>
+        Purchased
+      </ion-item>
+
+      <ion-item (click)='NonPurchased()'>
+        <button class="round-button button2" >
+          <img src="assets/img/leave-status.png" width="30px" height="30px" >
+        </button>
+        Non Purchased
+      </ion-item>
+
+    </ion-list>
+
+  </section>
+
+</ion-content> -->
+
+<ion-content padding class="ion-content-body">
+
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item" no-wrap>
+
+      <div class="row" (click)='Purchased()'>
+        <div>
+          <button class="round-button button1">
+            <img src="assets/img/calendar (2).png" height="30px" width="30px">
+          </button>
+          Purchased
+        </div>
+      </div>
+      <br>
+      <div class="row" (click)='NonPurchased()'>
+        <div>
+          <button class="round-button button4">
+            <img src="assets/img/leave-status.png" width="30px" height="30px" >
+          </button>
+          Non Purchased
+        </div>
+      </div>
+
+    </ion-item>
+  </div>
+  
+</ion-content>
+  
+  

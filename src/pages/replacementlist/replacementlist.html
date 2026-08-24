@@ -1,0 +1,61 @@
+<!--
+  Generated template for the ReplacementlistPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Replacement List</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+
+  <div *ngIf="data && data.length < 1" class="ion-item-body">
+    <p class="none">No record found</p>
+  </div>
+  <!-- <div *ngFor="let d of data;" class="ion-item-body" (click)="page(d)">
+    <ion-item class="ion-item-item">
+      <h3 class="title"><b>{{d.service_id}} ({{d.service_type}})</b></h3>
+      <p class="date">{{d.genset_no}}</p>
+      <p class="date">{{d.Loc_Name}}</p>
+      <p class="date">{{d.Lat ? d.Lat:"-"}},{{d.Long ? d.Long:"-"}}</p>
+      <p class="date" *ngIf='d.Status && d.Status == "In-Progress"' style="color:darkorange;">{{d.Status}}</p>
+      <p class="date" *ngIf='d.Status && d.Status == "Completed"' style="color:rgb(55, 0, 255);">{{d.Status}}</p>
+      <p class="date" *ngIf='d.Status && d.Status == "Repair"' style="color:rgb(255, 0, 0);">{{d.Status}}</p>
+    </ion-item>
+  </div> -->
+
+  <div  class="ion-item-body" *ngFor="let item of items" (click)="page(item)">
+    <ion-item class="ion-item-item">
+      <!-- <div>Type : <b>{{item.Type}}</b></div> -->
+      <div>Stock No : {{item.stock_no}} </div>
+      <div>Purpose :  {{item.purpose}}</div>
+      <div>Project Code : {{item.project_code}} [{{item.site}}] </div>
+      <div>Ownership : {{item.Ownership}} </div>
+      <div>Segment : {{item.segment}}</div>
+      <div>Company : {{item.company}}</div>
+      <!-- <div>Remarks : {{item.remarks}} </div> -->
+      <div>Status : {{item.status}}</div>
+      <!-- <div>Location : {{item.location}} </div>
+      <div>Project : {{item.project_code}} </div>
+      <div>Site : {{item.site}} </div>
+      <div>Ownership : {{item.Ownership}} </div>
+      <div>Segment : {{item.Segment}} </div> -->
+      <!-- <p class="date" *ngIf='d.Status && d.Status == "In-Progress"' style="color:darkorange;">{{d.Status}}</p>
+      <p class="date" *ngIf='d.Status && d.Status == "Completed"' style="color:rgb(55, 0, 255);">{{d.Status}}</p>
+      <p class="date" *ngIf='d.Status && d.Status == "Repair"' style="color:rgb(255, 0, 0);">{{d.Status}}</p> -->
+    </ion-item>
+  </div>
+
+  <!-- <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content
+    loadingSpinner="bubbles"
+    loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll> -->
+</ion-content>

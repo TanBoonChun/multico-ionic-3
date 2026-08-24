@@ -1,0 +1,13 @@
+page-replacementitemmodal2 {
+    .select-text {
+        overflow: hidden;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        min-width: 16px;
+        font-size: inherit;
+        text-overflow: ellipsis;
+        white-space: break-spaces;
+    }
+}

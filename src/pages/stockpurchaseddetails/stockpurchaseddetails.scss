@@ -1,0 +1,76 @@
+page-stockpurchaseddetails {
+    .app{
+        background: #42dff4 ;
+        color:black;
+        padding-bottom: 5px;
+    }
+    
+    .ion-title{
+        text-align: center;
+        color: white;
+    }
+
+    .ion-content-body {
+        // background: linear-gradient(to bottom, #000046 0, #240b36 );
+        background-color:#f1f2f6;
+
+    }
+
+    .ion-content{
+        background-color:#f1f2f6;
+    }
+
+    .round-button{
+        border: none;
+        background-color:transparent;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        margin-right: 20px;
+    }
+
+    .button1 {
+        border-radius: 50px;
+        background-color: #3498db;
+        box-shadow: 0 0 5px #3498db;
+    }
+
+    .button2{
+        border-radius: 50px;
+        background-color: #34db42;
+        box-shadow: 0 0 5px #34db42;
+    }
+
+    .button3 {
+        border-radius: 50px;
+        background-color: #fa3b3b;
+        box-shadow: 0 0 5px #fa3b3b;
+    }
+
+    .button4 {
+        border-radius: 50px;
+        background-color: #fed330;
+        box-shadow: 0 0 5px #fed330;
+    }
+
+    div.a {
+    text-align: center;
+    color: #000000;
+    }   
+
+    p{
+        padding-left: 20px;
+    }
+
+    #notifications-badge {
+        background-color: red;
+        position: absolute;
+        border-radius: 100%;
+      }
+
+      
+}

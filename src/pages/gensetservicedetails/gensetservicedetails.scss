@@ -1,0 +1,141 @@
+page-gensetservicedetails {
+
+  ion-header {
+      .toolbar {
+
+          .toolbar-title-md {
+            color: black;
+          }
+      }
+      .bar-button-default-md:hover:not(.disable-hover), .bar-button-clear-md-default:hover:not(.disable-hover), .bar-button-md-default:hover:not(.disable-hover) {
+          color: white;
+      }
+      .bar-button-default-ios, .bar-button-default.bar-button-ios-default, .bar-button-clear-ios-default {
+          color:rgb(0, 0, 0);
+      }
+      .bar-button-default-md, .bar-button-clear-md-default, .bar-button-md-default {
+          color: black;
+      }
+  }
+
+
+  .ion-item-body {
+      margin: 0px;
+      padding-bottom: 5px;
+      padding-top: 5px;
+  }
+
+    .box-button-menu {
+        width: 15vw;
+        height: 15vw;
+        border-radius: 18px;
+        text-align:center;
+        background: rgb(239, 247, 246);
+        margin: 0 auto;
+        padding: 10px;
+    }
+
+    .buttons{
+        margin: 0 auto;
+        text-align: center;
+    }
+
+  .item-md .item-button {
+      padding: 0 0.6em;
+      height: 35px;
+      font-size: 1.2rem;
+  }
+
+  .ion-item-item {
+      background: white;
+      border-radius: 8px;
+    //   padding-top: 4px;
+  }
+
+  .body {
+      // margin: 0 !important;
+      padding-top: 3%;
+      padding-bottom: 3%;
+  }
+
+  .content {
+      // margin: 0 !important;
+      padding-top: 3%;
+      padding-bottom: 3%;
+      color: black;
+      // white-space: pre-line;
+  }
+
+  .col-title {
+      width: 30%;
+      font-weight: bold;
+      white-space: pre-line;
+      font-size: 14px;
+  }
+
+  .col-details {
+      width: 70%;
+      // margin-left: -100px;
+      white-space: pre-line;
+      font-size: 14px;
+  }
+
+  .title {
+      font-size: 18px;
+      font-weight: bold;
+      white-space: pre-line;
+  }
+
+  .apply {
+      font-size: 16px;
+      font-weight: bold;
+      white-space: pre-line;
+  }
+
+  .status {
+      font-size: 16px;
+      color: #005eff;
+  }
+
+  .location-button {
+      border-radius: 5px;
+      background: rgb(88, 90, 88);
+  }
+
+  .redirect-button {
+      border-radius: 5px;
+      background: rgba(0, 0, 255, 0.829);
+  }
+
+  .approve-button {
+      border-radius: 5px;
+      background: rgba(39, 224, 39, 0.986);
+  }
+
+  .cancel-button {
+      border-radius: 5px;
+      background: rgba(255, 0, 0, 0.829);
+  }
+
+  .col-display{
+      width: 50%;
+      margin: auto;
+      font-size: 13px;
+  }
+
+  .title{
+      font-weight: bolder;
+      text-align: left;
+      margin: auto;
+      font-size: 15px;
+  }
+
+  .footer-btn{
+      width: 25vw;
+  }
+
+  ion-footer{
+      padding-bottom: 4px;
+  }
+
+}

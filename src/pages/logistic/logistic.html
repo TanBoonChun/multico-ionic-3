@@ -1,0 +1,104 @@
+
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Logistic</ion-title>
+  </ion-navbar>
+</ion-header>
+  
+<ion-content padding class="ion-content-body">
+
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item" no-wrap>
+      <div class="row" (click)='LogisticstockstatusPage()' hidden>
+        <div>
+          <button class="round-button button1" >
+            <img src="assets/img/calendar (2).png" height="30px" width="30px">
+          </button>
+          Stock Request Status
+        </div>
+      </div>
+      <div class="row" (click)='LogisticdostatusPage()' hidden>
+        <div>
+          <button class="round-button button4">
+            <img src="assets/img/leave-status.png" width="30px" height="30px" >
+          </button>
+          DO Status
+        </div>
+      </div>
+      <div class="row" (click)='LogisticinventorybagPage()' hidden>
+        <div>
+          <button class="round-button button3">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Inventory Bag
+        </div>
+      </div>
+      <div class="row" (click)='Stock()' hidden>
+        <div>
+          <button class="round-button button2">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Stock
+        </div>
+      </div>
+      <div class="row" (click)='STO()'>
+        <div>
+          <button class="round-button button5">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          My STO
+        </div>
+      </div>
+      <br>
+      <div class="row" (click)='GoodMain()' hidden>
+        <div>
+          <button class="round-button button6">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Good Returned / Receiving
+        </div>
+      </div>
+      <div class="row" (click)='Replacement()'>
+        <div>
+          <button class="round-button button3">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Item Replacement
+        </div>
+      </div>
+      <div class="row" (click)='GRN()' hidden>
+        <div>
+          <button class="round-button button5">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Good Return Note Form 
+        </div>
+      </div>
+      <div class="row" (click)='GRF()' hidden>
+        <div>
+          <button class="round-button button6">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Good Receiving Form 
+        </div>
+      </div>
+      <div class="row" (click)='goodreceivinglist()' hidden>
+        <div>
+          <button class="round-button button6">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Good Receiving List 
+        </div>
+      </div>
+      <div class="row" (click)='Vehicle()' hidden>
+        <div>
+          <button class="round-button button6">
+            <img src="assets/img/toolbox3.png" height="30px" width="30px">
+          </button>
+          Vehicle
+        </div>
+      </div>
+    </ion-item>
+  </div>
+  
+</ion-content>

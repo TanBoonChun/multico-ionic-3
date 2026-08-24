@@ -1,0 +1,527 @@
+// http://ionicframework.com/docs/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+.ion-content-body {
+  // background: linear-gradient(to bottom, #000046 0, #240b36 );
+  background: linear-gradient(to bottom, #f2c9b9 0%, #ef3e07 100%);
+}
+
+.modal-wrapper {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+.required:after { content:" *"; color:red; }
+.round-button{
+    border: none;
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    box-shadow: 0 0 0px #3f51b5;
+    position: relative;
+  }
+  .button1 {border-radius: 70px; background-color:#2c3e50;box-shadow: 0 0 5px #2c3e50}
+  .button2 {border-radius: 50px; background-color: #16a085;box-shadow:0 0 5px #16a085}
+  .button3 {border-radius: 50px; background-color: #8e44ad;box-shadow:0 0 5px #8e44ad}
+  .button4 {border-radius: 100px;background-color: #1abc9c;box-shadow:0 0 5px #1abc9c}
+  .button5 {border-radius: 60px; background-color: #3498db;box-shadow:0 0 5px #3498db}
+  .button6 {border-radius: 52px; background-color: #2ecc71;box-shadow:0 0 5px #2ecc71}
+  .button7 {border-radius: 50%; background-color: #9b59b6;box-shadow:0 0 5px #9b59b6}
+  .button8 {border-radius: 50px; background-color: #8fe73c;box-shadow:0 0 5px #8fe73c}
+  .button9 {border-radius: 50px; background-color: #f054a2;box-shadow:0 0 5px #f054a2}
+
+  .label-md {
+    margin: 13px 8px 13px 0;
+  }
+  
+  
+  ion-label {
+    margin: 0;
+    display: block;
+    overflow: hidden;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    font-size: inherit;
+    text-overflow: ellipsis;
+    white-space: normal !important;
+  }
+  
+  @font-face {
+    font-family: 'digi';
+    src: url('http://cssdeck.com/uploads/resources/fonts/digii/DS-DIGII.TTF');
+  }
+  
+  .clock {
+    font-family: 'digi';
+    font-size:70px;
+  }
+
+  .ionic-selectable-value-item
+    {
+      white-space: normal !important;
+    }
+/* ---- Nested top tabs (Leave Status, Claim Sheets) ---- */
+// Cordova's statusbar-padding rule adds env(safe-area-inset-top) to any tab page
+// whose first child is an ion-content. Those tab pages sit inside a page that
+// already has its own navbar, so the status bar is covered twice and an empty
+// band shows up between the tabbar and the first card.
+ion-content ion-tabs[tabsPlacement=top] ion-tab > .ion-page > ion-content.statusbar-padding:first-child .scroll-content {
+  padding-top: 0;
+}
+
+/* ---- Advance list pages (shared card styles) ---- */
+.adv-list {
+  background-color: #f4f5f8;
+
+  .adv-loading,
+  .adv-empty {
+    text-align: center;
+    padding: 56px 24px;
+    color: #8a94a6;
+
+    ion-icon {
+      font-size: 52px;
+      color: #c3c9d4;
+    }
+
+    h3 {
+      margin: 12px 0 4px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #5b6576;
+    }
+
+    p {
+      margin: 4px 0 0;
+      font-size: 13px;
+    }
+  }
+
+  .adv-card {
+    background: #fff;
+    border-radius: 14px;
+    margin: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 8px rgba(30, 40, 60, 0.08);
+
+    .adv-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+
+      .adv-no {
+        font-size: 13px;
+        font-weight: 700;
+        color: #8a94a6;
+        letter-spacing: 0.4px;
+      }
+
+      .adv-new {
+        font-size: 10px;
+        font-weight: 700;
+        color: #fff;
+        background: #9b59b6;
+        border-radius: 8px;
+        padding: 2px 7px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+    }
+
+    .adv-chip {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      white-space: nowrap;
+
+      &.chip-green {
+        background: rgba(26, 170, 86, 0.12);
+        color: #1aaa56;
+      }
+
+      &.chip-red {
+        background: rgba(227, 79, 64, 0.12);
+        color: #e34f40;
+      }
+
+      &.chip-amber {
+        background: rgba(245, 166, 35, 0.16);
+        color: #c77f00;
+      }
+
+      &.chip-grey {
+        background: #eef0f4;
+        color: #8a94a6;
+      }
+
+      &.chip-blue {
+        background: rgba(0, 102, 255, 0.12);
+        color: #0059d6;
+      }
+    }
+
+    .adv-amount {
+      font-size: 22px;
+      font-weight: 700;
+      color: #24304a;
+    }
+
+    .adv-type {
+      font-size: 13px;
+      font-weight: 600;
+      color: #B35C10;
+      margin: 2px 0 10px;
+    }
+
+    .adv-meta {
+      border-top: 1px solid #f0f2f5;
+      padding-top: 8px;
+
+      .adv-meta-row {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        color: #5b6576;
+        margin-top: 4px;
+
+        ion-icon {
+          font-size: 15px;
+          color: #aab2c0;
+          margin-right: 8px;
+          min-width: 16px;
+          text-align: center;
+        }
+
+        span {
+          flex: 1;
+        }
+      }
+    }
+  }
+}
+
+/* ---- Advance detail pages (shared card styles) ---- */
+.adv-detail {
+  background-color: #f4f5f8;
+
+  .detail-card {
+    background: #fff;
+    border-radius: 14px;
+    margin: 12px;
+    padding: 4px 0 8px;
+    box-shadow: 0 2px 8px rgba(30, 40, 60, 0.08);
+    overflow: hidden;
+  }
+
+  .detail-card-title {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #24304a;
+    border-bottom: 1px solid #eef0f4;
+
+    ion-icon {
+      color: #E67E22;
+      font-size: 20px;
+      margin-right: 8px;
+    }
+  }
+
+  .detail-field {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f4f5f8;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #B35C10;
+      margin-bottom: 3px;
+    }
+
+    .detail-value {
+      display: block;
+      font-size: 15px;
+      color: #24304a;
+      word-break: break-word;
+    }
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 7px 16px;
+    font-size: 14px;
+
+    .k {
+      color: #6b7280;
+      flex: 1;
+      padding-right: 10px;
+    }
+
+    .v {
+      color: #24304a;
+      font-weight: 600;
+      text-align: right;
+      white-space: pre-line;
+      word-break: break-word;
+    }
+  }
+
+  .detail-item {
+    margin: 12px;
+    border: 1px solid #eef0f4;
+    border-radius: 10px;
+    padding: 6px 4px;
+    background: #fafbfc;
+
+    .detail-item-amount {
+      display: flex;
+      justify-content: flex-end;
+      padding: 6px 12px 2px;
+
+      span {
+        font-size: 17px;
+        font-weight: 700;
+        color: #E67E22;
+      }
+    }
+
+    .detail-divider {
+      height: 1px;
+      background: #eef0f4;
+      margin: 6px 12px;
+    }
+  }
+
+  .detail-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px;
+    padding: 14px 16px;
+    background: #FEF3E9;
+    border-radius: 10px;
+    font-weight: 700;
+    color: #24304a;
+
+    .detail-total-amount {
+      font-size: 18px;
+      color: #E67E22;
+    }
+  }
+
+  .detail-status-chip {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 12px;
+    background: #eef0f4;
+    color: #5b6576;
+
+    &.chip-green {
+      background: rgba(26, 170, 86, 0.12);
+      color: #1aaa56;
+    }
+
+    &.chip-red {
+      background: rgba(227, 79, 64, 0.12);
+      color: #e34f40;
+    }
+
+    &.chip-amber {
+      background: rgba(245, 166, 35, 0.16);
+      color: #c77f00;
+    }
+
+    &.chip-blue {
+      background: rgba(0, 102, 255, 0.12);
+      color: #0059d6;
+    }
+
+    &.chip-grey {
+      background: #eef0f4;
+      color: #8a94a6;
+    }
+  }
+
+  .detail-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px 4px;
+
+    .detail-summary-label {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .detail-summary-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #24304a;
+    }
+
+    &.is-total {
+      margin-top: 4px;
+      padding-top: 10px;
+      border-top: 1px solid #eef0f4;
+
+      .detail-summary-value {
+        color: #E67E22;
+        font-size: 17px;
+      }
+    }
+  }
+
+  .detail-item-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px 4px;
+
+    .detail-item-date {
+      font-size: 13px;
+      font-weight: 700;
+      color: #8a94a6;
+    }
+
+    .detail-item-amt {
+      font-size: 16px;
+      font-weight: 700;
+      color: #E67E22;
+    }
+  }
+
+  .detail-item-type {
+    padding: 0 12px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #B35C10;
+  }
+
+  .detail-item-action {
+    padding: 8px 12px 4px;
+
+    button {
+      margin: 0;
+      height: 40px;
+      --border-radius: 8px;
+      font-weight: 700;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    padding: 4px 12px 8px;
+
+    button {
+      flex: 1;
+      margin: 0;
+      height: 44px;
+      --border-radius: 10px;
+      font-weight: 700;
+    }
+  }
+
+  .detail-empty {
+    text-align: center;
+    padding: 40px 24px;
+    color: #8a94a6;
+
+    ion-icon {
+      font-size: 46px;
+      color: #c3c9d4;
+    }
+
+    p {
+      margin: 10px 0 0;
+      font-size: 14px;
+    }
+  }
+
+  .thumbnail-container {
+    overflow-x: scroll;
+    width: 100%;
+    padding: 8px 12px 0;
+  }
+
+  .thumbnail-list {
+    white-space: nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .thumbnail-list li {
+    display: inline-block;
+  }
+
+  .thumbnail-image {
+    display: block;
+    padding: 2px;
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .attach-buttons {
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px 4px;
+
+    button {
+      flex: 1;
+      margin: 0;
+    }
+  }
+
+  .detail-error {
+    color: #E67E22;
+    font-size: 12px;
+    padding: 4px 16px 8px;
+  }
+
+  .submit-wrap {
+    padding: 4px 12px 20px;
+
+    button {
+      --border-radius: 10px;
+      height: 48px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+  }
+}

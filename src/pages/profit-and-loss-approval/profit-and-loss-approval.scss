@@ -1,0 +1,45 @@
+page-profit-and-loss-approval {
+  .app {
+    background: #42dff4;
+    color: black;
+    padding-bottom: 5px;
+  }
+
+  .ion-title {
+    text-align: center;
+    color: white;
+  }
+
+  .ion-content {
+    background-color: #f1f2f6;
+  }
+
+  div.a {
+    text-align: center;
+    color: #000000;
+  }
+
+  #notifications-badge {
+    background-color: red;
+    position: absolute;
+    border-radius: 100%;
+  }
+  .item-title {
+    padding-left: 8px;
+  }
+  ion-searchbar {
+    margin: 0 auto;
+  }
+  .grid {
+    padding: 0 !important;
+  }
+  ion-item-divider {
+    min-height: 0 !important;
+  }
+  .card-md {
+    border-radius: 15px !important;
+  }
+  .low-pnl {
+    background-color: rgb(250, 145, 145);
+  }
+}

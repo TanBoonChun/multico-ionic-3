@@ -1,0 +1,108 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+      <ion-title>EMPLOYEE TRAVEL &amp; ADVANCE FORM</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content class="adv-detail">
+
+  <!-- ..........................STAFF DETAILS.......................... -->
+  <div class="detail-card">
+    <div class="detail-card-title">
+      <ion-icon name="person"></ion-icon>
+      <span>Staff Details</span>
+    </div>
+
+    <div class="detail-field">
+      <span class="detail-label">Name</span>
+      <span class="detail-value">{{ user.Name ? user.Name : '-' }}</span>
+    </div>
+    <div class="detail-field">
+      <span class="detail-label">Project</span>
+      <span class="detail-value">{{ advance.project_code ? advance.project_code : '-' }}</span>
+    </div>
+    <div class="detail-field">
+      <span class="detail-label">Bank Account</span>
+      <span class="detail-value">{{ advance.Bank_Account_No ? advance.Bank_Account_No : '-' }}</span>
+    </div>
+    <div class="detail-field">
+      <span class="detail-label">Position</span>
+      <span class="detail-value">{{ advance.Position ? advance.Position : '-' }}</span>
+    </div>
+    <div class="detail-field" *ngIf="advance.Purpose">
+        <span class="detail-label">Purpose</span>
+        <span class="detail-value">{{ advance.Purpose }}</span>
+    </div>
+    <div class="detail-field">
+        <span class="detail-label">Advance Payment Required</span>
+        <span class="detail-value">{{ advance.Need_Advance ? 'Yes' : 'No (Travel Request Only)' }}</span>
+    </div>
+    <div class="detail-field" *ngIf="partner && partner.length">
+      <span class="detail-label">Partner</span>
+      <span class="detail-value" *ngFor="let a of partner">{{ a.Name }}</span>
+    </div>
+  </div>
+
+  <!-- ..........................ADVANCE REQUIRED.......................... -->
+  <div class="detail-card">
+    <div class="detail-card-title">
+      <ion-icon name="cash"></ion-icon>
+      <span>Travel Details</span>
+    </div>
+
+    <div class="detail-item" *ngFor="let item of advancedetails">
+      <div class="detail-item-amount" *ngIf="advance.Need_Advance"><span>RM {{ item.Total }}</span></div>
+      <div class="detail-item-amount" *ngIf="!advance.Need_Advance"><span>Travel Only</span></div>
+      <div class="detail-row"><span class="k">Start Date</span><span class="v">{{ item.Start_Date }}</span></div>
+      <div class="detail-row"><span class="k">End Date</span><span class="v">{{ item.End_Date }}</span></div>
+      <div class="detail-row"><span class="k">Site ID / LRD / Name</span><span class="v">{{ item.Site_ID }}</span></div>
+      <div class="detail-row" *ngIf="item.Remarks"><span class="k">Remarks</span><span class="v">{{ item.Remarks }}</span></div>
+      <div *ngIf="advance.Need_Advance">
+          <div class="detail-divider"></div>
+          <div class="detail-row"><span class="k">Amount (RM)</span><span class="v">RM {{ item.Total }}</span></div>
+      </div>
+    </div>
+
+    <div class="detail-total" *ngIf="advance.Need_Advance">
+      <span>Total Advance Requested</span>
+      <span class="detail-total-amount">RM {{ totalreq.Total_Requested }}</span>
+    </div>
+  </div>
+
+  <!-- ..........................APPROVERS.......................... -->
+  <div class="detail-card" *ngFor="let all of allApprover">
+    <div class="detail-field">
+      <span class="detail-label">Approver</span>
+      <span class="detail-value">{{ all.Name ? all.Name : '-' }}</span>
+    </div>
+    <div class="detail-field">
+      <span class="detail-label">Status</span>
+      <span class="detail-value">{{ all.Status ? all.Status : '-' }}</span>
+    </div>
+    <div class="detail-field" *ngIf="all.Remarks != ''">
+      <span class="detail-label">Remarks</span>
+      <span class="detail-value" style="white-space: pre-wrap;">{{ all.Remarks }}</span>
+    </div>
+    <div class="detail-field" *ngIf="all.updated_at != ''">
+      <span class="detail-label">Updated At</span>
+      <span class="detail-value">{{ all.updated_at }}</span>
+    </div>
+  </div>
+
+  <!-- ..........................ATTACHMENTS.......................... -->
+  <div class="detail-card" *ngIf="attachment && attachment.length">
+    <div class="detail-card-title">
+      <ion-icon name="attach"></ion-icon>
+      <span>Attachments</span>
+    </div>
+
+    <div class="attach-buttons" *ngFor="let a of attachment">
+      <button ion-button outline color="danger" icon-left (click)="downloadViewImage(a.Web_Path)">
+        <ion-icon name="eye"></ion-icon> View Attachment
+      </button>
+    </div>
+  </div>
+
+</ion-content>

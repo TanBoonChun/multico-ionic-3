@@ -1,0 +1,50 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{ isEdit ? 'Edit Note' : 'New Note' }}</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)='closeModal()'>Close</button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <div class="row">
+    <button ion-button small (click)="takePicture()">Take Picture</button>
+    <button ion-button small (click)="getPicture()">Get Picture</button>
+  </div>
+
+  <br>
+
+  <div class="thumbnail-container" *ngIf="existingImages.length || imagesN.length">
+    <ul class="thumbnail-list">
+      <li *ngFor="let img of existingImages; let i = index" class="thumbnail-item">
+        <img class="thumbnail-image" [src]="img.url">
+        <button class="thumbnail-remove" (click)="removeExistingImage(i)">&times;</button>
+      </li>
+      <li *ngFor="let img of imagesN; let i = index" class="thumbnail-item">
+        <img class="thumbnail-image" [src]="img">
+        <button class="thumbnail-remove" (click)="removeNewImage(i)">&times;</button>
+      </li>
+    </ul>
+  </div>
+
+  <br>
+
+  <ion-item>
+    <ion-label stacked>Title</ion-label>
+    <ion-input placeholder="Enter title" [(ngModel)]="title"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label stacked>Remarks</ion-label>
+    <ion-textarea placeholder="Type your remarks here..." [(ngModel)]="remarks" rows="6"></ion-textarea>
+  </ion-item>
+
+</ion-content>
+
+<ion-footer>
+  <button full ion-button (click)='save()'>Save</button>
+</ion-footer>

@@ -1,0 +1,79 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title text-wrap>Leave Detail</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="leave-detail">
+
+  <div class="hero-card">
+    <div class="status-pill" [ngClass]="(Status || '') | lowercase">
+      <ion-icon [name]="statusIcon()"></ion-icon>
+      <span>{{ Status }}</span>
+    </div>
+    <p class="hero-label">{{ Leave_Type }}</p>
+    <h1 class="hero-date">{{ Start_Date }}</h1>
+    <p class="hero-range" *ngIf="End_Date">to {{ End_Date }}</p>
+    <div class="hero-days">
+      <ion-icon name="calendar"></ion-icon>
+      <span>{{ No_of_Days }} day(s)</span>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-row">
+      <div class="info-key"><ion-icon name="time"></ion-icon> Leave Term</div>
+      <div class="info-val">{{ Leave_Term || '—' }}</div>
+    </div>
+    <div class="info-row">
+      <div class="info-key"><ion-icon name="briefcase"></ion-icon> Project</div>
+      <div class="info-val">{{ Project_Name || '—' }}</div>
+    </div>
+    <div class="info-row">
+      <div class="info-key"><ion-icon name="person"></ion-icon> Approver</div>
+      <div class="info-val">{{ Approver || '—' }}</div>
+    </div>
+    <div class="info-row column">
+      <div class="info-key"><ion-icon name="document-text"></ion-icon> Reason</div>
+      <div class="info-val reason">{{ Reason || '—' }}</div>
+    </div>
+  </div>
+
+  <div class="info-card" *ngIf="myattachment?.length || attachmentUrl">
+    <div class="info-row column">
+      <div class="info-key">
+        <ion-icon name="attach"></ion-icon>
+        Attachment<span *ngIf="myattachment?.length > 1">s ({{ myattachment.length }})</span>
+      </div>
+
+      <!-- Full list from /getleaveattachments. -->
+      <ng-container *ngIf="myattachment?.length">
+        <ng-container *ngFor="let att of myattachment">
+          <img *ngIf="isImage(att.Web_Path)" class="attach-img" [src]="serverUrl + att.Web_Path" (click)="openAttachment(serverUrl + att.Web_Path)">
+          <button ion-button block outline color="danger" *ngIf="!isImage(att.Web_Path)" (click)="openAttachment(serverUrl + att.Web_Path)">
+            <ion-icon name="document"></ion-icon> {{ att.File_Name || 'View Attachment' }}
+          </button>
+        </ng-container>
+      </ng-container>
+
+      <!-- Fallback: the single navParams Web_Path, if the list request failed. -->
+      <ng-container *ngIf="!myattachment?.length">
+        <img *ngIf="attachmentIsImage" class="attach-img" [src]="attachmentUrl" (click)="openAttachment()">
+        <button ion-button block outline color="danger" *ngIf="!attachmentIsImage" (click)="openAttachment()">
+          <ion-icon name="document"></ion-icon> View Attachment
+        </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <button ion-button block class="cancel-btn" type="button" (click)="cancelLeave()">
+    <ion-icon name="close-circle"></ion-icon>
+    Cancel Leave
+  </button>
+
+  <div class="bottom-space"></div>
+
+</ion-content>

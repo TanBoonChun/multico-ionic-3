@@ -1,0 +1,85 @@
+
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px;">My Task</ion-title>
+    <ion-buttons end>  <button class="buttonadd" navPush="ListformPage">
+      <ion-icon color="primary" class="icon" name="add">
+      </ion-icon></button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+      <div class="row">
+        <div class="col a" navPush="TaskListPage" navParams="assigned">
+          <button class="round-button button8">
+            <img class="image" width="35px" height="35px" src="assets/icon/taskpending.png">
+            <div class="test2">
+              <ion-badge color="danger" *ngIf=" taskBadgeCount > 0" float-right>{{ taskBadgeCount }}</ion-badge>
+            </div>
+          </button>
+          <h4>Task Assigned</h4>
+        </div>
+
+        <div class="col a" navPush="TaskListPage" navParams="in-progress">
+          <button class="round-button button4">
+            <img class="image" width="35px" height="35px" src="assets/icon/listaccept.png">
+            <div class="test2">
+              <ion-badge color="danger" *ngIf=" taskBadgeCount2 > 0" float-right>{{ taskBadgeCount2 }}</ion-badge>
+            </div>
+          </button>
+          <h4>Task In Progress</h4>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="row">
+        <div class="col a" navPush="TaskListPage" navParams="completed">
+          <button class="round-button button5">
+            <img class="image" width="35px" height="35px" src="assets/icon/listcomplete.png">
+            <div class="test2">
+            </div>
+          </button>
+          <h4>Task Completed</h4>
+        </div>
+
+        <div class="col a" navPush="TaskListPage" navParams="rejected">
+          <button class="round-button button3">
+            <img class="image" width="35px" height="35px" src="assets/icon/listreject.png">
+            <div class="test2">
+            </div>
+          </button>
+          <h4>Task Rejected</h4>
+        </div>
+      </div>
+      <br>
+
+      <div class="row">
+
+        <div class="col a" navPush="TaskListPage" navParams="in-progress overdue">
+          <button class="round-button button7">
+            <img class="image" width="35px" height="35px" src="assets/icon/listreject.png">
+            <div class="test2">
+              <ion-badge color="danger" *ngIf="overdueBadgeCount > 0" float-right>{{ overdueBadgeCount }}</ion-badge>
+            </div>
+          </button>
+          <h4>Task Overdue</h4>
+
+        </div>
+
+        <div class="col a"   navPush="TaskListPage" navParams="in-progress completed">
+          <button class="round-button button2">
+            <img class="image" width="35px" height="35px" src="assets/icon/listreject.png">
+            <div class="badge">
+              <!-- <ion-badge color="danger" *ngIf="allLeaveBadgeCount > 0" item-end>{{ allLeaveBadgeCount }}</ion-badge> -->
+            </div>
+          </button>
+          <h4>Task Overdue Completed</h4>
+        </div>
+      </div>
+    </ion-item>
+  </div>
+</ion-content>

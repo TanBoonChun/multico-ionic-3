@@ -1,0 +1,17 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Leave Status</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="leave-status">
+  <ion-tabs tabsPlacement='top' color="light">
+    <ion-tab [root]="tab1" tabTitle="Pending" tabsHideOnSubPages="true"></ion-tab>
+    <ion-tab [root]="tab2" tabTitle="Approved" [tabBadge]="approvedLeaveBadgeCount" tabsHideOnSubPages="true"></ion-tab>
+    <ion-tab [root]="tab3" tabTitle="Rejected" [tabBadge]="rejectedLeaveBadgeCount" tabsHideOnSubPages="true"></ion-tab>
+    <ion-tab [root]="tab4" tabTitle="Cancelled" [tabBadge]="cancelledLeaveBadgeCount" tabsHideOnSubPages="true"></ion-tab>
+  </ion-tabs>
+</ion-content>

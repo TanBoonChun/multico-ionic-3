@@ -1,0 +1,156 @@
+<!--
+  Generated template for the ReplacementitemmodalPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Replacement Modal 2</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)='closeModal()'>Close</button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+  <div><!--hide if no genset -->
+
+    <div class="row">
+      <div class="col col-title">Replacement Item: </div>
+    </div>
+
+    <!-- <div class="row">
+      <div class="col col-details ion-item-item ">{{replaceQr}}</div>
+      <button ion-button (click)="getCode('replace')">
+        <ion-icon name="qr-scanner"></ion-icon>
+      </button> 
+    </div> -->
+
+    <ion-list>
+      <div>
+        <ion-item>
+          <ion-label stacked color="primary" >Item Code</ion-label>
+          <ion-select [(ngModel)]="ItemCodeR">
+            <ion-option *ngFor="let a of items" value="{{a.InvId}}">{{a.Item_Code}} - ({{a.Part_Name}})
+            </ion-option>
+          </ion-select>
+        </ion-item>
+      </div>
+    </ion-list>
+
+    <div class="row">
+      <button ion-button item-right size='small' type="button" class="doc-button" (click)="select('replace')"><ion-icon name="camera"></ion-icon></button>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <ion-item>
+        <ion-input placeholder='Replace Qty' type='number' [(ngModel)]="replace_num"></ion-input>
+      </ion-item>
+      <button ion-button small color='light' (click)='add("replace")'>
+        <ion-icon name="ios-add" class='add-icon'></ion-icon>
+      </button>
+      <button ion-button small color='danger' (click)='minus("replace")'>
+        <ion-icon name="ios-remove"></ion-icon>
+      </button>
+    </div>
+
+    <div class="row" [hidden]="!viewImg['replace']">
+      <div class="thumbnail-container">
+        <ul class="thumbnail-list">
+          <li><span><img height='60' width='120' class="thumbnail-image" [src]="viewImg['replace']"><button ion-button size='small' (click)='removeImg("replace")' end>Remove</button></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <ion-list>
+        <ion-label>Condition</ion-label>
+        <ion-item>
+          <ion-label stacked style="color: black;"></ion-label>
+          <ion-select [(ngModel)]="OldCondition">
+            <ion-option value="Faulty">Faulty</ion-option>
+            <ion-option value="Good">Good</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <div class="col col-title">New Item: </div>
+    </div>
+
+    <!-- <div class="row">
+      <div class="col col-details ion-item-item ">{{newQr}} </div>
+      <button ion-button  (click)="getCode('new')">
+        <ion-icon name="qr-scanner"></ion-icon>
+      </button>
+    </div> -->
+
+    <ion-list>
+      <div>
+        <ion-item>
+          <ion-label stacked color="primary" >Item Code</ion-label>
+          <ion-select [(ngModel)]="ItemCodeN">
+            <ion-option *ngFor="let a of items" value="{{a.InvId}}">{{a.Item_Code}} - ({{a.Part_Name}})
+            </ion-option>
+          </ion-select>
+        </ion-item>
+      </div>
+    </ion-list>
+
+    <div class="row">
+      <button ion-button item-right size='small' type="button" class="doc-button" (click)="select('new')">
+        <ion-icon name="camera"></ion-icon>
+      </button>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <ion-item class="item">
+        <ion-input placeholder='New Qty' class='input' type='number' [(ngModel)]="new_num"></ion-input>
+      </ion-item>
+      <button ion-button small color='light' (click)='add("new")'>
+        <ion-icon name="ios-add" class='add-icon'></ion-icon>
+      </button>
+      <button ion-button small color='danger' (click)='minus("new")'>
+        <ion-icon name="ios-remove"></ion-icon>
+      </button>      
+    </div>
+    
+    <div class="row" [hidden]="!viewImg['new']">
+      <div class="thumbnail-container">
+        <ul class="thumbnail-list">
+          <li><span><img height='60' width='120' class="thumbnail-image" [src]="viewImg['new']"><button ion-button size='small' (click)='removeImg("new")'>Remove</button></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <ion-list>
+        <ion-label>Condition</ion-label>
+        <ion-item>
+          <ion-label stacked style="color: black;"></ion-label>
+          <ion-select [(ngModel)]="NewCondition">
+            <ion-option value="Faulty">Faulty</ion-option>
+            <ion-option value="Good">Good</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </div>
+
+  </div>
+</ion-content>
+<ion-footer>
+  <button full ion-button (click)='submit()'>Submit</button>
+</ion-footer>

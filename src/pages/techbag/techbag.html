@@ -1,0 +1,44 @@
+<!--
+  Generated template for the TechbagPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Techbag</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+
+  <ion-searchbar showCancelButton="always" #mySearchbar (ionInput)="getList0($event)"></ion-searchbar>
+
+  
+   
+  <div *ngFor="let item of items;">
+    <div class="ion-item-body">
+
+    <div class="ion-item-body">
+      <ion-item class="ion-item-item">
+          
+        <!-- <p class="title">Date : {{item.service_date}}</p> -->
+        <p class="title">Item Code : {{item.Item_Code}}</p>
+        <p class="title">Item Name : {{item.Part_Name}}</p>
+        <p class="title">Serial No : {{item.Serial_No}}</p>
+        <p class="title">Unit : {{item.Unit}}</p>
+        <p class="title">Qty : {{item.Qty}}</p>
+        <p class="title">Condition : {{item.ItemCondition}}</p>
+        <p class="title">Status : {{item.status}}</p>
+
+      </ion-item>
+    </div>
+    </div>
+  </div>
+
+  
+  
+</ion-content>

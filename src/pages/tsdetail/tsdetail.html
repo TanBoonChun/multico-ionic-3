@@ -1,0 +1,36 @@
+
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Timesheet Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="ion-content-body">
+
+
+  <div class="item">
+    <div id="all">
+      <div class="box">
+        <section class="month" *ngFor="let key of keys">
+          <div>
+            <h3 class="month">{{ key.split('-').slice(1,2) }}<br>{{ key.split('-').slice(0,1) }}</h3>
+          </div>
+          <section>
+            <ul class="list">
+              <li class="item" *ngFor="let item of groups[key]">
+                <h5>{{item.Date}} ({{ myFunction(item.Date) }})</h5>
+                <p class="date">Time In: {{item.Time_In}}</p>
+                <p class="date">Time Out: {{item.Time_Out}}</p>
+                <p class="date">Status: {{item.Status}}</p>
+                <p class="date">Project Name: {{item.Project_Name}}</p>
+                <p class="date">Site: {{item.Site_Name}}</p>
+                <p class="date">Approver: {{item.Approver}}</p>
+                <p class="date">Remarks: {{item.Remarks}}</p>
+              </li>
+            </ul>
+          </section>
+        </section>
+      </div>
+    </div>
+  </div>
+</ion-content>

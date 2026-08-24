@@ -1,0 +1,50 @@
+<ion-header>
+    <ion-navbar >
+      <ion-title style="font-size: 12px;">Service Management</ion-title>
+    </ion-navbar>
+  </ion-header>
+
+  <ion-content padding class="ion-content-body">
+
+    <!-- <div class="ion-item-body">
+      <ion-item class="ion-item-item">
+        <div class="title">
+          <h2><b>Genset Services</b></h2>
+        </div>
+
+        <div class="row">
+          <div class="col a">
+            <img class="image" src="assets/icon/gscservice.png">
+            <h4>GSC</h4>
+          </div>
+          <div class="col a">
+            <img class="image" src="assets/icon/gst.png">
+            <h4>GST</h4>
+          </div>
+        </div>
+      </ion-item>
+    </div> -->
+
+    <div *ngIf="data && data.length < 1" class="ion-item-body">
+      <p class="none">No record found</p>
+    </div>
+    <div *ngFor="let d of data;" class="ion-item-body" (click)="page(d)">
+      <ion-item class="ion-item-item">
+        <h3 class="title"><b>{{d.service_id}} ({{d.service_type}})</b></h3>
+        <p class="date">{{d.genset_no}}</p>
+        <p class="date">{{d.Loc_Name}}</p>
+        <p class="date">{{d.Lat ? d.Lat:"-"}},{{d.Long ? d.Long:"-"}}</p>
+        <p class="date" *ngIf='d.Status && d.Status == "In-Progress"' style="color:darkorange;">{{d.Status}}</p>
+        <p class="date" *ngIf='d.Status && d.Status == "Completed"' style="color:rgb(55, 0, 255);">{{d.Status}}</p>
+        <p class="date" *ngIf='d.Status && d.Status == "Repair"' style="color:rgb(255, 0, 0);">{{d.Status}}</p>
+        <!-- <p class="date" *ngIf='d.Status == "Service "' style="color:darkorange;">{{d.Status}}</p> -->
+      </ion-item>
+    </div>
+    <!-- <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content
+        loadingSpinner="bubbles"
+        loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll> -->
+  </ion-content>
+

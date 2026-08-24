@@ -1,0 +1,198 @@
+<ion-header>
+
+    <ion-navbar color="primary">
+        <ion-title>EMPLOYEE TRAVEL &amp; ADVANCE FORM</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content class="ion-content-body">
+    <form novalidate (ngSubmit)="submit()" [formGroup]="signupform">
+
+        <!-- ..........................STAFF DETAILS.......................... -->
+        <div class="card">
+            <div class="card-title">
+                <ion-icon name="person"></ion-icon>
+                <span>Staff Details</span>
+            </div>
+
+            <ion-list class="form-list">
+                <ion-item>
+                    <ion-label stacked color="primary">Name</ion-label>
+                    <div item-content class="static-value">{{Name ? Name : "-"}}</div>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label stacked color="primary" class="required">Project Code</ion-label>
+                    <ionic-selectable item-content [(ngModel)]="Project_Code" (ngModelChange)="siteCode()" [items]="items" formControlName="Project_Code" itemValueField="Project_Code" itemTextField="Project_Code" [canSearch]="true"
+                        [canClear]="true" (onSearch)="searchItems($event)" [class.error1]="!signupform.controls.Project_Code.valid && signupform.controls.Project_Code.dirty">
+                    </ionic-selectable>
+                </ion-item>
+                <div class="field-error" *ngIf="signupform.get('Project_Code').hasError('required') && signupform.get('Project_Code').touched">
+                    Please select your project code
+                </div>
+
+                <ion-item>
+                    <ion-label stacked color="primary" [class.required]="Need_Advance">Bank Account</ion-label>
+                    <ion-select placeholder="Please select" [(ngModel)]="Bank_Name" formControlName="Bank_Name" [class.error1]="!signupform.controls.Bank_Name.valid && signupform.controls.Bank_Name.dirty">
+                        <ion-option *ngFor="let bank of banks" value="{{bank.Bank_Name}} - {{bank.Bank_Account_No}} ">{{bank.Bank_Name}} - {{bank.Bank_Account_No}} </ion-option>
+                    </ion-select>
+                </ion-item>
+                <div class="field-error" *ngIf="signupform.get('Bank_Name').hasError('required') && signupform.get('Bank_Name').touched">
+                    Please select your bank account
+                </div>
+
+                <ion-item>
+                    <ion-label stacked color="primary">Vendor</ion-label>
+                    <ionic-selectable item-content [(ngModel)]="Vendor" [items]="vendors"
+                        formControlName="Vendor" itemValueField="Id" itemTextField="Vendor_Name" [canSearch]="true"
+                        [canClear]="true" (onSearch)="searchVendors($event)" [class.error1]="!signupform.controls.Vendor.valid && signupform.controls.Vendor.dirty">
+                    </ionic-selectable>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label stacked color="primary">Position</ion-label>
+                    <div item-content class="static-value">{{Position ? Position : "-"}}</div>
+                </ion-item>
+            </ion-list>
+        </div>
+
+        <!-- ..........................ADVANCE PAYMENT.......................... -->
+        <div class="card">
+            <div class="card-title">
+                <ion-icon name="card"></ion-icon>
+                <span>Advance Payment</span>
+            </div>
+
+            <ion-list class="form-list">
+                <ion-item>
+                    <ion-label color="primary">Require Advance Payment</ion-label>
+                    <ion-toggle [(ngModel)]="Need_Advance" formControlName="Need_Advance" (ionChange)="toggleAdvance()"></ion-toggle>
+                </ion-item>
+            </ion-list>
+
+            <div class="hint-note">
+                <ion-icon name="information-circle"></ion-icon>
+                <span>Turn this on only if you need an advance payment. Left off, this is a travel request only.</span>
+            </div>
+        </div>
+
+        <!-- ..........................HIDDEN LEGACY FIELDS.......................... -->
+        <div hidden>
+            <ion-item>
+                <ion-label stacked color="primary" class="required">Site Code</ion-label>
+                <ionic-selectable item-content [(ngModel)]="Site_Code" [items]="apps"
+                    formControlName="Site_Code" itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true"
+                    [canClear]="true" (onSearch)="searchApps($event)" [class.error1]="!signupform.controls.Site_Code.valid && signupform.controls.Site_Code.dirty">
+                </ionic-selectable>
+            </ion-item>
+            <ion-item>
+                <ion-label stacked color="primary" class="required">Site ID/LRD/Site Name</ion-label>
+                <ion-textarea [(ngModel)]="Site_Name" placeholder="Insert your site name here" formControlName="Site_Name" (ngModelChange)="noSpace(Site_Name)" [class.error1]="!signupform.controls.Site_Name.valid && signupform.controls.Site_Name.dirty">
+                </ion-textarea>
+            </ion-item>
+            <!-- Pax drove the old accommodation rate, the amount is entered by hand now
+            <ion-item>
+                <ion-label stacked color="primary" class="required">Pax</ion-label>
+                <ion-select (ionChange)="tukar($event)" placeholder="please select" [(ngModel)]="NoPartner" formControlName="NoPartner" value="id">
+                    <ion-option id="1" value="1">1</ion-option>
+                    <ion-option id="2" value="2">2</ion-option>
+                    <ion-option id="3" value="3">3</ion-option>
+                    <ion-option id="4" value="4">4</ion-option>
+                    <ion-option id="5" value="5">5</ion-option>
+                </ion-select>
+            </ion-item>
+            -->
+        </div>
+
+        <!-- ..........................TRAVEL DETAILS.......................... -->
+        <div class="card">
+            <div class="card-title with-action">
+                <div class="title-text">
+                    <ion-icon name="calendar"></ion-icon>
+                    <span>Travel Details</span>
+                </div>
+                <button ion-button round type="button" class="add-fab" (click)="addrow(i)">
+                    <ion-icon name="add"></ion-icon>
+                </button>
+            </div>
+
+            <div class="empty-state" *ngIf="itemarray.length === 0">
+                <ion-icon name="document"></ion-icon>
+                <p>No travel detail added yet.</p>
+                <small>Tap the <ion-icon name="add"></ion-icon> button above to add an entry.</small>
+            </div>
+
+            <div class="advance-item" *ngFor="let item of itemarray; let i = index">
+                <div class="advance-item-header">
+                    <span class="advance-amount" *ngIf="Need_Advance">RM {{item.Total_Requested}}</span>
+                    <span class="advance-amount" *ngIf="!Need_Advance">Travel Only</span>
+                    <div class="advance-actions">
+                        <button ion-button clear type="button" (click)="edit(i)">
+                            <ion-icon name="create"></ion-icon>
+                        </button>
+                        <button ion-button clear color="danger" type="button" (click)="remove(i)">
+                            <ion-icon name="trash"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="advance-row"><span class="k">Start Date</span><span class="v">{{item.newStartDate}}</span></div>
+                <div class="advance-row"><span class="k">End Date</span><span class="v">{{item.newEndDate}}</span></div>
+                <div class="advance-row"><span class="k">Site ID / LRD / Name</span><span class="v">{{item.Site_Code.siteCode}}</span></div>
+                <div class="advance-row" *ngIf="item.Remarks"><span class="k">Remarks</span><span class="v">{{item.Remarks}}</span></div>
+
+                <div *ngIf="Need_Advance">
+                    <div class="advance-divider"></div>
+                    <div class="advance-row total"><span class="k">Amount (RM)</span><span class="v amount">RM {{item.Total_Requested}}</span></div>
+                </div>
+            </div>
+
+            <div class="grand-total" *ngIf="Need_Advance">
+                <span>Total Advance Requested</span>
+                <span class="grand-total-amount">RM {{Total_Requested}}</span>
+            </div>
+        </div>
+
+        <!-- ..........................ATTACHMENTS.......................... -->
+        <div class="card">
+            <div class="card-title">
+                <ion-icon name="attach"></ion-icon>
+                <span>Attachments</span>
+            </div>
+
+            <div class="thumbnail-container" *ngIf="imagesN.length > 0">
+                <ul class="thumbnail-list">
+                    <li *ngFor="let imageN of imagesN"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+                </ul>
+            </div>
+
+            <div class="attach-buttons">
+                <button type="button" ion-button color="primary" icon-left (click)="onTakePicture()">
+                    <ion-icon name="camera"></ion-icon> Take Picture
+                </button>
+                <button type="button" ion-button outline color="danger" icon-left (click)="clearImage()">
+                    <ion-icon name="close-circle"></ion-icon> Clear
+                </button>
+            </div>
+
+            <ion-list class="form-list">
+                <ion-item>
+                    <ion-label stacked color="primary">Attachment Remarks</ion-label>
+                    <ion-textarea autocomplete="true" spellcheck="true" rows="4" autoGrow="true" type="text" placeholder="Insert here" [(ngModel)]="Att_Remarks" formControlName="Att_Remarks" [class.error1]="!signupform.controls.Att_Remarks.valid && signupform.controls.Att_Remarks.dirty">
+                    </ion-textarea>
+                </ion-item>
+            </ion-list>
+        </div>
+
+        <div class="hint-note" *ngIf="Need_Advance">
+            <ion-icon name="information-circle"></ion-icon>
+            <span>Make sure there is no negative (-) value.</span>
+        </div>
+
+        <div class="submit-wrap">
+            <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+        </div>
+
+    </form>
+</ion-content>

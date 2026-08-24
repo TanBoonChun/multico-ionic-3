@@ -1,0 +1,308 @@
+page-advancesite {
+
+    ion-content.ion-content-body {
+        --background: #f1f2f6;
+        background-color: #f1f2f6;
+    }
+
+    // ..........................CARD.......................... //
+    .card {
+        background: #ffffff;
+        border-radius: 12px;
+        margin: 12px;
+        padding: 4px 0 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        padding: 14px 16px 10px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #2c3038;
+        border-bottom: 1px solid #eceef2;
+
+        ion-icon {
+            color: #E67E22;
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        &.with-action {
+            justify-content: space-between;
+
+            .title-text {
+                display: flex;
+                align-items: center;
+
+                ion-icon {
+                    color: #E67E22;
+                    font-size: 20px;
+                    margin-right: 8px;
+                }
+            }
+        }
+    }
+
+    // ..........................FORM FIELDS.......................... //
+    .form-list {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+
+        ion-item {
+            --background: transparent;
+            background: transparent;
+        }
+
+        ion-label[stacked] {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+    }
+
+    .static-value {
+        font-size: 15px;
+        color: #2c3038;
+        padding: 4px 0;
+    }
+
+    ion-textarea,
+    .item-input {
+        text-align: left;
+    }
+
+    // ..........................ERRORS.......................... //
+    .field-error {
+        color: #E67E22;
+        font-size: 12px;
+        padding: 4px 16px 8px;
+    }
+
+    .error1 {
+        border-bottom: 1px solid #ff0000 !important;
+    }
+
+    .required:after {
+        content: " *";
+        color: #E67E22;
+    }
+
+    // ..........................ADD BUTTON.......................... //
+    .add-fab {
+        width: 38px;
+        height: 38px;
+        margin: 0;
+        --border-radius: 50%;
+        background: #E67E22;
+        box-shadow: 0 2px 6px rgba(230, 126, 34, 0.4);
+
+        ion-icon {
+            color: #ffffff;
+            font-size: 22px;
+            margin: 0;
+        }
+    }
+
+    // ..........................EMPTY STATE.......................... //
+    .empty-state {
+        text-align: center;
+        color: #9aa0aa;
+        padding: 24px 16px;
+
+        ion-icon {
+            font-size: 40px;
+            color: #cfd3da;
+        }
+
+        p {
+            margin: 8px 0 2px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        small {
+            font-size: 12px;
+
+            ion-icon {
+                font-size: 14px;
+                vertical-align: middle;
+            }
+        }
+    }
+
+    // ..........................ADVANCE ITEM CARD.......................... //
+    .advance-item {
+        margin: 12px;
+        border: 1px solid #eceef2;
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: #fafbfc;
+    }
+
+    .advance-item-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+
+        .advance-amount {
+            font-size: 17px;
+            font-weight: 700;
+            color: #E67E22;
+        }
+
+        .advance-actions {
+            display: flex;
+
+            button {
+                margin: 0;
+                --padding-start: 6px;
+                --padding-end: 6px;
+                height: 32px;
+
+                ion-icon {
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+
+    .advance-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 5px 0;
+        font-size: 13.5px;
+
+        .k {
+            color: #6b7280;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .v {
+            color: #2c3038;
+            font-weight: 600;
+            text-align: right;
+
+            &.amount {
+                white-space: nowrap;
+            }
+        }
+
+        &.total {
+            margin-top: 6px;
+            padding-top: 8px;
+            border-top: 1px dashed #d5d9e0;
+
+            .k {
+                font-weight: 700;
+                color: #2c3038;
+            }
+
+            .v {
+                color: #E67E22;
+            }
+        }
+    }
+
+    .advance-divider {
+        height: 1px;
+        background: #eceef2;
+        margin: 8px 0;
+    }
+
+    // ..........................GRAND TOTAL.......................... //
+    .grand-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 12px;
+        padding: 14px 16px;
+        background: #FEF3E9;
+        border-radius: 10px;
+        font-weight: 700;
+        color: #2c3038;
+
+        .grand-total-amount {
+            font-size: 18px;
+            color: #E67E22;
+        }
+    }
+
+    // ..........................ATTACHMENTS.......................... //
+    .attach-buttons {
+        display: flex;
+        gap: 8px;
+        padding: 8px 12px 4px;
+
+        button {
+            flex: 1;
+            margin: 0;
+        }
+    }
+
+    .thumbnail-container {
+        overflow-x: scroll;
+        width: 100%;
+        padding: 8px 12px 0;
+    }
+
+    .thumbnail-list {
+        white-space: nowrap;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .thumbnail-list li {
+        display: inline-block;
+    }
+
+    .thumbnail-image {
+        display: block;
+        padding: 2px;
+        max-width: 100px;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    // ..........................HINT + SUBMIT.......................... //
+    .hint-note {
+        display: flex;
+        align-items: center;
+        margin: 4px 16px 12px;
+        color: #000000;
+        font-size: 12px;
+
+        ion-icon {
+            font-size: 16px;
+            margin-right: 6px;
+            color: #f5a623;
+        }
+    }
+
+    .submit-wrap {
+        padding: 0 12px 20px;
+
+        button {
+            --border-radius: 10px;
+            height: 48px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+    }
+
+    .alert-radio-label {
+        white-space: normal !important;
+    }
+}
+
+.red {
+    button {
+        color: rgb(241, 1, 1);
+    }
+}

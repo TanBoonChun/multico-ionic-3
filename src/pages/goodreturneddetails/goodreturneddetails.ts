@@ -1,0 +1,101 @@
+import { Component } from '@angular/core';
+import { IonicPage, NavController, NavParams,ToastController } from 'ionic-angular';
+import { AlertController } from 'ionic-angular';
+
+import { Observable } from 'rxjs/Observable';
+import { Storage } from '@ionic/storage';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Toast } from '@ionic-native/toast';
+import { SERVER_URL } from '../../environment';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+  })
+}
+
+/**
+ * Generated class for the GoodreturneddetailsPage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
+ */
+
+// @IonicPage()
+@Component({
+  selector: 'page-goodreturneddetails',
+  templateUrl: 'goodreturneddetails.html',
+})
+export class GoodreturneddetailsPage {
+  Id:any;
+  Type:any='';
+  Receiving_No:any='';
+  PO_No:any='';
+  DO_No:any='';
+  Vendor_Name:any='';
+  Company:any='';
+  location:any='';
+  project_code:any='';
+  site:any='';
+  Ownership:any='';
+  Segment:any='';
+  created_at:any='';
+  Date:any='';
+  Time:any='';
+  SiteName:any='';
+  ProjectNo:any='';
+  Remarks:any='';
+
+  b:any='';
+  a:any='';
+
+  constructor(
+    public navCtrl: NavController, 
+    public http: HttpClient,
+    private toast: Toast,
+    public alertCtrl: AlertController,
+    public navParams: NavParams,
+    public storage: Storage) {
+      this.Id=this.navParams.get('Id')
+      this.Type=this.navParams.get('Type')
+      this.Receiving_No=this.navParams.get('Receiving_No')
+      this.PO_No=this.navParams.get('PO_No')
+      this.DO_No=this.navParams.get('DO_No')
+      this.Vendor_Name=this.navParams.get('Vendor_Name')
+      this.Company=this.navParams.get('Company')
+      this.location=this.navParams.get('location')
+      this.project_code=this.navParams.get('project_code')
+      this.site=this.navParams.get('site')
+      this.Ownership=this.navParams.get('Ownership')
+      this.Segment=this.navParams.get('Segment')
+      this.created_at=this.navParams.get('created_at')
+      this.Date=this.navParams.get('Date')
+      this.Time=this.navParams.get('Time')
+      this.SiteName=this.navParams.get('SiteName')
+      this.ProjectNo=this.navParams.get('ProjectNo')
+      this.Remarks=this.navParams.get('Remarks')
+
+      this.loadData();
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad GoodreceivingdetailsPage');
+  }
+
+  loadData(){
+    let data: Observable<any>;
+
+
+    // Receiving
+    this.storage.get("token").then((val) => {
+      data = this.http.get(
+        SERVER_URL + "/getreceivestocks/"+this.Id+"?token=" + val.token
+      );
+      data.subscribe((result) => {
+        this.b = result.stock;
+        this.a = result.serial;
+      });
+    });
+  }
+
+}

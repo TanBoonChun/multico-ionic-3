@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar color='primary'>
+    <ion-title>PR</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <ion-list>
+    <ion-item (click)='navigateToApprovalPage("pending")'>
+      <button class="round-button button1" item-start>
+        <img src="assets/img/profit-pending.png" height="30px" width="30px">
+      </button>
+      <ion-badge color="danger" item-end *ngIf="totalPendingOrder > 0">{{ totalPendingOrder }}</ion-badge>
+      Pending Approval
+    </ion-item>
+    <ion-item (click)='navigateToApprovalPage("approved")'>
+      <button class="round-button button1" item-start>
+        <img src="assets/img/approved.png" height="30px" width="30px">
+      </button>
+      <span class="item-title">Approved</span>
+    </ion-item>
+    <ion-item (click)='navigateToApprovalPage("rejected")'>
+      <button class="round-button button1" item-start>
+        <img src="assets/img/rejected.png" height="30px" width="30px">
+      </button>
+      <span class="item-title">Rejected</span>
+    </ion-item>
+  </ion-list>
+</ion-content>

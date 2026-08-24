@@ -1,0 +1,46 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+      <ion-title>Good Returned List</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <ion-searchbar (ionInput)="getList($event)" [showCancelButton]="shouldShowCancel" [debounce]="500" placeholder="Type, GR No, Company, Site, Ownership"></ion-searchbar>
+
+  <ion-item *ngIf="b == null">Loading ... </ion-item>
+  <ion-item *ngIf="b != null && b.length == 0">No Good Returned list</ion-item>
+
+  <ion-item *ngFor="let item of b;">
+    <ion-col (click)="goToReturnedDetail(item)">
+      <!-- <p style="color:blueviolet" ALIGN=RIGHT ><b>{{ notifications[item.Id] ? 'New ': ''}}</b></p> -->
+      <div>Type : <b>{{item.Type}}</b></div>
+      <div>GR No : {{item.Receiving_No}} </div>
+      <div>PO No :  {{item.PO_No}}</div>
+      <div>DO No : {{item.DO_No}} </div>
+      <div>Vendor : {{item.Vendor_Name}} </div>
+      <div>Company : {{item.Company}} </div>
+      <div>Location : {{item.location}} </div>
+      <div>Project : {{item.project_code}} </div>
+      <div>Site : {{item.site}} </div>
+      <div>Ownership : {{item.Ownership}} </div>
+      <div>Segment : {{item.Segment}} </div>
+
+
+      <!-- <div *ngIf="item.status == 'Pending Request'" style="color:rgb(165, 165, 6);">{{item.status}} </div>
+      <div *ngIf="item.status == 'Processing'" style="color:orange;">{{item.status}} </div>
+      <div *ngIf="item.status == 'Approved'" style="color:green;">{{item.status}} </div>
+      <div *ngIf="item.status == 'Cancel Request'" style="color:red;">{{item.status}} </div>
+      <div *ngIf="item.status == 'Completed'" style="color:skyblue;">{{item.status}} </div> -->
+
+
+
+
+
+    </ion-col>
+    <!-- <p style="color:#1aaa56">{{item.Status}}</p> -->
+  </ion-item>
+
+</ion-content>

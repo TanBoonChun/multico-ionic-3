@@ -1,0 +1,175 @@
+page-claimedit {
+  .claim-edit {
+    background-color: #f4f5f8;
+  }
+
+  .form-card {
+    background: #fff;
+    border-radius: 14px;
+    margin: 12px;
+    padding: 4px 0 6px;
+    box-shadow: 0 2px 8px rgba(30, 40, 60, 0.08);
+    overflow: hidden;
+  }
+
+  .form-card-title {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #24304a;
+
+    ion-icon {
+      color: #E67E22;
+      font-size: 19px;
+      margin-right: 8px;
+    }
+  }
+
+  ion-list {
+    margin: 0;
+    padding: 0;
+  }
+
+  .item {
+    background: transparent;
+    --background: transparent;
+  }
+
+  ion-item {
+    background-color: transparent;
+  }
+
+  ion-item-divider {
+    background: transparent;
+    color: #B35C10;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    min-height: 0;
+    padding: 6px 16px 2px;
+  }
+
+  // Attachments
+  .thumbnail-container {
+    overflow-x: scroll;
+    width: 100%;
+    padding: 4px 12px 0;
+  }
+
+  .thumbnail-list {
+    white-space: nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .thumbnail-list li {
+    display: inline-block;
+  }
+
+  .thumbnail-frame {
+    position: relative;
+    display: inline-block;
+  }
+
+  .thumbnail-image {
+    display: block;
+    padding: 3px;
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  // Sits over the photo's top-right corner. Kept small so it does not cover
+  // the receipt, but with a solid backing so it stays visible on any photo.
+  .thumbnail-remove {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #e34f40;
+    color: #fff;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+    ion-icon {
+      font-size: 13px;
+      color: #fff;
+    }
+  }
+
+  .thumbnail-empty {
+    text-align: center;
+    padding: 18px 0 8px;
+    color: #aab2c0;
+
+    ion-icon {
+      font-size: 40px;
+    }
+
+    p {
+      margin: 4px 0 0;
+      font-size: 13px;
+    }
+  }
+
+  .attach-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px 6px;
+
+    button {
+      margin: 0;
+      flex: 1;
+      height: 40px;
+      font-size: 13px;
+
+      &[icon-only] {
+        flex: 0 0 44px;
+      }
+    }
+  }
+
+  .total-payable {
+    ion-input {
+      font-weight: 700;
+      color: #E67E22;
+    }
+  }
+
+  .submit-wrap {
+    padding: 6px 12px 24px;
+
+    button {
+      height: 48px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(230, 126, 34, 0.25);
+    }
+  }
+
+  .error {
+    color: rgb(223, 62, 62);
+    font-size: 11px;
+    padding-left: 4px;
+  }
+
+  .error1 {
+    color: rgb(75, 75, 75);
+    border-bottom: 1px solid #ff0000;
+  }
+
+  .required:after {
+    content: " *";
+    color: red;
+  }
+}

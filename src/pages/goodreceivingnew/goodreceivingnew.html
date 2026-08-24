@@ -1,0 +1,163 @@
+<!--
+  Generated template for the GoodreceivingnewPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Good Item</ion-title>
+    <ion-buttons right><button class="invisible"><ion-icon name="close" class="larger" (click)="showConfirm()"></ion-icon></button></ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list>
+    <form novalidate (ngSubmit)="submit()" [formGroup]="signupform">
+
+      <div class="row">
+        <div>
+          <h3 left style="color: black;">Item &nbsp;</h3>
+        </div>
+      </div>
+
+      <ion-grid>
+          <!-- <ion-row  nowrap >
+              <ion-col col-6></ion-col>
+              <ion-col col-6><div style="text-align: center;"></div></ion-col>
+              
+          </ion-row> -->
+          <ion-row>
+            <ion-col col-6 class="required">Component
+                <ion-item no-lines *ngIf="( signupform.get('Component').hasError('required') ) && signupform.get('Component').touched">
+                    <div class="error" *ngIf="signupform.get('Component').hasError('required') && signupform.get('Component').touched">
+                        Please insert your Component
+                    </div>
+                </ion-item>
+            </ion-col>
+            <ion-col col-6>
+              <ion-item>
+                <ion-label stacked></ion-label>
+                <ionic-selectable item-content [(ngModel)]="Component" [items]="component" formControlName="Component" itemValueField="Category" itemTextField="Category" (ngModelChange)="changeMaterial($event)" [canSearch]="true" [canClear]="true"  [class.error1]="!signupform.controls.Component.valid && signupform.controls.Component.dirty">
+                </ionic-selectable>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6 class="required">Material Code / Description
+                <ion-item no-lines *ngIf="( signupform.get('Material').hasError('required') ) && signupform.get('Material').touched">
+                    <div class="error" *ngIf="signupform.get('Material').hasError('required') && signupform.get('Material').touched">
+                        Please insert your Material Code/Description
+                    </div>
+                </ion-item>
+            </ion-col>
+            <ion-col col-6>
+              <ion-item>
+                <ion-label stacked></ion-label>
+                <ionic-selectable item-content [(ngModel)]="Material" [items]="inv" formControlName="Material" itemValueField="Id" itemTextField="ItemCode" (ngModelChange)="changeUnit($event)" [canSearch]="true" [canClear]="true"  [class.error1]="!signupform.controls.Material.valid && signupform.controls.Material.dirty">
+                </ionic-selectable>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+              <ion-col col-6 class="required">Unit
+                  <ion-item no-lines *ngIf="( signupform.get('Unit').hasError('required') ) && signupform.get('Unit').touched">
+                      <div class="error" *ngIf="signupform.get('Unit').hasError('required') && signupform.get('Unit').touched">
+                          Please insert your Unit
+                      </div>
+                  </ion-item>
+              </ion-col>
+              <ion-col col-6>
+                <ion-row>
+                  <ion-input type="number" placeholder="Quantity" [(ngModel)]="Quantity" formControlName="Quantity" [class.error1]="!signupform.controls.Quantity.valid && signupform.controls.Quantity.dirty">
+                  </ion-input>
+                </ion-row>
+                <ion-row>
+                  <ion-item>
+                    <ion-label stacked></ion-label>
+                    <ionic-selectable item-content [(ngModel)]="Unit" [items]="asd" formControlName="Unit" itemValueField="id" itemTextField="id" [canSearch]="true" [canClear]="true"  [class.error1]="!signupform.controls.Unit.valid && signupform.controls.Unit.dirty">
+                    </ionic-selectable>
+                  </ion-item>
+                </ion-row>
+              </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6 class="required">Condition
+                <ion-item no-lines *ngIf="( signupform.get('Condition').hasError('required') ) && signupform.get('Condition').touched">
+                    <div class="error" *ngIf="signupform.get('Condition').hasError('required') && signupform.get('Condition').touched">
+                        Please insert your Condition
+                    </div>
+                </ion-item>
+            </ion-col>
+            <ion-col col-6>
+              <ion-item>
+                <ion-label stacked></ion-label>
+                <ionic-selectable item-content [(ngModel)]="Condition" [items]="condition" formControlName="Condition" itemValueField="Option" itemTextField="Option" [canSearch]="true" 
+                [canClear]="true"  [class.error1]="!signupform.controls.Condition.valid && signupform.controls.Condition.dirty">
+                </ionic-selectable>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6 class="required">Serial No
+              <ion-item no-lines *ngIf="( signupform.get('SerialNo').hasError('required') ) && signupform.get('SerialNo').touched">
+                <div class="error" *ngIf="signupform.get('SerialNo').hasError('required') && signupform.get('SerialNo').touched">
+                  Please insert your Serial No
+                </div>
+              </ion-item>
+              <!-- <br> -->
+              <!-- <ion-label (click)="clickme()">+</ion-label> -->
+            </ion-col>
+            <ion-col col-6>
+              <!-- <div *ngFor="let xy of inputRowValues; let ii=index">
+                <ion-input type="text" [(ngModel)]="xy.SerialNo" formControlName="SerialNo">
+                </ion-input>
+              </div> -->
+              <!-- {{SerialNo}}
+                <ion-input type="text" placeholder="SerialNo" [(ngModel)]="SerialNo" formControlName="SerialNo" [class.error1]="!signupform.controls.SerialNo.valid && signupform.controls.SerialNo.dirty">
+                </ion-input> -->
+
+              <ion-item *ngFor="let att of anArray; let idx = index">
+                <ion-label color="primary">{{att.label}}{{idx+1}}</ion-label>
+                <ion-input type="text"  text-right [ngModelOptions]="{standalone: true}"  [(ngModel)]="anArray[idx].value"></ion-input>
+              </ion-item>
+              <button ion-button type="button" (click)="Add()"><b>Add</b></button>
+              <button ion-button type="button" (click)="getCode('new')">
+                <ion-icon name="qr-scanner"></ion-icon>
+              </button>
+
+            </ion-col>
+          </ion-row>
+
+      </ion-grid>
+
+      
+      <!-- <ion-item *ngFor="let att of anArray; let idx = index">
+        <ion-label color="primary">{{att.label}}{{idx+1}}</ion-label>
+        <ion-input type="text"  text-right [ngModelOptions]="{standalone: true}"  [(ngModel)]="anArray[idx].value"></ion-input>
+      </ion-item>
+      <button ion-button  type="button" (click)="Add()">Add More</button>
+      <button ion-button full  (click)="goTo()" >let's go</button>
+   
+      <ion-card *ngIf="data">
+        <ion-item *ngFor="let att of anArray;">
+          <div class="card-title">{{att.value}}</div>
+        </ion-item>
+      </ion-card> -->
+
+      <br>
+
+      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+
+    </form>
+    <button ion-button block color="primary" type="button" (click)="saje()">Saje</button>
+
+  </ion-list> 
+</ion-content>

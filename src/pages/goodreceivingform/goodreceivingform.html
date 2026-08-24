@@ -1,0 +1,286 @@
+<!--
+  Generated template for the GoodreceivingformPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Goods Form</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="ion-content-body">
+  <ion-list>
+      <form novalidate (ngSubmit)="submit()" [formGroup]="signupform">
+
+          <ion-item>
+            <ion-label stacked color="primary" class="required">Type</ion-label>
+            <ion-select cancelText="Cancel" okText="OK" placeholder="Please Select" [(ngModel)]="Process" formControlName="Process">
+              <ion-option value="GR">Good Receiving</ion-option>
+              <ion-option value="Returned">Good Returned</ion-option>
+              <ion-option value="Decomm">Decomm</ion-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label stacked color="primary" class="required">From Company</ion-label>
+            <ionic-selectable item-content [(ngModel)]="FromCompany" [items]="vendors" formControlName="FromCompany" itemValueField="Id" itemTextField="Vendor_Name" [canSearch]="true" 
+            [canClear]="true"  [class.error1]="!signupform.controls.FromCompany.valid && signupform.controls.FromCompany.dirty">
+            </ionic-selectable>
+          </ion-item>
+
+          <ion-item>
+            <ion-label stacked color="primary">Receiving Date</ion-label>
+            <ion-datetime pickerFormat="DD MMM YYYY" displayFormat="DD MMM YYYY" placeholder="Choose Receiving Date" max="2200" [(ngModel)]="ReceivingDate" formControlName="ReceivingDate"></ion-datetime>
+          </ion-item>
+
+          <ion-item>
+            <ion-label stacked color="primary">Receiving Time</ion-label>
+            <ion-datetime pickerFormat="h:mm A" displayFormat="h:mm A" placeholder="Choose Receiving Time" [(ngModel)]="ReceivingTime"  formControlName="ReceivingTime"></ion-datetime>
+          </ion-item>
+
+          <div>
+            <ion-item>
+              <ion-label stacked color="primary" class="required">PO No</ion-label>
+              <ion-textarea autocomplete=“true” spellcheck=“true” autofocus="true" rows="5" autoGrow="true" type="text" placeholder="PO No" [(ngModel)]="PO" formControlName="PO" [class.error1]="!signupform.controls.PO.valid && signupform.controls.PO.dirty">
+              </ion-textarea>
+              <ion-item no-lines *ngIf="( signupform.get('PO').hasError('required') ) && signupform.get('PO').touched">
+                <div class="error" *ngIf="signupform.get('PO').hasError('required') && signupform.get('PO').touched">
+                  Please insert your PO No
+                </div>
+              </ion-item>
+            </ion-item>
+          </div>
+
+          <div>
+            <ion-item>
+              <ion-label stacked color="primary" class="required">DO No</ion-label>
+              <ion-textarea autocomplete=“true” spellcheck=“true” autofocus="true" rows="5" autoGrow="true" type="text" placeholder="DO No" [(ngModel)]="DO" formControlName="DO" [class.error1]="!signupform.controls.DO.valid && signupform.controls.DO.dirty">
+              </ion-textarea>
+              <ion-item no-lines *ngIf="( signupform.get('DO').hasError('required') ) && signupform.get('DO').touched">
+                <div class="error" *ngIf="signupform.get('DO').hasError('required') && signupform.get('DO').touched">
+                  Please insert your DO No
+                </div>
+              </ion-item>
+            </ion-item>
+          </div>
+
+          <ion-item>
+            <ion-label stacked color="primary" class="required">Warehouse/Bay</ion-label>
+            <ionic-selectable item-content [(ngModel)]="Warehouse"   [items]="locations" formControlName="Warehouse" itemValueField="RoomId" itemTextField="NameCode" [canSearch]="true" 
+              [canClear]="true" [class.error1]="!signupform.controls.Project_Code.valid && signupform.controls.Project_Code.dirty">
+              </ionic-selectable>
+          </ion-item>
+
+          <ion-item>
+            <ion-label stacked color="primary" class="required">Ownership</ion-label>
+            <ionic-selectable item-content [(ngModel)]="Ownership"   [items]="ownerships" formControlName="Ownership" itemValueField="Id" itemTextField="OWN" [canSearch]="true" 
+              [canClear]="true" [class.error1]="!signupform.controls.Ownership.valid && signupform.controls.Ownership.dirty">
+              </ionic-selectable>
+          </ion-item>
+          
+
+          <ion-item>
+              <ion-label stacked color="primary" class="required">Project</ion-label>
+              <ionic-selectable item-content [(ngModel)]="Project_Code"  (ngModelChange)="siteCode()" [items]="items" formControlName="Project_Code" itemValueField="Project_Code" itemTextField="Project_Code" [canSearch]="true" 
+              [canClear]="true" (onSearch)="searchItems($event)" [class.error1]="!signupform.controls.Project_Code.valid && signupform.controls.Project_Code.dirty">
+              </ionic-selectable>
+          </ion-item>
+          <ion-item no-lines *ngIf="( signupform.get('Project_Code').hasError('required') ) && signupform.get('Project_Code').touched">
+              <div class="error" *ngIf="signupform.get('Project_Code').hasError('required') && signupform.get('Project_Code').touched">
+                Please select your project code
+              </div>
+          </ion-item>
+
+        
+          <div>
+            <ion-item>
+              <ion-label stacked color="primary" class="required">Site Code</ion-label>
+              <ionic-selectable item-content [(ngModel)]="Site_Code" [items]="apps" formControlName="Site_Code" itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true" [canClear]="true" [class.error1]="!signupform.controls.Site_Code.valid && signupform.controls.Site_Code.dirty">
+              </ionic-selectable>
+            </ion-item>
+          </div>
+          <div>
+            <ion-item>
+              <ion-label stacked color="primary" class="required">Site Name</ion-label>
+              <ion-textarea [(ngModel)]="Site_Name" placeholder="Insert your site name here" formControlName="Site_Name"  [class.error1]="!signupform.controls.Site_Name.valid && signupform.controls.Site_Name.dirty">
+              </ion-textarea>
+            </ion-item>
+            <ion-item no-lines *ngIf="( signupform.get('Site_Name').hasError('required') ) && signupform.get('Site_Name').touched">
+              <div class="error" *ngIf="signupform.get('Site_Name').hasError('required') && signupform.get('Site_Name').touched">
+                Please insert your site name
+              </div>
+            </ion-item>
+          </div>
+
+          <div>
+            <ion-item>
+              <ion-label stacked color="primary" class="required">Project No</ion-label>
+              <ion-textarea [(ngModel)]="Project_No" placeholder="Insert your project no here" formControlName="Project_No"  [class.error1]="!signupform.controls.Project_No.valid && signupform.controls.Project_No.dirty">
+              </ion-textarea>
+            </ion-item>
+            <ion-item no-lines *ngIf="( signupform.get('Project_No').hasError('required') ) && signupform.get('Project_No').touched">
+              <div class="error" *ngIf="signupform.get('Project_No').hasError('required') && signupform.get('Project_No').touched">
+                Please insert your project no
+              </div>
+            </ion-item>
+          </div>
+
+          <ion-item>
+            <ion-label stacked color="primary" class="required">Company</ion-label>
+            <ionic-selectable item-content [(ngModel)]="Company" [items]="options" formControlName="Company" itemValueField="Option" itemTextField="Option" [canSearch]="true" 
+            [canClear]="true"  [class.error1]="!signupform.controls.Company.valid && signupform.controls.Company.dirty">
+            </ionic-selectable>
+          </ion-item>
+
+          <ion-item>
+            <ion-label stacked color="primary" class="required">Segment</ion-label>
+            <ionic-selectable item-content [(ngModel)]="Segment" [items]="segment" formControlName="Segment" itemValueField="Option" itemTextField="Option" [canSearch]="true" 
+            [canClear]="true"  [class.error1]="!signupform.controls.Segment.valid && signupform.controls.Segment.dirty">
+            </ionic-selectable>
+          </ion-item>
+
+          <div>
+              <ion-item>
+                  <ion-label stacked color="primary" class="required">Remarks</ion-label>
+                  <ion-textarea autocomplete=“true” spellcheck=“true” autofocus="true" rows="5" autoGrow="true" type="text" placeholder="" [(ngModel)]="Remarks" formControlName="Remarks" [class.error1]="!signupform.controls.Remarks.valid && signupform.controls.Remarks.dirty">
+                  </ion-textarea>
+                  <ion-item no-lines *ngIf="( signupform.get('Remarks').hasError('required') ) && signupform.get('Remarks').touched">
+                      <div class="error" *ngIf="signupform.get('Remarks').hasError('required') && signupform.get('Remarks').touched">
+                          Please insert your Remarks
+                      </div>
+                  </ion-item>
+              </ion-item>
+
+          </div>
+
+          <div class="row">
+            <div>
+                <h3 left style="color: black;">Add Item &nbsp;
+                </h3>
+            </div>
+            <div>
+                <button start ion-button type="button" class="buttonadd" (click)="addrow(i)">
+                    <ion-icon color="primary" class="icon" name="add"></ion-icon>
+                </button>
+            </div>
+          </div>
+          
+              
+          <ion-grid style="width: 100%" hidden>
+              
+            <ion-row  nowrap >
+                <ion-col col-4></ion-col>
+                <ion-col col-2><div style="text-align: center;">No Of Days</div></ion-col>
+                <ion-col col-3><div style="text-align: center;">Allowance (Per Day)</div></ion-col>
+                <ion-col col-3><div style="text-align: center;">Amount (RM)</div></ion-col>
+                
+            </ion-row>
+
+          </ion-grid>
+
+
+          <ion-grid>
+              
+
+            <div *ngFor="let item of itemarray; let i = index">
+              <ion-row  nowrap >
+                <ion-col col-6>
+                  <img (click)='edit(i)' class="buttonremove"  src='assets/icon/pencil.png' end />
+                  <img (click)="remove(i)" class="buttonremove" src='assets/icon/rubbish.png'  />
+                </ion-col>
+                <ion-col col-6>
+                  <div style="text-align: center;">Amount (RM)</div>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col col-6>Material Code / Description</ion-col>
+                <ion-col col-6>
+                    <div>{{item.Mat}} </div>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col col-6>Unit</ion-col>
+                <ion-col col-6>
+                  <div>{{item.UnitName.id}}</div>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col col-6>Quantity</ion-col>
+                <ion-col col-6>
+                  <div>{{item.Quantity}}</div>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col col-6>Condition</ion-col>
+                <ion-col col-6>
+                  <div>{{item.Status}}</div>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col col-6>Serial No</ion-col>
+                <ion-col col-6>
+                  <div *ngFor="let a of item.newAnArray; let i=index">
+                    <div class="right">{{a.value}} </div>
+                    <!-- <button ion-button clear (click)="updateTask(i)">
+                      <ion-icon name="create"></ion-icon>
+                    </button> -->
+                  </div>                      
+                </ion-col>
+              </ion-row>
+
+              <br>
+            
+            </div>
+
+          </ion-grid>
+
+          <div class="thumbnail-container">
+              <ul class="thumbnail-list">
+                <li *ngFor="let imageN of imagesN"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+              </ul>
+          </div>
+      
+      
+          <button type="button" ion-button icon-right full (click)="onTakePicture()">Take Picture <ion-icon name="camera"></ion-icon>
+          </button>
+      
+          <button type="button" ion-button icon-right full (click)="clearImage()">Clear
+          </button>
+          
+          <br>
+          <div>
+              <ion-item>
+                  <ion-label stacked color="primary">Attachment Remarks</ion-label>
+                  <ion-textarea autocomplete=“true” spellcheck=“true” autofocus="true" rows="5" autoGrow="true" type="text" placeholder="insert here" [(ngModel)]="Att_Remarks" formControlName="Att_Remarks" [class.error1]="!signupform.controls.Att_Remarks.valid && signupform.controls.Att_Remarks.dirty">
+                  </ion-textarea>
+                  <ion-item no-lines *ngIf="( signupform.get('Att_Remarks').hasError('required') ) && signupform.get('Att_Remarks').touched">
+                      <div class="error" *ngIf="signupform.get('Att_Remarks').hasError('required') && signupform.get('Att_Remarks').touched">
+                          Please insert your attachement remarks
+                      </div>
+                  </ion-item>
+              </ion-item>
+
+          </div>
+
+          <br>
+          <div style="color: red; font-size: x-small;"> *Make sure no negative (-) value</div>
+          <br>
+          <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+
+      </form>
+      <button ion-button block color="primary" type="button" (click)="saje()">saje</button>
+
+  </ion-list>
+
+  
+</ion-content>

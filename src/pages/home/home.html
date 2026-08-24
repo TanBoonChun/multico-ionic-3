@@ -1,0 +1,211 @@
+<ion-content  class="ion-content">
+  <ion-card>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-avatar item-start (click)="onGoToLogout()">
+            <div *ngIf="userImage == serverUrl + '/img/default-user.png' ">
+              <img  class="user-profile" src="assets/imgs/defaultuser.png">
+            </div>
+            <div *ngIf="userImage != serverUrl + '/img/default-user.png'">
+              <img  class="user-profile" [src]="serverUrl + userImage">
+            </div>
+          </ion-avatar>
+          <h3>{{ Name }}</h3>
+          <p class="text-sm">{{ Position }}</p>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <div>
+
+    <div class="padding">
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-chip>
+              <ion-label color="light">My Workplace</ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button1" (click)='onGoToNotice()'>
+              <img src="assets/img/loudspeaker.png" width="35px" height="35px">
+              <div class="test">
+                <ion-badge color="danger" *ngIf=" noticeBadgeCount > 0" float-right>{{ noticeBadgeCount }}</ion-badge>
+              </div>
+            </button>
+            <div class="icon-label">Notice</div>
+
+          </div>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button4" (click)='onGoToClaims()'>
+              <img src="assets/img/claim (4).png" width="35px" height="35px">
+            </button>
+            <div class="icon-label">Claims</div>
+          </div>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button8" (click)='onGoToAdvance()'>
+              <img src="assets/img/advance.png" width="35px" height="35px">
+              <div class="test">
+                <ion-badge color="danger" *ngIf="advCount + myAppCount > 0" float-right>{{ advCount + myAppCount }}</ion-badge>
+              </div>
+            </button>
+            <div class="icon-label">My Travel &amp; Advance</div>
+          </div>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-chip>
+              <ion-label color="light">Human Resources</ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button3" (click)='onGoToAttendance()'>
+              <img src="assets/img/attendance (3).png" width="35px" height="35px">
+            </button>
+            <div class="icon-label">Attendance</div>
+          </div>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button6" (click)='onGoToTimesheet()'>
+              <img src="assets/img/timesheet (3).png" width="35px" height="35px">
+            </button>
+            <div class="icon-label">Timesheet</div>
+          </div>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button7" (click)='onGoToHoliday()'>
+              <img src="assets/img/holiday (1).png" width="35px" height="35px">
+            </button>
+            <div class="icon-label">Holiday</div>
+          </div>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button5"  (click)='onGoToLeaves()'>
+              <img src="assets/img/leave-icon.png" width="35px" height="35px">
+              <div class="test">
+                  <ion-badge color="danger" *ngIf=" allLeaveBadgeCount > 0" float-right>{{ allLeaveBadgeCount }}</ion-badge>
+                  </div>
+            </button>
+            <div class="icon-label">Leave</div>
+          </div>
+
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-chip>
+              <ion-label color="light">Operations</ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button9" (click)='onGoToGenset()'>
+              <img src="assets/img/service.png" width="45px" height="45px">
+            </button>
+            <div class="icon-label">Service Management</div>
+          </div>
+        </ion-row>
+
+        <!-- <ion-row>
+          <ion-col>
+            <ion-chip>
+              <ion-label color="light">Project Management </ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row> -->
+        <!-- <ion-row>
+          <div class="col a" col-4>
+            <button class="round-button button9" (click)='onGoToTask()'>
+              <img src="assets/icon/task2.png" width="35px" height="35px">
+              <div class="test">
+                <ion-badge color="danger" *ngIf=" taskBadgeCount > 0" float-right>{{ taskBadgeCount }}</ion-badge>
+                <ion-badge float-right color="danger">260k</ion-badge>
+              </div>
+            </button>
+            <div>Task</div>
+          </div>
+        </ion-row> -->
+        <!-- <ion-row>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button2" (click)='onGoToList()'>
+              <img src="assets/icon/list2.png" width="35px" height="35px">
+              <div class="test">
+                <ion-badge color="danger" *ngIf=" listBadgeCount > 0" float-right>
+                  {{ listBadgeCount }}</ion-badge>
+              </div>
+            </button>
+            <div class="icon-label">To-Do List</div>
+          </div>
+
+          <div class="col a" col-4 *ngIf="(isObject(user) && (user.User_Type == 'Staff' || user.User_Type == 'Contractor')&& user.Active == 1)">
+            <button class="round-button button10" (click)='logistic()'>
+              <img src="assets/img/delivery-trucky.png" width="35px" height="35px">
+            </button>
+            <div class="icon-label">Logistic</div>
+          </div>
+
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1 && user.UserId != 1036 )">
+            <button class="round-button button11" (click)='PendingApproval()'>
+              <img src="assets/img/approval2.png" width="35px" height="35px">
+              <div class="test">
+                <ion-badge color="danger" *ngIf="sitecode > 0" float-right>{{ sitecode }}</ion-badge>
+              </div>
+            </button>
+            <div class="icon-label">Site Code Approval </div>
+          </div>
+
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1 && user.UserId == 1036)">
+            <button class="round-button button12" (click)='ProjectApproval()'>
+              <img src="assets/img/approval2.png" width="35px" height="35px">
+              <div class="test">
+                <ion-badge color="danger" *ngIf="projectcode > 0" float-right>{{ projectcode }}</ion-badge>
+              </div>
+            </button>
+            <div class="icon-label">Project Code Approval </div>
+          </div>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-chip>
+              <ion-label color="light">Sales Management</ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button profit-btn" (click)="navigateToProfitAndLossPage()">
+              <img src="assets/img/profit.png" width="35px" height="35px">
+              <div class="test">
+                <ion-badge color="danger" *ngIf="totalPendingPnl > 0" float-right>{{ totalPendingPnl }}</ion-badge>
+              </div>
+            </button>
+            <div class="icon-label">Profit and Loss</div>
+          </div>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button order-btn" (click)="navigateToPrPage()">
+              <img src="assets/img/order.png" width="35px" height="35px">
+              <div class="test">
+                <ion-badge color="danger" *ngIf="totalOrder > 0" float-right>{{ totalOrder }}</ion-badge>
+              </div>
+            </button>
+            <div class="icon-label">PR</div>
+          </div>
+        </ion-row> -->
+      </ion-grid>
+    </div>
+    <br>
+  </div>
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+
+    <div class="div-footer">
+        &#169; Copyright {{currentYear}} Softoya International Sdn. Bhd. <br> All rights reserved <br>
+        <b>Ver. : {{VersionNumber}}</b>
+      </div>
+  </ion-toolbar>
+</ion-footer>

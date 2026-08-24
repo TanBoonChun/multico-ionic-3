@@ -1,0 +1,91 @@
+page-list{
+  // ion-header {
+  //   .toolbar {
+  //   //   position: absolute;
+
+  //   //   .toolbar-background-md {
+  //   //     background: transparent;
+  //   //   }
+  //       .toolbar-title-md {
+  //       color: black;
+  //       // text-align: center;
+  //       // padding-right: 10%;
+  //       }
+  //   }
+  //   .bar-button-default-md:hover:not(.disable-hover), .bar-button-clear-md-default:hover:not(.disable-hover), .bar-button-md-default:hover:not(.disable-hover) {
+  //       color: white;
+  //   }
+  //   .bar-button-default-ios, .bar-button-default.bar-button-ios-default, .bar-button-clear-ios-default {
+  //       color:rgb(0, 0, 0);
+  //   }
+  //   .bar-button-default-md, .bar-button-clear-md-default, .bar-button-md-default {
+  //       color: black;
+  //   }
+  // }
+
+  // .ion-content-body {
+  //     // background: linear-gradient(to bottom, #000046f3 0, #240b36fb );
+  //     background: linear-gradient(to bottom, rgba(75, 107, 183, 0.925) 0%,  rgba(24, 40, 72, 0.925) 100%);
+  //     // color: white;
+  //     // padding-top: 5%;
+  //     // align-items: center;
+  // }
+
+  .ion-content-body{
+    background-color: #f1f2f6;
+  }
+
+  .ion-item-body {
+      margin: 0px;
+      padding-bottom: 5px;
+      padding-top: 5px;
+      // background: white;
+  }
+
+  .ion-item-item {
+      background: white;
+      border-radius: 8px;
+      // text-align: center;
+      white-space: pre-line;
+  }
+
+  .body {
+      // margin: 0 !important;
+      padding-top: 3%;
+      padding-bottom: 3%;
+  }
+
+  .title {
+      font-size: 16px;
+      font-weight: bold;
+  }
+
+  .content {
+      // margin: 0 !important;
+      // padding-top: 3%;
+      // padding-bottom: 3%;
+      color: black;
+      // white-space: pre-line;
+  }
+
+  .col-title {
+      // margin-left: -100px;
+      font-weight: bold;
+      white-space: pre-line;
+      font-size: 14px;
+  }
+
+  .col-details {
+      margin-left: 5px;
+      // font-weight: bold;
+      white-space: pre-line;
+      font-size: 14px;
+  }
+
+  .col-details2 {
+    padding-left: 10px;
+    // font-weight: bold;
+    white-space: pre-line;
+    font-size: 14px;
+  }
+}

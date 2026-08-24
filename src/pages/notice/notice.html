@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px;">Notice</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <div *ngFor="let item of items;">
+    <div class="ion-item-body" navPush="NoticedetailsPage" [navParams]="item">
+      <ion-item class="ion-item-item">
+          <p style="color: #eec147" ALIGN=RIGHT ><b>{{ notifications[item.Id] ? 'New ': ''}}</b></p>
+
+        <h3 class="title">{{item.Title}}</h3>
+        <p class="date">{{item.Start_Date}}</p>
+        <p class="date">{{Created_By}}</p>
+      </ion-item>
+    </div>
+  </div>
+</ion-content>

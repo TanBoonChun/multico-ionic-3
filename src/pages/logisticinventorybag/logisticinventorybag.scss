@@ -1,0 +1,56 @@
+page-logisticinventorybag{
+    ion-header {
+        .toolbar {
+        //   position: absolute;
+
+        //   .toolbar-background-md {
+        //     background: transparent;
+        //   }
+          .toolbar-title-md {
+            color: white;
+            // text-align: center;
+            // padding-right: 10%;
+          }
+        }
+        .bar-button-default-md:hover:not(.disable-hover), .bar-button-clear-md-default:hover:not(.disable-hover), .bar-button-md-default:hover:not(.disable-hover) {
+            color: white;
+        }
+        .bar-button-default-ios, .bar-button-default.bar-button-ios-default, .bar-button-clear-ios-default {
+            color:rgb(0, 0, 0);
+        }
+        .bar-button-default-md, .bar-button-clear-md-default, .bar-button-md-default {
+            color: black;
+        }        
+    }
+
+    .ion-content-body {
+        // background: linear-gradient(to bottom, #000046f3 0, #240b36fb );
+        // background: linear-gradient(to bottom, rgba(75, 107, 183, 0.925) 0%,  rgba(24, 40, 72, 0.925) 100%);        // color: white;
+        // padding-top: 5%;
+        // align-items: center;
+    }
+
+    .ion-item-body {
+        margin: 0px;
+        padding-bottom: 5px;
+        padding-top: 5px;
+        // background: white;
+    }
+
+    .ion-item-item {
+        background: white;
+        border-radius: 8px;
+        // text-align: centegr;
+    }
+
+    .date {
+        font-size: 14px;
+        color: black;
+    }
+
+    .title {
+        font-size: 16px;
+        font-weight: bold;
+        white-space: pre-line;
+    }
+}

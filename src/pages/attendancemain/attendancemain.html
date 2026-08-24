@@ -1,0 +1,107 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Attendance</ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content padding class="ion-content-body">
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+      <ion-grid>
+        <ion-row>
+          <ion-col col-4>
+            <button class="round-button button1" (click)="ProjectAttendance()">
+              <img
+                src="assets/img/project (1).png"
+                width="35px"
+                height="35px"
+              />
+            </button>
+            <div>Project</div>
+          </ion-col>
+          <ion-col col-4 >
+            <button class="round-button button5" (click)="OfficeAttendance()">
+              <img src="assets/img/office.png" width="35px" height="35px" />
+            </button>
+            <div>Office</div>
+          </ion-col>
+         
+          <!-- <ion-col col-4>
+            <button class="round-button button4" (click)="OTWAttendance()">
+              <img
+                class="image"
+                src="assets/icon/tracking.png"
+                width="35px"
+                height="35px"
+              />
+            </button>
+            <h4>OTW</h4>
+          </ion-col>
+          <ion-col col-4>
+            <button class="round-button button2" (click)="BreakAttendance()">
+              <img src="assets/img/food1.png" width="35px" height="35px" />
+            </button>
+            <div>Break</div>
+          </ion-col> -->
+        </ion-row>
+      </ion-grid>
+      <!-- <div class="row">
+        <div
+          class="col a"
+          *ngIf="(ShareCost == '0' && Workbase == 'Project') || Name == 'Portal Admin'"
+        >
+          <button class="round-button button1" (click)="ProjectAttendance()">
+            <img src="assets/img/project (1).png" width="35px" height="35px" />
+          </button>
+          <div>Project</div>
+        </div>
+        <div
+          class="col a"
+          *ngIf="(ShareCost == '0' && Workbase == 'Office')  || Name == 'Portal Admin'"
+        >
+          <button class="round-button button5" (click)="OfficeAttendance()">
+            <img src="assets/img/office.png" width="35px" height="35px" />
+          </button>
+          <div>Office</div>
+        </div>
+        <div
+          class="col a"
+          (click)="shareCost()"
+          *ngIf="ShareCost == '1' || Name == 'Portal Admin'"
+        >
+          <button class="round-button button3">
+            <img
+              class="image"
+              src="assets/img/share.png"
+              width="35px"
+              height="35px"
+            />
+          </button>
+          <h4>Share Cost</h4>
+        </div> -->
+
+      <!-- <div class="col a" (click)="OTWAttendance()">
+          <button class="round-button button4">
+            <img
+              class="image"
+              src="assets/icon/tracking.png"
+              width="35px"
+              height="35px"
+            />
+          </button>
+          <h4>OTW</h4>
+        </div>
+      </div> -->
+
+      <!-- <div class="row">
+        <div class="col a">
+          <button class="round-button button2" (click)="BreakAttendance()">
+            <img src="assets/img/food1.png" width="35px" height="35px" />
+          </button>
+          <div>Break</div>
+        </div>
+        <div class="col a"></div>
+        <div class="col a"></div>
+      </div> -->
+    </ion-item>
+  </div>
+</ion-content>

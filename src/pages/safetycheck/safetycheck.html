@@ -1,0 +1,30 @@
+
+<ion-header>
+    <ion-navbar color="primary">
+      <ion-title style="font-size: 12px;">Safety Check List</ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content padding class="ion-content-body">
+  
+    <form novalidate [formGroup]="safetycheck" (ngSubmit)="onSubmit()">
+      <ion-item *ngFor="let item of items">
+        <ion-label>{{ item.name }}</ion-label>
+        <ion-checkbox color="shade" formControlName="item" (ionChange)="selectSafety(item.name)" [(ngModel)]="item.isChecked"></ion-checkbox>
+      </ion-item>
+      <br>
+
+      <div class="thumbnail-container">
+        <ul class="thumbnail-list">
+          <li *ngFor="let imageN of imagesN"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+        </ul>
+      </div>
+
+      <button type="button" ion-button icon-right full (click)="onTakePicture()">
+        Take Picture <ion-icon name="camera"></ion-icon>
+      </button>
+      
+      <button ion-button full type="submit" [disabled]="!safetycheck.valid">Submit</button>
+    </form>
+    
+  </ion-content>

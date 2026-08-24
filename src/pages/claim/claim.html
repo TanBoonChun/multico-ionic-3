@@ -1,0 +1,21 @@
+
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Claim Sheets</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only class="add-btn" [navPush]="addclaim">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="ion-content-body">
+  <ion-tabs tabsPlacement='top' color="light" class="claim-tabs">
+    <ion-tab [root]="tab1" tabTitle="Pending" tabsHideOnSubPages="true"></ion-tab>
+    <ion-tab [root]="tab5" tabTitle="Submitted" tabsHideOnSubPages="true"></ion-tab>
+    <ion-tab [root]="tab3" tabTitle="Recalled" tabsHideOnSubPages="true"></ion-tab>
+    <ion-tab [root]="tab2" tabTitle="Approved" tabsHideOnSubPages="true"></ion-tab>
+    <ion-tab [root]="tab4" tabTitle="Rejected" tabsHideOnSubPages="true"></ion-tab>
+  </ion-tabs>
+</ion-content>

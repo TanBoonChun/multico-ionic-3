@@ -1,0 +1,157 @@
+page-claimsubmission {
+  .claim-submission {
+    background-color: #f4f5f8;
+  }
+
+  .form-card {
+    background: #fff;
+    border-radius: 14px;
+    margin: 12px;
+    padding: 4px 0 6px;
+    box-shadow: 0 2px 8px rgba(30, 40, 60, 0.08);
+    overflow: hidden;
+  }
+
+  .form-card-title {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #24304a;
+
+    ion-icon {
+      color: #E67E22;
+      font-size: 19px;
+      margin-right: 8px;
+    }
+  }
+
+  ion-list {
+    margin: 0;
+    padding: 0;
+  }
+
+  .item {
+    background: transparent;
+    --background: transparent;
+  }
+
+  ion-item {
+    background-color: transparent;
+  }
+
+  ion-item-divider {
+    background: transparent;
+    color: #B35C10;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    min-height: 0;
+    padding: 6px 16px 2px;
+  }
+
+  // Attachments
+  .thumbnail-container {
+    overflow-x: scroll;
+    width: 100%;
+    padding: 4px 12px 0;
+  }
+
+  .thumbnail-list {
+    white-space: nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .thumbnail-list li {
+    display: inline-block;
+  }
+
+  .thumbnail-image {
+    display: block;
+    padding: 3px;
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .thumbnail-empty {
+    text-align: center;
+    padding: 18px 0 8px;
+    color: #aab2c0;
+
+    ion-icon {
+      font-size: 40px;
+    }
+
+    p {
+      margin: 4px 0 0;
+      font-size: 13px;
+    }
+  }
+
+  .attach-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px 6px;
+
+    button {
+      margin: 0;
+      flex: 1;
+      height: 40px;
+      font-size: 13px;
+
+      &[icon-only] {
+        flex: 0 0 44px;
+      }
+    }
+  }
+
+  .submit-wrap {
+    padding: 6px 12px 24px;
+
+    button {
+      height: 48px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(230, 126, 34, 0.25);
+    }
+  }
+
+  .error {
+    color: rgb(223, 62, 62);
+    font-size: 11px;
+    padding-left: 4px;
+  }
+
+  .error1 {
+    color: rgb(75, 75, 75);
+    border-bottom: 1px solid #ff0000;
+  }
+
+  .myInput {
+    width: calc(100% - 10px);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .add-button {
+    border-radius: 50px;
+  }
+
+  .text-input::-webkit-input-placeholder {
+    text-indent: 0;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .required:after {
+    content: " *";
+    color: red;
+  }
+}

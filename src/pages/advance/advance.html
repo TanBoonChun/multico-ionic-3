@@ -1,0 +1,116 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Travel &amp; Advance</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="adv-menu">
+
+  <p class="section-label">My Travel &amp; Advance Application Form</p>
+
+  <ion-list class="menu-card">
+    <button ion-item detail-none (click)="advanceSite()">
+      <div class="icon-wrap blue" item-start>
+        <ion-icon name="add"></ion-icon>
+      </div>
+      <h2>New Travel &amp; Advance</h2>
+      <p>Create a new travel &amp; advance request</p>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+  </ion-list>
+
+  <p class="section-label">My Travel &amp; Advance Details</p>
+
+  <ion-list class="menu-card">
+    <button ion-item detail-none (click)="advancePending()">
+      <div class="icon-wrap amber" item-start>
+        <ion-icon name="time"></ion-icon>
+      </div>
+      <h2>My Pending Request</h2>
+      <p>Waiting for approval</p>
+      <ion-badge *ngIf="pendingAdvanceBadgeCount > 0" item-end>{{ pendingAdvanceBadgeCount }}</ion-badge>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+
+    <button ion-item detail-none (click)="advanceApproved()">
+      <div class="icon-wrap green" item-start>
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+      <h2>My Approved Request</h2>
+      <p>Approved requests</p>
+      <ion-badge *ngIf="myAppCount > 0" item-end>{{ myAppCount }}</ion-badge>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+
+    <button ion-item detail-none (click)="advanceRejected()">
+      <div class="icon-wrap red" item-start>
+        <ion-icon name="close-circle"></ion-icon>
+      </div>
+      <h2>My Rejected Request</h2>
+      <p>Rejected requests</p>
+      <ion-badge *ngIf="rejectedAdvanceBadgeCount > 0" item-end>{{ rejectedAdvanceBadgeCount }}</ion-badge>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+
+    <button ion-item detail-none (click)="advancePaymentDone()">
+      <div class="icon-wrap purple" item-start>
+        <ion-icon name="cash"></ion-icon>
+      </div>
+      <h2>My Payment Done</h2>
+      <p>Payment completed</p>
+      <ion-badge *ngIf="paymentDoneBadgeCount > 0" item-end>{{ paymentDoneBadgeCount }}</ion-badge>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+  </ion-list>
+
+  <p class="section-label">Travel &amp; Advance Management (Admin)</p>
+
+  <ion-list class="menu-card">
+    <button ion-item detail-none (click)="advancemanagementPending()">
+      <div class="icon-wrap amber" item-start>
+        <ion-icon name="time"></ion-icon>
+      </div>
+      <h2>Pending Request</h2>
+      <p>Requests waiting for your approval</p>
+      <ion-badge *ngIf="advCount > 0" item-end>{{ advCount }}</ion-badge>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+
+    <button ion-item detail-none (click)="advancemanagementApproved()">
+      <div class="icon-wrap green" item-start>
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+      <h2>Approved Request</h2>
+      <p>Requests you have approved</p>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+
+    <button ion-item detail-none (click)="advancemanagementRejected()">
+      <div class="icon-wrap red" item-start>
+        <ion-icon name="close-circle"></ion-icon>
+      </div>
+      <h2>Rejected Request</h2>
+      <p>Requests you have rejected</p>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+  </ion-list>
+
+  <div *ngIf="user.Department == 'Account'">
+    <p class="section-label">Travel &amp; Advance Management (Account)</p>
+
+    <ion-list class="menu-card">
+      <button ion-item detail-none (click)="advancefinanceready()">
+        <div class="icon-wrap teal" item-start>
+          <ion-icon name="card"></ion-icon>
+        </div>
+        <h2>Ready for Payment</h2>
+        <p>Approved advances ready to be paid</p>
+        <ion-badge *ngIf="financeAdvanceBadgeCount > 0" item-end>{{ financeAdvanceBadgeCount }}</ion-badge>
+        <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+      </button>
+    </ion-list>
+  </div>
+
+  <div class="bottom-space"></div>
+
+</ion-content>

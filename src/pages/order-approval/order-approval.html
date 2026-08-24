@@ -1,0 +1,92 @@
+<ion-header>
+
+  <ion-navbar color='primary'>
+    <ion-title>Order</ion-title>
+  </ion-navbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [(ngModel)]="searchValue"
+      placeholder="Search pr no..."
+      [showCancelButton]="shouldShowCancel"
+      (ionInput)="onInput($event)"
+      (ionCancel)="onCancel($event)">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content padding class='ion-content-body'>
+  <ion-card *ngIf='orders.length == 0 && !search'>
+    <ion-card-content>
+      No data available.
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf='search'>
+    <ion-card-content style="text-align: center;">
+      <ion-spinner name="bubbles"></ion-spinner>
+    </ion-card-content>
+  </ion-card>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-card *ngFor='let order of orders' (click)="navigateToDetailsPage(order.Id)">
+    <ion-card-header style="font-size:14px;" text-wrap>
+      {{ order.project_code.projectCode }} {{ order.project_code.Description ? "["+order.project_code.Description+"]":"" }}
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>PR No</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ order.PR_No }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Date</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ order.Date }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Special</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8><span class='label {{ order.Special == 1 ? "label-success":"label-danger" }}'>{{ order.Special == 1 ? "Yes":"No" }}</span></ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Category</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ order.Category }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Vendor Name</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ order.vendor.Vendor_Name }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Description</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' innerHTML="{{ order.PR_Description || '-' }}" col-8></ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Remarks</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' innerHTML="{{ order.Remark || '-' }}" col-8></ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Currency</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ order.Currency }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Total</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;text-align:right;'  col-8>{{ order.total || 0 | number:'1.2-2' }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+  <ion-infinite-scroll (ionInfinite)="loadMoreData($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

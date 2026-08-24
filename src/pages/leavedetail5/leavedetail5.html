@@ -1,0 +1,62 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Leave Approve Details</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="leave-detail">
+
+  <div class="hero-card">
+    <div class="status-pill" [ngClass]="(Status || '') | lowercase">
+      <ion-icon [name]="statusIcon()"></ion-icon>
+      <span>{{ Status }}</span>
+    </div>
+    <p class="hero-label">{{ Leave_Type }}</p>
+    <h1 class="hero-date">{{ Start_Date }}</h1>
+    <p class="hero-range" *ngIf="End_Date">to {{ End_Date }}</p>
+    <div class="hero-days">
+      <ion-icon name="calendar"></ion-icon>
+      <span>{{ No_of_Days }} day(s)</span>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-row">
+      <div class="info-key"><ion-icon name="time"></ion-icon> Leave Term</div>
+      <div class="info-val">{{ Leave_Term || '—' }}</div>
+    </div>
+    <div class="info-row">
+      <div class="info-key"><ion-icon name="person"></ion-icon> Approver</div>
+      <div class="info-val">{{ Approver || '—' }}</div>
+    </div>
+    <div class="info-row column">
+      <div class="info-key"><ion-icon name="document-text"></ion-icon> Reason</div>
+      <div class="info-val reason">{{ Reason || '—' }}</div>
+    </div>
+  </div>
+
+  <div class="info-card" *ngIf="attachmentUrl">
+    <div class="info-row column">
+      <div class="info-key"><ion-icon name="attach"></ion-icon> Attachment</div>
+      <img *ngIf="attachmentIsImage" class="attach-img" [src]="attachmentUrl" (click)="openAttachment()">
+      <button ion-button block outline color="danger" *ngIf="!attachmentIsImage" (click)="openAttachment()">
+        <ion-icon name="document"></ion-icon> View Attachment
+      </button>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button ion-button class="approve-btn" (click)="approveLeave()">
+      <ion-icon name="checkmark"></ion-icon> Approve
+    </button>
+    <button ion-button class="reject-btn" (click)="rejectLeave()">
+      <ion-icon name="close"></ion-icon> Reject
+    </button>
+  </div>
+
+  <div class="bottom-space"></div>
+
+</ion-content>

@@ -1,0 +1,27 @@
+<ion-header>
+    <ion-navbar color="primary">
+      <ion-title style="font-size: 12px;">Inventory Bag History</ion-title>
+    </ion-navbar>
+</ion-header>
+  
+<ion-content padding class="ion-content-body">
+  
+   
+    <div *ngFor="let item of items;">
+      <div class="ion-item-body">
+        <ion-item class="ion-item-item">
+            
+          <p class="title">Date : {{item.service_date}}</p>
+          <p class="title">Item Code : {{item.barcode}}</p>
+          <p class="title">Item Name : {{item.genInvName}}</p>
+          <p class="title">Item Model : {{item.model}}</p>
+          <p class="title">Qty : {{item.Qty}}</p>
+          <p class="title">Req No : {{item.Req_No}}</p>
+          <!-- <p class="title">Requested By : {{item.Name}}</p> -->
+        </ion-item>
+      </div>
+    </div>
+  
+    
+    
+</ion-content>

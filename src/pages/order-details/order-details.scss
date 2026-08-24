@@ -1,0 +1,17 @@
+page-order-details {
+  .container {
+    overflow: auto;
+    height:440px !important;
+  }
+  table {
+    border-collapse: collapse;
+  }
+  th,
+  td {
+    padding: 10px;
+  }
+  
+  .slide-zoom {
+		height: 100% !important;
+	}
+}

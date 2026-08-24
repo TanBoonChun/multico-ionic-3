@@ -1,0 +1,30 @@
+
+<ion-content class="adv-list">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingText="Pull to refresh" refreshingText="Refreshing..."></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="adv-empty" *ngIf="items !== undefined && items.length === 0">
+    <ion-icon name="undo"></ion-icon>
+    <h3>No recalled claim sheets</h3>
+    <p>Claim sheets that have been recalled will appear here.</p>
+  </div>
+
+  <div class="adv-card" *ngFor="let item of items" tappable (click)="gotoPage(item)">
+    <div class="adv-card-top">
+      <span class="adv-no">{{ item.Claim_Sheet_Name }}</span>
+      <span class="adv-chip chip-blue">{{ item.Status }}</span>
+    </div>
+    <div class="adv-meta" *ngIf="item.Remarks || item.Balance">
+      <div class="adv-meta-row" *ngIf="item.Remarks">
+        <ion-icon name="document-text"></ion-icon>
+        <span>{{ item.Remarks }}</span>
+      </div>
+      <div class="adv-meta-row" *ngIf="item.Balance">
+        <ion-icon name="cash"></ion-icon>
+        <span>Balance: RM {{ item.Balance }}</span>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

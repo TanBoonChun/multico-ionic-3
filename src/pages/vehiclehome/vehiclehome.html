@@ -1,0 +1,38 @@
+<!--
+  Generated template for the VehiclehomePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Vehicle Homepage</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+      <button ion-button (click)=getCode()>Scan</button>
+      <button ion-button [navPush]="'VehiclelistPage'">All Vehicle</button>
+      <button ion-button [navPush]="'VehicleapprovalPage'">Approval List</button>
+    </ion-item>
+
+    <ion-card>
+      <ion-card-header>
+        My Vehicles
+      </ion-card-header>
+
+      <div *ngIf="myvehicles">
+        <ion-item *ngFor="let vehicle of myvehicles" [navPush]="vehicledetails" [navParams]="{Id:vehicle.Id,type:'click',permission:true}" class="list">
+          <ion-label>{{vehicle.Vehicle_No}}</ion-label>
+        </ion-item>
+      </div>
+
+    </ion-card>
+    
+  </div>
+</ion-content>

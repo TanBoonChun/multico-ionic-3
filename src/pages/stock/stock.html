@@ -1,0 +1,36 @@
+
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px;">Stock</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item" no-wrap>
+
+      <div class="row" (click)='StockReceive()'>
+        <div >
+          <button class="round-button button1">
+            <img src="assets/img/calendar (2).png" height="30px" width="30px">
+          </button>
+          Stock Receiving
+        </div>
+      </div>
+      <br>
+      <div class="row" (click)='StockReturn()'>
+        <div >
+          <button class="round-button button4">
+            <img src="assets/img/leave-status.png" width="30px" height="30px" >
+          </button>
+          Stock Returned
+        </div>
+      </div>
+
+    </ion-item>
+  </div>
+  
+</ion-content>
+  

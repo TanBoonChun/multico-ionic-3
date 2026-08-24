@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px">Task Reject
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)='dismiss()'>
+        <ion-icon item-right name="ios-close-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+   
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <ion-list>
+      <ion-item>
+        <ion-label stacked color="primary">Comment</ion-label>
+        <ion-textarea enterkeyhint="enter" autocomplete="true" spellcheck="true" autofocus="true" rows="5" autoGrow="true" type="text" placeholder="Remarks" [(ngModel)]='remarks'>
+        </ion-textarea>     
+        </ion-item>
+      <ion-item>
+        <button
+          ion-button
+          block
+          color="primary"
+          type="submit"
+          (click)="updateTask()"
+        >
+          Submit
+        </button>
+      </ion-item>
+  </ion-list>
+</ion-content>

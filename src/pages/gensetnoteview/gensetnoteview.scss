@@ -1,0 +1,32 @@
+page-gensetnoteview {
+
+  .row {
+    display: flex;
+    padding: 4px 8px;
+  }
+
+  .col-title {
+    width: 30%;
+    font-weight: bold;
+    white-space: pre-line;
+    font-size: 14px;
+  }
+
+  .col-details {
+    width: 70%;
+    white-space: pre-line;
+    font-size: 14px;
+  }
+
+  .thumbnail-list li {
+    display: inline-block;
+  }
+
+  .thumbnail-image {
+    display: block;
+    padding: 2px;
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+  }
+}

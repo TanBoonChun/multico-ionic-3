@@ -1,0 +1,232 @@
+<ion-header>
+  <ion-navbar color='primary'>
+    <ion-title>Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding class='ion-content-body'>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div *ngIf='pnl'>
+    <ion-item>
+      <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Site Code</ion-label>
+      <div col-9 item-content style='font-size:12px;' innerHTML="{{  siteCodes || 'No Site Code' }}">
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Engineer In Charge</ion-label>
+      <div col-9 item-content style='font-size:12px;'>
+        {{ pnl.requestor.Name }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Start Date</ion-label>
+      <div col-9 item-content style='font-size:12px;'>
+        {{ pnl.start_date }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>End Date</ion-label>
+      <div col-9 item-content style='font-size:12px;'>
+        {{ pnl.end_date }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>SOW</ion-label>
+      <div col-9 item-content style='font-size:12px;'>
+        {{ pnl.sow }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Remarks</ion-label>
+      <div col-9 item-content style='font-size:12px;' innerHTML="{{  pnl.remarks || '-' }}">
+      </div>
+    </ion-item>
+    <ion-item-divider color="light">Contractor</ion-item-divider>
+    <div *ngFor="let contractor of pnl.contractor">
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Vendor Name</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ contractor.vendor?.Vendor_Name || "-" }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Total</ion-label>
+        <div col-9 item-content style='font-size:12px;text-align:right;padding-right:10px !important;'>
+          {{ contractor.total | number : '1.2-2' || "0.00" }}
+        </div>
+      </ion-item>
+    </div>
+    <ion-item-divider color="light" *ngIf='pnl.material_cost.length > 0'>Material Cost</ion-item-divider>
+    <div *ngFor="let material of pnl.material_cost">
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Vendor Name</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ material.vendor?.Vendor_Name || "-" }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Total</ion-label>
+        <div col-9 item-content style='font-size:12px;text-align:right;padding-right:10px !important;'>
+          {{ material.total | number : '1.2-2' || "0.00" }}
+        </div>
+      </ion-item>
+    </div>
+    <ion-item-divider color="light">
+      <ion-col col-4>P&L Details</ion-col> <button (click)="profitPdf()" ion-button col-3>View PDF</button>
+    </ion-item-divider>
+    <ion-item style="font-size:12px !important;">
+      <div class="container">
+        <table border='1' cellpadding='5px'>
+          <thead>
+            <tr>
+              <th></th>
+              <th *ngFor="let site of pnl.pnl_site" style="background-color: #26d96b;">{{ site.siteCode }}</th>
+              <th style="background-color: #26d96b;">Combine</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>CLIENT PO/QUOTATION VALUE</th>
+              <th *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ site.totalClientPo | number : '1.2-2' || "0.00" }}</th>
+              <th style="text-align: right;">{{ pnl.totalClientPo | number :'1.2-2' }}</th>
+            </tr>
+            <tr>
+              <th [attr.colspan]="siteCodes.length + 1" style="background-color: gray;color:white;">EXTERNAL</th>
+            </tr>
+            <tr>
+              <th [attr.colspan]="siteCodes.length + 1" style="background-color: rgb(51, 169, 216);color:white;">SUB CONTRACTOR QUOTATION/WO</th>
+            </tr>
+            <tr *ngFor='let contractor of pnl.contractor'>
+              <th>{{ contractor.vendor?.Vendor_Name || "" }}</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ (site.siteIds == contractor.project_id2 ? contractor.total:0) | number : '1.2-2'}}</td>
+              <td style="text-align: right;">{{ contractor.total || 0 | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <th>Material Cost</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ materialCosts[site.siteIds] || 0 | number:'1.2-2' }}</td>
+              <td style="text-align: right;">{{ pnl.totalMaterialCost || 0 | number :'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <th>STAFF CLAIM (PURCHASES) [NO PR]</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ site.totalPurchases || 0 | number:'1.2-2' }}</td>
+              <td style="text-align: right;">{{ pnl.totalPurchases || 0 | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <th>STAFF CLAIM (SUB CON CHARGES) [NO PR]</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ site.totalSubcon || 0 | number:'1.2-2' }}</td>
+              <td style="text-align: right;">{{ pnl.totalSubcon || 0 | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <th [attr.colspan]="siteCodes.length + 1" style="background-color: gray;color:white;">INTERNAL</th>
+            </tr>
+            <tr>
+              <th>MANPOWER SUPPLY SALARIES</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ site.totalSalary || 0 | number:'1.2-2' }}</td>
+              <td style="text-align: right;">{{ pnl.totalSalary || 0 | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <th>STAFF CLAIM</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ site.totalClaim - site.totalSubcon - site.totalPurchases || 0 | number:'1.2-2' }}</td>
+              <td style="text-align: right;">{{ pnl.totalClaim || 0 | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <th>TIME COST</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ site.totalTimeCost || 0 | number:'1.2-2' }}</td>
+              <td style="text-align: right;">{{ pnl.totalTimeCost || 0 | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <th>TOTAL COST</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ site.totalCost | number:'1.2-2' }}</td>
+              <td style="text-align: right;">{{ pnl.totalCost || 0 | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <th>P&L MARGIN</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;">{{ site.grossMargin  }}</td>
+              <td style="text-align: right;">{{ pnl.grossMargin  }}</td>
+            </tr>
+            <tr>
+              <th style="background-color: yellow;">P&L MARGIN (%)</th>
+              <td *ngFor="let site of pnl.pnl_site" style="text-align: right;background-color: yellow;">{{ site.margin }} %</td>
+              <td style="text-align: right;background-color: yellow;">{{ pnl.margin }}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ion-item>
+    <ion-item-divider color="light" *ngIf="pnl.client_files.length > 0">Client Attachment</ion-item-divider>
+    <div *ngIf="pnl.client_files.length > 0">
+      <ion-slides pager='true' slidesPerView="2" loop='false'>
+        <div *ngFor="let file of pnl.client_files">
+          <ion-slide  (click)="imageGallery(file.Web_Path)"  *ngIf="file.Web_Path.toUpperCase().match('JPG|JPEG|PNG')">
+            <ion-item>
+              <img [src]="serverUrl + '/' + file.Web_Path" style="height:278px;">
+            </ion-item>
+          </ion-slide>
+        </div>
+      </ion-slides>
+      <div *ngFor="let file of pnl.client_files">
+          <ion-item  *ngIf="!file.Web_Path.toUpperCase().match('JPG|JPEG|PNG')" (click)='viewPdf(file.Web_Path)'>
+            <a>{{ file.File_Name }}</a>
+          </ion-item>
+      </div>
+    </div>
+    <ion-item-divider color="light" *ngIf="pnl.subcon_files.length > 0">Subcon Attachment</ion-item-divider>
+    <div *ngIf="pnl.subcon_files.length > 0">
+      <ion-slides pager='true' slidesPerView="2" loop='false'>
+        <div *ngFor="let file of pnl.subcon_files">
+          <ion-slide  (click)="imageGallery(file.Web_Path)"  *ngIf="file.Web_Path.toUpperCase().match('JPG|JPEG|PNG')">
+            <ion-item>
+              <img [src]="serverUrl + '/' + file.Web_Path" style="height:278px;">
+            </ion-item>
+          </ion-slide>
+        </div>
+      </ion-slides>
+      <div *ngFor="let file of pnl.subcon_files">
+          <ion-item  *ngIf="!file.Web_Path.toUpperCase().match('JPG|JPEG|PNG')" (click)='viewPdf(file.Web_Path)'>
+            <a>{{ file.File_Name }}</a>
+          </ion-item>
+      </div>
+    </div>
+    <div *ngFor='let status of pnl.statuses'>
+      <ion-item>
+        <ion-label style='font-size:12px;font-weight: bold;' col-3>Approver</ion-label>
+        <div col-9 item-content style='font-size:12px;text-align:right;padding-right:10px !important;'>
+          {{ status.approver.Name }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label style='font-size:12px;font-weight: bold;' col-3>Status</ion-label>
+        <div col-9 item-content style='font-size:12px;text-align:right;padding-right:10px !important;'>
+          {{ status.status }}
+        </div>
+      </ion-item>
+      <ion-item *ngIf='status.remarks'>
+        <ion-label style='font-size:12px;font-weight: bold;' col-3>Remarks</ion-label>
+        <div col-9 item-content style='font-size:12px;text-align:right;padding-right:10px !important;'>
+          {{ status.remarks }}
+        </div>
+      </ion-item>
+    </div>    
+    <div *ngIf='pnl.status && pnl.status.includes("pending") && user.UserId == pnl.approverId'>
+      <ion-item>
+        <ion-label stacked color='primary'>Remarks</ion-label>
+        <ion-textarea enterkeyhint="enter" autofocus="true" autoGrow="true" rows='4' autocomplete=“true” spellcheck=“true” placeholder='Remarks...' [(ngModel)]="remarks"></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-grid>
+          <ion-row justify-content-center align-items-end style="height:100%">
+               <ion-col col-6>
+                    <button (click)="updateStatus('approved')"  ion-button color="success" round icon-start><ion-icon name="checkmark"></ion-icon> Approve</button>
+               </ion-col>
+               <ion-col col-6>
+                    <button  (click)="updateStatus('rejected')"  ion-button color="danger" round icon-start><ion-icon name="close"></ion-icon> Reject </button>          
+               </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,121 @@
+
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Request Stock</ion-title>
+    <ion-buttons right><button class="invisible"><ion-icon name="close" class="larger" (click)="showConfirm()"></ion-icon></button></ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list>
+    <form novalidate (ngSubmit)="submit()" [formGroup]="signupform">
+
+      <div class="row">
+        <div>
+        </div>
+      </div>
+
+      <ion-grid>
+ 
+
+          <ion-row>
+            <ion-col col-6 class="required">Material Code / Description
+                <ion-item no-lines *ngIf="( signupform.get('Material').hasError('required') ) && signupform.get('Material').touched">
+                    <div class="error" *ngIf="signupform.get('Material').hasError('required') && signupform.get('Material').touched">
+                        Please insert your Material Code/Description
+                    </div>
+                </ion-item>
+            </ion-col>
+            <ion-col col-6>
+              <ion-item>
+                <ion-label stacked></ion-label>
+                <ionic-selectable item-content [(ngModel)]="Material" [items]="inventories" formControlName="Material" itemValueField="Id" itemTextField="ItemCode" (ngModelChange)="changeUnit($event)" [canSearch]="true" [canClear]="true"  [class.error1]="!signupform.controls.Material.valid && signupform.controls.Material.dirty">
+                </ionic-selectable>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>Boom No</ion-col>
+            <ion-col col-6>
+              <ion-item>
+                <ion-label stacked></ion-label>
+                <ion-label>{{bom_no}}</ion-label>
+                
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>MM No</ion-col>
+            <ion-col col-6>
+              <ion-item>
+                <ion-label stacked></ion-label>
+                <ion-label>{{mm_no}}</ion-label>
+                
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+
+          <ion-row>
+              <ion-col col-6 class="required">Quantity
+                  <ion-item no-lines *ngIf="( signupform.get('Unit').hasError('required') ) && signupform.get('Unit').touched">
+                      <div class="error" *ngIf="signupform.get('Unit').hasError('required') && signupform.get('Unit').touched">
+                          Please insert your Quantity
+                      </div>
+                  </ion-item>
+              </ion-col>
+              <ion-col col-6>
+                <ion-row>
+                  <ion-item>
+                  <ion-input type="number" placeholder="Quantity" [(ngModel)]="Quantity" formControlName="Quantity" [class.error1]="!signupform.controls.Quantity.valid && signupform.controls.Quantity.dirty">
+                  </ion-input>
+                </ion-item>
+                </ion-row>
+                <ion-row>
+                  <ion-item>
+                    <ion-label stacked></ion-label>
+                    <ionic-selectable item-content [(ngModel)]="Unit" [items]="asd" formControlName="Unit" itemValueField="id" itemTextField="id" [canSearch]="true" [canClear]="true"  [class.error1]="!signupform.controls.Unit.valid && signupform.controls.Unit.dirty" (ngModelChange)="changeConvert()">
+                    </ionic-selectable>
+                  </ion-item>
+                </ion-row>
+                <ion-row>
+                  <ion-item>
+                    <p *ngIf="convert" style="white-space: pre-wrap;color:black;">* {{convert}}</p>
+                  </ion-item>
+                </ion-row>
+              </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>Total</ion-col>
+            <ion-col col-6>
+              <ion-item>
+                <p style="white-space: pre-wrap;color:black;">{{total}}</p>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>Available
+            </ion-col>
+            <ion-col col-6>
+              <ion-item>
+                <p style="white-space: pre-wrap;color:black;">{{available}}</p>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+      </ion-grid>
+
+      <br>
+
+      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+
+    </form>
+  </ion-list> 
+</ion-content>

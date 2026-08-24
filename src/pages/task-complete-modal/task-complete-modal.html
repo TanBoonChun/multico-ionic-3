@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px">Complete
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)='dismiss()'>
+        <ion-icon item-right name="ios-close-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+   
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <ion-list>
+    <form novalidate (ngSubmit)="updateTask()" [formGroup]="taskForm">
+      <ion-item>
+        <ion-label stacked color="primary">Complete Date</ion-label>
+        <ion-datetime
+          pickerFormat="DD MMM YYYY"
+          [(ngModel)]="complete_date"
+          displayFormat="DD MM YYYY"
+          placeholder="Choose complete date"
+          max="2400"
+          formControlName="complete_date"
+          [class.error1]="!taskForm.controls.complete_date.valid && taskForm.controls.complete_date.dirty"
+        >
+        </ion-datetime>
+      </ion-item>
+      <ion-item
+        no-lines
+        *ngIf="( taskForm.get('complete_date').hasError('required') ) && taskForm.get('complete_date').touched"
+      >
+        <div
+          class="error"
+        >
+          Please insert your complete_date date
+        </div>
+      </ion-item>
+
+      <br /><br />
+      <footer>
+        <button
+          ion-button
+          block
+          color="primary"
+          type="submit"
+          [disabled]="taskForm.invalid"
+        >
+          Submit
+        </button>
+      </footer>
+    </form>
+  </ion-list>
+</ion-content>

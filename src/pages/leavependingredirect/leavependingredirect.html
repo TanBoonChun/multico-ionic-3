@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-navbar color="primary">
+          <ion-toolbar>
+              <ion-title>Leave Pending  Redirect</ion-title>
+          </ion-toolbar>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content padding>
+  
+    <div class="div1">
+    <ion-list>
+        <ion-item>
+          <ion-label>Approver:</ion-label>
+          <ion-select [(ngModel)]="Approver">
+          <ion-option *ngFor="let app of apps" value="{{app.Id}}">{{app.Name}}</ion-option>
+          </ion-select>
+        </ion-item>
+    </ion-list>
+    </div>
+  
+    <div class="center">
+    <button ion-button block type="submit" color="primary" (click)="redirectClaim()">Submit</button>
+    </div>
+  </ion-content>
+  

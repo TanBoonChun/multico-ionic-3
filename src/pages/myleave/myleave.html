@@ -1,0 +1,98 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Leave Submission</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="leave-form">
+  <form novalidate (ngSubmit)="applyLeave()" [formGroup]="signupform">
+
+    <p class="section-label">Leave Details</p>
+
+    <ion-list class="form-card">
+
+      <ion-item>
+        <ion-label stacked color="primary" class="required">Leave Type</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Leave_Type" (ngModelChange)="fetchCalculatedLeaveDays($event)" formControlName="Leave_Type" [class.error1]="!signupform.controls.Leave_Type.valid && signupform.controls.Leave_Type.dirty">
+          <ion-option *ngFor="let type of types" value="{{type.Option}}">{{type.Option}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <div class="error" *ngIf="signupform.get('Leave_Type').hasError('required') && signupform.get('Leave_Type').touched">
+        Please select your leave
+      </div>
+
+      <ion-item>
+        <ion-label stacked color="primary" class="required">Start Date</ion-label>
+        <ion-datetime
+          pickerFormat=" DD MMM YYYY" [(ngModel)]="Start_Date"
+          displayFormat="DD MM YYYY" placeholder="Choose start date" max="2200" (ngModelChange)="fetchCalculatedLeaveDays($event)" formControlName="Start_Date" [class.error1]="!signupform.controls.Start_Date.valid && signupform.controls.Start_Date.dirty">
+        </ion-datetime>
+      </ion-item>
+      <div class="error" *ngIf="signupform.get('Start_Date').hasError('required') && signupform.get('Start_Date').touched">
+        Please select your start date
+      </div>
+
+      <ion-item>
+        <ion-label stacked color="primary" class="required">End Date</ion-label>
+          <ion-datetime
+            pickerFormat="DD MMM YYYY" [(ngModel)]="End_Date"
+            displayFormat="DD MM YYYY" placeholder="Choose end date" max="2200" (ngModelChange)="fetchCalculatedLeaveDays($event)" formControlName="End_Date" [class.error1]="!signupform.controls.End_Date.valid && signupform.controls.End_Date.dirty">
+        </ion-datetime>
+      </ion-item>
+      <div class="error" *ngIf="signupform.get('End_Date').hasError('required') && signupform.get('End_Date').touched">
+        Please select your end date
+      </div>
+
+      <ion-item class="total-days">
+        <ion-label stacked color="primary">Total Leave Days</ion-label>
+        <ion-label class="days-value">{{ getLeaveDays() }} day(s)</ion-label>
+        <ion-icon item-end name="ios-settings" (click)="presentLeaveModal()"></ion-icon>
+      </ion-item>
+
+      <ion-item no-lines>
+        <ion-label stacked color="primary" class="required">Reason</ion-label>
+        <ion-textarea type="text" [(ngModel)]="Reason" placeholder="State your reason here" formControlName="Reason" [class.error1]="!signupform.controls.Reason.valid && signupform.controls.Reason.dirty"></ion-textarea>
+      </ion-item>
+      <div class="error" *ngIf="signupform.get('Reason').hasError('required') && signupform.get('Reason').touched">
+        Please state your reason
+      </div>
+
+    </ion-list>
+
+    <p class="section-label">Attachments</p>
+
+    <div class="attach-card">
+      <ion-row *ngIf="imagesN?.length">
+        <ion-col col-6 *ngFor="let photo of imagesN; let id = index">
+          <ion-card class="block">
+            <ion-icon name="trash" class="deleteIcon" (click)="deletePhoto(id)"></ion-icon>
+            <img [src]="photo" *ngIf="photo" />
+          </ion-card>
+        </ion-col>
+      </ion-row>
+
+      <div class="attach-actions">
+        <button type="button" ion-button outline color="danger" (click)="onTakePicture()">
+          <ion-icon name="camera"></ion-icon> Camera
+        </button>
+        <button type="button" ion-button outline color="danger" (click)="getImage()">
+          <ion-icon name="images"></ion-icon> Gallery
+        </button>
+        <button type="button" ion-button clear color="dark" (click)="clearImage()">
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <button ion-button block class="submit-btn" type="submit" [disabled]="signupform.invalid || isSubmitting">
+      <ion-spinner *ngIf="isSubmitting"></ion-spinner>
+      <span *ngIf="!isSubmitting">Submit Leave</span>
+    </button>
+
+    <div class="bottom-space"></div>
+
+  </form>
+</ion-content>

@@ -1,0 +1,199 @@
+<ion-header>
+  <ion-navbar color='primary'>
+    <ion-title>Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding class='ion-content-body'>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div *ngIf='order'>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>PR No</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.PR_No }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Category</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.Category }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Currency</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.Currency }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Project Code</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.project_code.projectCode }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Vendor Name</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.vendor.Vendor_Name }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Vendor Contact Person</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.vendor.Contact_Person || "-" }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Vendor Contact No</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.vendor.Contact_No || "-" }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Vendor Address</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.vendor.Address || "-" }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Remarks</ion-label>
+        <div col-9 item-content style='font-size:12px;'>
+          {{ order.Remark || "-" }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>PR Description</ion-label>
+        <div col-9 item-content style='font-size:12px;' innerHTML="{{ order.PR_Description || '-' }}">
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Credit Terms</ion-label>
+        <div col-9 item-content style='font-size:12px;' innerHTML="{{ order.Payment_Terms || '-' }}">
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Payment Milestone</ion-label>
+        <div col-9 item-content style='font-size:12px;' innerHTML="{{ order.Payment_Milestone || '-' }}">
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>PIC</ion-label>
+        <div col-9 item-content style='font-size:12px;' innerHTML="{{ order.pic.Name || '-' }}">
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Long Payment Terms</ion-label>
+        <div col-9 item-content style='font-size:12px;' innerHTML="{{ order.Long_Payment_Terms || '-' }}">
+        </div>
+      </ion-item>
+      <ion-item *ngIf="order.Show_Project_Terms == 1">
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Project Terms</ion-label>
+        <div col-9 item-content style='font-size:12px;' innerHTML="{{ order.Project_Terms || '-' }}">
+        </div>
+      </ion-item>
+      <ion-item *ngIf="order.Bid_Waived == 1">
+        <ion-label text-wrap style='font-size:12px;font-weight: bold;' col-3>Bid Waived Remarks</ion-label>
+        <div col-9 item-content style='font-size:12px;' innerHTML="{{ order.Bid_Waived_Remarks || '-' }}">
+        </div>
+      </ion-item>
+    <ion-item-divider color="light">Item Details</ion-item-divider>
+    <ion-item style="font-size:12px !important;">
+      <div class="container">
+        <table border='1' cellpadding='5px'>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Site Code</th>
+              <th>Site Name</th>
+              <th>Item Description</th>
+              <th>Qty</th>
+              <th>Unit</th>
+              <th>Unit Price</th>
+              <th>Tax Code</th>
+              <th>Discount</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of order.order_item;let i =index">
+              <td>{{ i+1 }}</td>
+              <td>{{ item.site_code.siteCode }}</td>
+              <td>{{ item.site_code.Site_Name }}</td>
+              <td>{{ item.inventory.Part_Name }}</td>
+              <td>{{ item.Qty }}</td>
+              <td>{{ item.Unit }}</td>
+              <td>{{ item.Unit_Price || 0 | number:'1.2-2' }}</td>
+              <td>{{ item.Tax_Code }}</td>
+              <td>{{ item.Discount || 0 | number:'1.2-2' }}</td>
+              <td style="text-align:right;">{{ item.Total | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ion-item>
+    <ion-item-divider color="light">Attachment</ion-item-divider>
+    <div *ngIf="order.files.length > 0">
+      <ion-slides pager='true' slidesPerView="2" loop='true'>
+        <div *ngFor="let file of order.files">
+          <ion-slide  (click)="imageGallery(file.Web_Path)"  *ngIf="file.Web_Path.toUpperCase().match('JPG|JPEG|PNG')">
+            <ion-item>
+              <img [src]="serverUrl + '/' + file.Web_Path" style="height:278px;">
+            </ion-item>
+          </ion-slide>
+        </div>
+      </ion-slides>
+      <div *ngFor="let file of order.files">
+          <ion-item  *ngIf="!file.Web_Path.toUpperCase().match('JPG|JPEG|PNG')" (click)='pdf(file.Web_Path)'>
+            <a>{{ file.File_Name }}</a>
+          </ion-item>
+      </div>
+    </div>
+    <ion-item-divider color="light">P&L</ion-item-divider>
+    <div *ngFor="let pnl of order.pnlItems">
+        <ion-item   (click)='profitPdf(pnl.pnl_id)'>
+          <a>{{ pnl.site_code?.PO_No + " - " + pnl.site_code?.Site_ID + (pnl.site_code?.Site_Name ? ( " - "+ pnl.site_code?.Site_Name ): "") }}</a>
+        </ion-item>
+    </div>
+    <div *ngFor='let status of order.statuses'>
+      <ion-item>
+        <ion-label style='font-size:12px;font-weight: bold;' col-3>Approver</ion-label>
+        <div col-9 item-content style='font-size:12px;text-align:right;padding-right:10px !important;'>
+          {{ status.approver.Name }}
+        </div>
+      </ion-item>
+      <ion-item>
+        <ion-label style='font-size:12px;font-weight: bold;' col-3>Status</ion-label>
+        <div col-9 item-content style='font-size:12px;text-align:right;padding-right:10px !important;'>
+          {{ status.Status }}
+        </div>
+      </ion-item>
+      <ion-item *ngIf='status.Comment'>
+        <ion-label style='font-size:12px;font-weight: bold;' col-3>Remarks</ion-label>
+        <div col-9 item-content style='font-size:12px;text-align:right;padding-right:10px !important;'>
+          {{ status.Comment }}
+        </div>
+      </ion-item>
+    </div>
+    <div *ngIf="order.approverId == user.UserId && order.approverStatus.includes('Pending')">
+      <ion-item>
+        <ion-label stacked color='primary'>Remarks</ion-label>
+        <ion-textarea enterkeyhint="enter" autofocus="true" autoGrow="true" rows='4' autocomplete="on" autocorrect="on" placeholder='Remarks...' [(ngModel)]="remarks"></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-grid>
+          <ion-row justify-content-center align-items-end style="height:100%">
+               <ion-col col-6>
+                    <button (click)="updateStatus('Approved')"  ion-button color="success" round icon-start><ion-icon name="checkmark"></ion-icon> Approve</button>
+               </ion-col>
+               <ion-col col-6>
+                    <button  (click)="updateStatus('Rejected')"  ion-button color="danger" round icon-start><ion-icon name="close"></ion-icon> Reject </button>          
+               </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </div>
+  </div>
+</ion-content>

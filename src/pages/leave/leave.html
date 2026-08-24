@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Leave Activity</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="leave-menu">
+
+  <p class="section-label">My Application</p>
+
+  <ion-list class="menu-card">
+    <button ion-item detail-none (click)="myLeave()">
+      <div class="icon-wrap blue" item-start>
+        <ion-icon name="calendar"></ion-icon>
+      </div>
+      <h2>My Leave</h2>
+      <p>Apply and view your leave</p>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+
+    <button ion-item detail-none (click)="leavestatus()">
+      <div class="icon-wrap amber" item-start>
+        <ion-icon name="time"></ion-icon>
+      </div>
+      <h2>Leave Status</h2>
+      <p>Track your leave applications</p>
+      <ion-badge *ngIf="allLeaveBadgeCount > 0" item-end>{{ allLeaveBadgeCount }}</ion-badge>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+  </ion-list>
+
+  <p class="section-label">My Approval</p>
+
+  <ion-list class="menu-card">
+    <button ion-item detail-none (click)="myapproval()">
+      <div class="icon-wrap green" item-start>
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+      <h2>My Approval</h2>
+      <p>Leaves waiting for your approval</p>
+      <ion-badge *ngIf="pendingLeaveBadgeCount > 0" item-end>{{ pendingLeaveBadgeCount }}</ion-badge>
+      <ion-icon class="chev" name="arrow-forward" item-end></ion-icon>
+    </button>
+  </ion-list>
+
+  <div class="bottom-space"></div>
+
+</ion-content>

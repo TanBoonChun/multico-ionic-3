@@ -1,0 +1,186 @@
+
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title >Attendance</ion-title>
+  </ion-navbar>
+
+</ion-header>
+<ion-content padding class="ion-content-body">
+
+
+  <div class="ion-item-body" ng-app="clock">
+    <ion-item class="ion-item-item">
+      <h2 class="title">{{Name}}</h2>
+      <h4>{{Date | date: 'dd MMM yyyy' }} </h4>
+      <h4>{{ clock }}</h4>
+    </ion-item>
+  </div>
+
+  <form novalidate (ngSubmit)="submitTimeIn()" [formGroup]="signupform">
+
+    <ion-item text-center color="danger" [hidden]="false">
+      <div>Latitude: {{ Latitude_In }}
+        <input type="text" readonly="true" hidden="false" [(ngModel)]="Latitude_In" formControlName="Latitude_In" [class.error1]="!signupform.controls.Latitude_In.valid && signupform.controls.Latitude_In.dirty">
+      </div>
+      <div>Longitude: {{ Longitude_In }}
+        <input type="text" readonly="true" hidden="false" [(ngModel)]="Longitude_In" formControlName="Longitude_In" [class.error1]="!signupform.controls.Longitude_In.valid && signupform.controls.Longitude_In.dirty">
+      </div>
+    </ion-item>
+    <ion-item no-lines *ngIf="( signupform.get('Latitude_In').hasError('required') ) && signupform.get('Latitude_In').touched">
+      <div class="error" *ngIf="signupform.get('Latitude_In').hasError('required') && signupform.get('Latitude_In').touched">
+        Please check your latitude
+      </div>
+    </ion-item>
+    <ion-item no-lines *ngIf="( signupform.get('Longitude_In').hasError('required') ) && signupform.get('Longitude_In').touched">
+      <div class="error" *ngIf="signupform.get('Longitude_In').hasError('required') && signupform.get('Longitude_In').touched">
+        Please check your longitude
+      </div>
+    </ion-item>
+
+    <br>
+    <div class="a">
+      <button ion-button color="danger" type="button" (click)="doRefresh()">Refresh</button>
+    </div>
+    <br>
+
+    <div class="thumbnail-container">
+      <ul class="thumbnail-list">
+        <li *ngFor="let imageN of imagesN"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+      </ul>
+    </div>
+
+    <button type="button" [hidden]="! hideUI" ion-button color="danger" icon-right full (click)="onSafetyCheck()">
+      Safety Check <ion-icon name="checkbox-outline"></ion-icon>
+    </button>
+
+    <button type="button" ion-button color="danger" icon-right full (click)="onTakePicture()">
+      Take Picture <ion-icon name="camera"></ion-icon>
+    </button>
+
+    <button type="button" ion-button color="danger" icon-right full (click)="clearImage()">
+      Clear
+    </button>
+
+    <!-- <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary" class="required">Check In Type</ion-label>
+      <ion-select [(ngModel)]="Check_In_Type" formControlName="Check_In_Type" [class.error1]="!signupform.controls.Check_In_Type.valid && signupform.controls.Check_In_Type.dirty">
+        <ion-option *ngFor="let type of types" value="{{type.Option}}">{{type.Option}}
+        </ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item no-lines *ngIf="( signupform.get('Check_In_Type').hasError('required') ) && signupform.get('Check_In_Type').touched">
+      <div class="error" *ngIf="signupform.get('Check_In_Type').hasError('required') && signupform.get('Check_In_Type').touched">
+        Please select your check in type
+      </div>
+    </ion-item> -->
+
+    <ion-item class="ion-item" [hidden]="hideUI || !user?.driving_ot">
+      <ion-label>Driving</ion-label>
+      <ion-checkbox [(ngModel)]="isDriving" formControlName="isDriving" (ionChange)="onDrivingChange()"></ion-checkbox>
+    </ion-item>
+
+    <ion-item class="ion-item" [hidden]="hideUI || isDriving">
+      <ion-label>Work Anywhere</ion-label>
+      <ion-checkbox [(ngModel)]="isWorkFromHome" formControlName="isWorkFromHome"></ion-checkbox>
+    </ion-item>
+
+    <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary">Team Members</ion-label>
+      <ionic-selectable
+        item-content
+        [(ngModel)]="selectedTeamMembers"
+        [items]="teamMembers"
+        formControlName="teamMembers"
+        [isMultiple]="true"
+        itemValueField="Id"
+        itemTextField="Name"
+        [canSearch]="true"
+        (onSearch)="searchTeamMembers($event)">
+      </ionic-selectable>
+    </ion-item>
+
+    <ion-item rows="5" class="ion-text-wrap" class="ion-item" [hidden]="hideUI">
+      <ion-label class="ion-text-wrap" class="ion-text-wrap" stacked color="primary" class="required">Project Code</ion-label>
+      <!-- <ion-select [(ngModel)]="Department" formControlName="Department" (ngModelChange)="setProjectOptions($event)" [class.error1]="!signupform.controls.Department.valid && signupform.controls.Department.dirty">
+        <ion-option *ngFor="let depart of departs" value="{{depart.Id}}">{{depart.Project_Name}}</ion-option>
+      </ion-select> -->
+      <ionic-selectable class="ion-text-wrap" item-content [(ngModel)]="Department" [items]="departs" formControlName="Department" 
+      itemValueField="Project_Code" (ngModelChange)="siteCode()" itemTextField="Project_Code" [canSearch]="true" [canClear]="true"
+       (onSearch)="searchProjectCode($event)" [class.error1]="!signupform.controls.Department.valid && signupform.controls.Department.dirty">
+      </ionic-selectable>
+    </ion-item>
+    <ion-item no-lines *ngIf="( signupform.get('Department').hasError('required') ) && signupform.get('Department').touched">
+      <div class="error" *ngIf="signupform.get('Department').hasError('required') && signupform.get('Department').touched">
+        Please select your project code
+      </div>
+    </ion-item>
+
+    <ion-item  class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary" class="required">Site Code</ion-label>
+      <ionic-selectable item-content [(ngModel)]="Project_Code" [items]="apps" formControlName="Project_Code" 
+      itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true" [canClear]="true"  [class.error1]="!signupform.controls.Project_Code.valid && signupform.controls.Project_Code.dirty">
+      </ionic-selectable>
+    </ion-item>
+    <ion-item no-lines *ngIf="( signupform.get('Project_Code').hasError('required') ) && signupform.get('Project_Code').touched">
+      <div class="error" *ngIf="signupform.get('Project_Code').hasError('required') && signupform.get('Project_Code').touched">
+        Please select your site code
+      </div>
+    </ion-item>
+
+    <!-- <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary" class="required">Scope of Work</ion-label>
+        <ion-select item-content [(ngModel)]="ScopeOfWork" formControlName="ScopeOfWork" [class.error1]="!signupform.controls.ScopeOfWork.valid && signupform.controls.ScopeOfWork.dirty">
+          <ion-option *ngFor="let s of scope" value="{{s.Option}}">{{s.Option}}</ion-option>
+        </ion-select>
+    </ion-item>
+    <ion-item no-lines *ngIf="( signupform.get('ScopeOfWork').hasError('required') ) && signupform.get('ScopeOfWork').touched">
+      <div class="error" *ngIf="signupform.get('ScopeOfWork').hasError('required') && signupform.get('ScopeOfWork').touched">
+        Please select your scope of work
+      </div>
+    </ion-item> -->
+
+    <div *ngIf="Project_Code && Project_Code.Project_Code == 'No Project Code -  -  - '">
+    <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary" class="required">Site Name</ion-label>
+        <ion-textarea type="text" [(ngModel)]="Site_Name" placeholder="Enter your site name here" 
+        formControlName="Site_Name" [class.error1]="!signupform.controls.Site_Name.valid && signupform.controls.Site_Name.dirty"></ion-textarea>
+    </ion-item>
+    <ion-item [hidden]="hideUI" no-lines *ngIf="( signupform.get('Site_Name').hasError('required') ) && signupform.get('Site_Name').touched">
+      <div class="error" *ngIf="signupform.get('Site_Name').hasError('required') && signupform.get('Site_Name').touched">
+        Please insert your site name
+      </div>
+    </ion-item>
+    </div>
+
+    <!-- <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary">Todo / Task
+        <p class="error" *ngIf="signupform.get('Task').hasError('required') && signupform.get('Task').touched">
+          Please select task
+        </p>
+      </ion-label>
+      <ion-select [(ngModel)]="Task" formControlName="Task"
+        [class.error1]="!signupform.controls.Task.valid && signupform.controls.Task.dirty">
+        <ion-option *ngFor="let task of tasks" value="{{task.user_task_id}}">{{ task.rollout_number || "" }} {{task.Current_Task}} (Due {{ task.due_date }})
+        </ion-option>
+        <ion-option value="">No Task</ion-option>
+      </ion-select>
+    </ion-item> -->
+
+    <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary">Remarks</ion-label>
+      <ion-textarea type="text" [(ngModel)]="Remarks" placeholder="State your remarks here" formControlName="Remarks" [class.error1]="!signupform.controls.Remarks.valid && signupform.controls.Remarks.dirty"></ion-textarea>
+    </ion-item>
+    <ion-item [hidden]="hideUI" no-lines *ngIf="( signupform.get('Remarks').hasError('required') ) && signupform.get('Remarks').touched">
+      <div class="error" *ngIf="signupform.get('Remarks').hasError('required') && signupform.get('Remarks').touched">
+        Please state your remarks
+      </div>
+    </ion-item>
+
+    <button ion-button full color="danger" type="submit" [hidden]="hideUI" [disabled]="signupform.invalid">Time in</button>
+
+  </form>
+
+  <button ion-button full color="danger" type="button" (click)="submitTimeOut()" [hidden]="!hideUI">Time out</button>
+
+</ion-content>

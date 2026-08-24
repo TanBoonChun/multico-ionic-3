@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>New Claim</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="ion-content-body add-claim">
+  <form novalidate (ngSubmit)="submitClaim()" [formGroup]="signupform">
+
+    <div class="form-card">
+      <div class="form-card-title">
+        <ion-icon name="add-circle"></ion-icon> New Claim Sheet
+      </div>
+      <ion-list no-lines>
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Name of claim sheet</ion-label>
+          <ion-select [(ngModel)]="Payment_Month" [multiple]="false" placeholder="Please select" formControlName="Payment_Month"
+            [class.error1]="!signupform.controls.Payment_Month.valid && signupform.controls.Payment_Month.dirty">
+            <ion-option *ngFor="let item of items" value="{{item}}">{{item}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item no-lines *ngIf="( signupform.get('Payment_Month').hasError('required') ) && signupform.get('Payment_Month').touched">
+          <div class="error" *ngIf="signupform.get('Payment_Month').hasError('required') && signupform.get('Payment_Month').touched">
+            Please select your claimsheet name
+          </div>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Remarks</ion-label>
+          <ion-textarea placeholder="Enter your remarks here" [(ngModel)]="Remarks" formControlName="Remarks"
+            [class.error1]="!signupform.controls.Remarks.valid && signupform.controls.Remarks.dirty"></ion-textarea>
+        </ion-item>
+        <ion-item no-lines *ngIf="( signupform.get('Remarks').hasError('required') ) && signupform.get('Remarks').touched">
+          <div class="error" *ngIf="signupform.get('Remarks').hasError('required') && signupform.get('Remarks').touched">
+            Please insert your remarks
+          </div>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <div class="submit-wrap">
+      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+    </div>
+  </form>
+</ion-content>

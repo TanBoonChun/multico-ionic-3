@@ -1,0 +1,165 @@
+
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>My STO Form</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content ion-content-body">
+  <ion-list>
+    <form novalidate (ngSubmit)="submitSTO()" [formGroup]="signupform">
+
+      <ion-item>
+        <ion-label stacked color="primary" [class.required]="signupform.controls.Purpose.invalid">Purpose</ion-label>
+        <ion-select [(ngModel)]="Purpose" (ngModelChange)="setMandatoryField($event)" [multiple]="false" placeholder="Please select" formControlName="Purpose" [class.error1]="!signupform.controls.Purpose.valid && signupform.controls.Purpose.dirty">
+          <ion-option *ngFor="let p of purpose" value="{{ decodeEntities(p.Option) }}">{{decodeEntities(p.Option)}}</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item *ngIf="!hideCompanyName">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.Company_Name.invalid">Company Name</ion-label>
+        <ionic-selectable #companyComponent item-content [(ngModel)]="Company_Name" formControlName="Company_Name" itemValueField="Id" [items]="company" [canSearch]="true" [canClear]="true" itemTextField="Option">
+        </ionic-selectable>
+      </ion-item>
+
+      <ion-item *ngIf="!hideSegment">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.Segment.invalid">Segment</ion-label>
+        <ionic-selectable #companyComponent item-content [(ngModel)]="Segment" formControlName="Segment" itemValueField="Option" [items]="segment" [canSearch]="true" [canClear]="true" itemTextField="Option">
+        </ionic-selectable>
+      </ion-item>
+
+      <ion-item *ngIf="!hideOwnership">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.Ownership.invalid">Ownership</ion-label>
+        <ionic-selectable #companyComponent item-content [(ngModel)]="Ownership" formControlName="Ownership" itemValueField="Option" [items]="ownership" [canSearch]="true" [canClear]="true" itemTextField="Option">
+        </ionic-selectable>
+      </ion-item>
+
+      <ion-item *ngIf="!hideProjectCode">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.ProjectCode.invalid">Project Code</ion-label>
+        <ionic-selectable #companyComponent item-content [(ngModel)]="ProjectCode" (ngModelChange)="siteCode()" formControlName="ProjectCode" itemValueField="Project_Code" [items]="projectcode" [canSearch]="true" [canClear]="true" itemTextField="Project_Code">
+        </ionic-selectable>
+      </ion-item>
+
+      <ion-item *ngIf="!hideSiteCode">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.SiteCode.invalid">Site Code</ion-label>
+        <ionic-selectable #companyComponent item-content [(ngModel)]="SiteCode" formControlName="SiteCode" itemValueField="siteCode" [items]="sitecode" [canSearch]="true" [canClear]="true" itemTextField="siteCode">
+        </ionic-selectable>
+      </ion-item>
+
+      <ion-item *ngIf="!hideDocketNo">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.DocketNo.invalid">Docket No</ion-label>
+        <ionic-selectable #companyComponent item-content [(ngModel)]="DocketNo" formControlName="DocketNo" itemValueField="Id" [items]="docketno" [canSearch]="true" [canClear]="true" itemTextField="docket_no">
+        </ionic-selectable>
+      </ion-item>
+
+      <ion-item *ngIf="!hideWarehouse">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.Warehouse.invalid">Warehouse</ion-label>
+        <ionic-selectable #companyComponent item-content [(ngModel)]="Warehouse" formControlName="Warehouse" itemValueField="Id" [items]="warehouse" [canSearch]="true" [canClear]="true" itemTextField="Room">
+        </ionic-selectable>
+      </ion-item>
+
+      <ion-item *ngIf="!hideToWarehouse">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.ToWarehouse.invalid">To Warehouse</ion-label>
+        <ionic-selectable #companyComponent item-content [(ngModel)]="ToWarehouse" formControlName="ToWarehouse" itemValueField="Id" [items]="warehouse" [canSearch]="true" [canClear]="true" itemTextField="Room">
+        </ionic-selectable>
+      </ion-item>
+
+      <!-- <div> -->
+      <ion-item *ngIf="!hideRemark">
+        <ion-label stacked color="primary" [class.required]="signupform.controls.Remark.invalid">Remarks</ion-label>
+        <ion-textarea autocomplete=“true” spellcheck=“true” autofocus="true" rows="5" autoGrow="true" type="text" placeholder="" [(ngModel)]="Remark" formControlName="Remark">
+        </ion-textarea>
+      </ion-item>
+      <!-- </div> -->
+      
+      <br>
+      <div class="row">
+        <div>
+          <h3 left style="color: black;">Add Item &nbsp;</h3>
+        </div>
+        <div>
+          <button start ion-button type="button" class="buttonadd" (click)="addrow(i)">
+            <ion-icon color="primary" class="icon" name="add"></ion-icon>
+          </button>
+        </div>
+      </div>
+          
+
+
+      <ion-grid>
+          
+
+        <div *ngFor="let item of itemarray; let i = index">
+          <ion-row  nowrap >
+            <ion-col col-6>
+              <img (click)='edit(i)' class="buttonremove"  src='assets/icon/pencil.png' end />
+              <img (click)="remove(i)" class="buttonremove" src='assets/icon/rubbish.png'  />
+            </ion-col>
+            <ion-col col-6>
+              <div style="text-align: center;"></div>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>Material Code / Description</ion-col>
+            <ion-col col-6>
+                <div>{{item.newMaterial.ItemCode}} </div>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>BOM No</ion-col>
+            <ion-col col-6>
+                <div>{{item.newBoomNo}} </div>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>MM No</ion-col>
+            <ion-col col-6>
+                <div>{{item.newMMNo}} </div>
+            </ion-col>
+          </ion-row>
+          
+          <ion-row>
+            <ion-col col-6>Quantity</ion-col>
+            <ion-col col-6>
+              <div>{{item.newQuantity}}</div>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>Unit</ion-col>
+            <ion-col col-6>
+              <div>{{item.newUnit}}</div>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>Total</ion-col>
+            <ion-col col-6>
+              <div>{{item.newTotal}}</div>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-6>Available</ion-col>
+            <ion-col col-6>
+              <div>{{item.newAvailable}}</div>
+            </ion-col>
+          </ion-row>
+
+          <br>
+        
+        </div>
+      </ion-grid>
+
+
+      <br>
+      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+
+    </form>
+  </ion-list>
+
+
+</ion-content>

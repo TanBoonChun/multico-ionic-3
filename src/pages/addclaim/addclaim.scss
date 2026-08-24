@@ -1,0 +1,66 @@
+page-addclaim {
+  .add-claim {
+    background-color: #f4f5f8;
+  }
+
+  .form-card {
+    background: #fff;
+    border-radius: 14px;
+    margin: 12px;
+    padding: 4px 0 6px;
+    box-shadow: 0 2px 8px rgba(30, 40, 60, 0.08);
+    overflow: hidden;
+  }
+
+  .form-card-title {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #24304a;
+
+    ion-icon {
+      color: #E67E22;
+      font-size: 19px;
+      margin-right: 8px;
+    }
+  }
+
+  ion-list {
+    margin: 0;
+    padding: 0;
+  }
+
+  ion-item {
+    background-color: transparent;
+  }
+
+  .submit-wrap {
+    padding: 6px 12px 24px;
+
+    button {
+      height: 48px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(230, 126, 34, 0.25);
+    }
+  }
+
+  .error {
+    color: rgb(223, 62, 62);
+    font-size: 11px;
+    padding-left: 4px;
+  }
+
+  .error1 {
+    color: rgb(75, 75, 75);
+    border-bottom: 1px solid #ff0000;
+  }
+
+  .required:after {
+    content: " *";
+    color: red;
+  }
+}

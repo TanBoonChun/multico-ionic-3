@@ -1,0 +1,77 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Genset Details</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class='ion-content-body'>
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+      <div class="body">
+        <h4 class="apply">{{ serNo }}</h4>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="col col-title">Service Type:</div>
+          <div class="col col-details">{{ type }}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Genset No:</div>
+          <div class="col col-details">{{ genset }}</div>
+        </div>
+        <!-- <div class="row" [hidden]='status != "In-Progress" || status == "Verified"'>
+          <div class="col col-title">Before:</div>
+          <div class="col col-details"></div>
+          <div class="row">
+            <button ion-button item-right size='small' type="button" class="doc-button" (click)="select('replace')"><ion-icon name="camera"></ion-icon></button>
+          </div>
+        </div>
+
+        <div class="row" [hidden]="!viewImg['replace']">
+          <div class="thumbnail-container">
+            <ul class="thumbnail-list">
+              <li><span><img height='60' width='120' class="thumbnail-image" [src]="viewImg['replace']"><button ion-button size='small' (click)="clearImage('replace')">Remove</button></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row" [hidden]='status != "In-Progress" || status == "Verified"'>
+          <div class="col col-title">After:</div>
+          <div class="col col-details"></div>
+          <div class="row">
+            <button ion-button item-right size='small' type="button" class="doc-button" (click)="select('new')"><ion-icon name="camera"></ion-icon></button>
+          </div>
+        </div>
+        <div class="row" [hidden]="!viewImg['new']">
+          <div class="thumbnail-container">
+            <ul class="thumbnail-list">
+              <li><span><img height='60' width='120' class="thumbnail-image" [src]="viewImg['new']"><button ion-button size='small' (click)="clearImage('new')">Remove</button></span>
+              </li>
+            </ul>
+          </div>
+        </div> -->
+
+      </div>
+    </ion-item>
+  </div>
+</ion-content>
+<ion-footer>
+  <div class="row">
+    <div class="col a" style="text-align:center;">
+      <button ion-button  round item-left [hidden]='hide' (click)='repair()'>Repair</button>
+    </div>
+    <div class="col a" style="text-align:center;">
+        <button ion-button  round [hidden]='hide'  (click)='verify("verify")'item-right>Verify</button>
+    </div>
+  </div>
+  <!-- *ngIf='status != "Repair" || status != "Verified" || status != "Completed"' -->
+  <ion-row center>
+    <ion-col text-center>
+        <!-- <button ion-button  round *ngIf='status == "In-Progress"' (click)='verify("complete")' [hidden]='isUser' hidden>Complete</button> -->
+      <button ion-button  round *ngIf='status == "Completed"' (click)='verify("verify")' [hidden]='!isUser'>Verify</button>
+    </ion-col>
+   </ion-row> 
+</ion-footer>

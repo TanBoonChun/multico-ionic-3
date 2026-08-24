@@ -1,0 +1,148 @@
+page-myleave {
+
+  .leave-form {
+    background-color: #f4f5f8;
+  }
+
+  .section-label {
+    margin: 20px 16px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #8a94a6;
+  }
+
+  .form-card,
+  .attach-card {
+    margin: 0 12px;
+    padding: 4px 4px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(30, 40, 60, 0.08);
+    overflow: hidden;
+
+    .item {
+      background: transparent;
+    }
+
+    ion-label[stacked] {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+  }
+
+  .attach-card {
+    padding: 12px;
+  }
+
+  .total-days {
+    .days-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #24304a;
+    }
+
+    ion-icon[item-end] {
+      color: #b0b7c3;
+      font-size: 22px;
+    }
+  }
+
+  .error {
+    color: #e34f40;
+    font-size: 11px;
+    padding: 2px 16px 6px;
+  }
+
+  .error1 {
+    color: rgb(75, 75, 75);
+    border-bottom: 1px solid #ff0000;
+  }
+
+  .attach-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+
+    button {
+      flex: 1;
+      margin: 0;
+      height: 42px;
+      border-radius: 12px;
+      font-size: 13px;
+
+      ion-icon {
+        margin-right: 4px;
+        font-size: 16px;
+      }
+    }
+  }
+
+  .submit-btn {
+    // block buttons are width: 100%, so the side margins have to come off the
+    // width or the button runs past the edge of the screen
+    width: calc(100% - 24px);
+    margin: 20px 12px 0;
+    height: 50px;
+    border-radius: 14px;
+    background: #E67E22;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 14px rgba(227, 79, 64, 0.32);
+  }
+
+  .thumbnail-container {
+    overflow-x: scroll;
+    width: 100%;
+  }
+
+  .thumbnail-list {
+    white-space: nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 4px;
+  }
+
+  .thumbnail-list li {
+    display: inline-block;
+  }
+
+  .thumbnail-image {
+    display: block;
+    padding: 2px;
+    max-width: 100px;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .block {
+    position: relative;
+    margin: 4px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    .deleteIcon {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 2;
+      color: #fff;
+      background: rgba(227, 79, 64, 0.9);
+      padding: 5px;
+      border-radius: 50%;
+      font-size: 16px;
+    }
+  }
+
+  .required:after {
+    content: " *";
+    color: red;
+  }
+
+  .bottom-space {
+    height: 24px;
+  }
+}

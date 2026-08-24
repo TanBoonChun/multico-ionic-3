@@ -1,0 +1,30 @@
+<ion-header>
+    <ion-navbar color="primary">
+      <ion-title style="font-size: 12px;">Inventory Bag</ion-title>
+    </ion-navbar>
+</ion-header>
+  
+<ion-content padding class="ion-content-body">
+  
+   
+    <div *ngFor="let item of items;">
+      <div class="ion-item-body" >
+
+      <div class="ion-item-body">
+        <ion-item class="ion-item-item">
+            
+          <!-- <p class="title">Date : {{item.service_date}}</p> -->
+          <p class="title">Item Code : {{item.barcode}}</p>
+          <p class="title">Item Name : {{item.name}}</p>
+          <p class="title">Item Model : {{item.model}}</p>
+          <p class="title">KVA : {{item.capacity}}</p>
+          <p class="title">Qty : {{item.Balance}}</p>
+          <!-- <p class="title">Requested By : {{item.Name}}</p> -->
+        </ion-item>
+      </div>
+      </div>
+    </div>
+  
+    
+    
+</ion-content>

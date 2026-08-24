@@ -1,0 +1,22 @@
+<ion-header>
+    <ion-navbar color="primary">
+      <ion-title style="font-size: 12px;">Stock Purchased</ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content padding class="ion-content-body">
+  
+    
+    <div *ngIf="items && items.length < 1">
+        <p class="none">No record found</p>
+    </div>  
+
+    <div *ngFor="let item of items;" class="ion-item-body" (click)="gotoStockDetail(item)">
+      <ion-item class="ion-item-item">
+        <h3 class="title">{{item.Leave_Type}}</h3>
+        <p class="date">{{item.Start_Date}}</p>
+        <p class="date">{{item.Approver}}</p>
+      </ion-item>
+    </div>
+  
+  </ion-content>

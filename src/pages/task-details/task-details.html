@@ -1,0 +1,181 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px">Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <div *ngIf="userTask">
+    <ion-item-divider color="light">Site Information</ion-item-divider>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Rollout</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.planner?.rollout?.rollout_number || "-" }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Project Code</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.planner?.project_code?.Contract_No || "-" }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Site Code</ion-label
+      >
+      <div
+        col-9
+        item-content
+        style="font-size: 12px"
+        innerHTML=" {{ userTask.task?.planner?.planner_projects[0]?.siteCode || '-' }}"
+      ></div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Client So</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.planner?.client_so || "-" }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Customer Name</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.planner?.customer_name || "-" }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Contact No</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.planner?.contact_number || "-" }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Site Name</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.planner?.site_name || "-" }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Point A</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.planner?.point_a || "-" }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Point B</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.planner?.point_b || "-" }}
+      </div>
+    </ion-item>
+    <ion-item-divider color="light">Task</ion-item-divider>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Task Description</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.Current_Task }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Assign Date</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.assign_date }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >Due Date</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.task.due_date }}
+      </div>
+    </ion-item>
+    <ion-item>
+      <ion-label text-wrap style="font-size: 12px; font-weight: bold" col-3
+        >JCD Date</ion-label
+      >
+      <div col-9 item-content style="font-size: 12px">
+        {{ userTask.complete_date || " - " }}
+      </div>
+    </ion-item>
+    <ion-item
+      *ngIf='userTask.latest_status.status.toUpperCase() == "IN-PROGRESS"'
+      style="text-align: center;"
+    >
+      <button ion-button icon-start (click)="onTakePicture()">
+        <ion-icon name="camera"></ion-icon> Camera
+      </button>
+      <button ion-button icon-start (click)="selectFile()">
+        <ion-icon name="document-outline"></ion-icon> Select File
+      </button>
+    </ion-item>
+    <ion-item *ngFor="let image of images">
+      <ion-thumbnail item-start *ngIf="image.uri">
+        <img [src]="image.uri" />
+      </ion-thumbnail>
+      <ion-label>{{ image.File_Name }}</ion-label>
+      <ion-icon
+        name="settings"
+        item-end
+        (click)="presentFilePopover($event,image.Id)"
+      ></ion-icon>
+    </ion-item>
+    <ion-item
+      style="text-align: center"
+      *ngIf='userTask.latest_status.status.toUpperCase() == "ASSIGNED"'
+    >
+      <button
+        (click)="updateStatus('in-progress')"
+        ion-button
+        color="secondary"
+        icon-start
+        round
+      >
+        <ion-icon name="checkbox-outline"></ion-icon> Accept
+      </button>
+      <button
+        (click)="updateStatus('rejected')"
+        ion-button
+        color="danger"
+        icon-start
+        round
+      >
+        <ion-icon name="close"></ion-icon> Reject
+      </button>
+    </ion-item>
+    <ion-item
+      style="text-align: center"
+      *ngIf='userTask.latest_status.status.toUpperCase() == "IN-PROGRESS"'
+    >
+      <button
+        (click)="updateStatus('completed')"
+        ion-button
+        color="secondary"
+        icon-start
+        round
+      >
+        <ion-icon name="checkbox-outline"></ion-icon> Complete
+      </button>
+    </ion-item>
+  </div>
+</ion-content>

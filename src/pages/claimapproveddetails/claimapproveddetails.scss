@@ -1,0 +1,48 @@
+page-claimapproveddetails {
+  div.b {
+    line-height: 30px;
+    text-align: left;
+  }
+  .card-header{
+    margin-top: 20px;
+    text-align: center;
+  }
+  .button-add{
+    background: #2996b9;
+    width: 70px;
+    height: 30px;
+    position: relative;
+    text-align: center;
+    align-content: center;
+  }
+  .ion-content{
+    background-color: white;
+  }
+  .date{
+    text-align: right;
+  }
+  .navbar-title {
+    text-overflow: inherit;
+    white-space: normal;
+  }
+  .thumbnail-container {
+    overflow-x:scroll;
+    width:100%;
+    // padding: 0 15px;
+  }
+
+  .thumbnail-list {
+      white-space:nowrap;
+      list-style: none;
+      padding: 0;
+  }
+  .thumbnail-list li {
+    display: inline-block;
+  }
+  .thumbnail-image {
+      display: block;
+      padding:2px;
+      max-width: 100px;
+      height:auto;
+  }
+}

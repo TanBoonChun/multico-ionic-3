@@ -1,0 +1,40 @@
+
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Travel Date</ion-title>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">
+        <span ion-text color="primary">Done</span>          
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <div class="ion-item-body">
+    <ion-item class=ion-item-item>
+      <ion-label stacked color="primary" class="required">Start Date</ion-label>
+      <ion-datetime
+        pickerFormat="DD MMM YYYY" [(ngModel)]="Start_Date" displayFormat="DD MM YYYY" placeholder="Choose start date" max="2200" (ngModelChange)="fetchCalculatedDays($event)">
+      </ion-datetime>
+    </ion-item>
+  </div>
+
+  <div class="ion-item-body">
+    <ion-item class=ion-item-item>
+      <ion-label stacked color="primary" class="required">End Date</ion-label>
+      <ion-datetime
+        pickerFormat="DD MMM YYYY" [(ngModel)]="End_Date" displayFormat="DD MM YYYY" placeholder="Choose end date" max="2200" (ngModelChange)="fetchCalculatedDays($event)">
+      </ion-datetime>
+    </ion-item>
+  </div>
+
+  <br>
+
+  <ion-label>Days : {{getLeaveDays()}}</ion-label>
+
+</ion-content>

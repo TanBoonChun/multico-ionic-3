@@ -1,0 +1,74 @@
+<!--
+  Generated template for the GensetrequestPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Genset Request</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+
+
+  <div class="ion-item-body">
+      
+    <ion-list>
+
+      <!-- <ion-item class="ion-item-item"> -->
+        <!-- <ion-label stacked color="primary">Item Name :</ion-label>
+        <ion-select [(ngModel)]='item' (ionChange)='onChange()'>
+          <ion-option *ngFor='let i of itemList' [value]='i.Id'>{{i.name}}</ion-option>
+        </ion-select> -->
+
+        <div class="row">
+          <div class="col col-details ion-item-item ">{{newQr}} </div>
+          <button ion-button  (click)="getCode('new')">
+            <ion-icon name="qr-scanner"></ion-icon>
+          </button>
+        </div>
+
+      <!-- </ion-item> -->
+      <ion-item class="ion-item-item1">
+        <ion-label stacked color="primary">Qty :</ion-label>
+        <ion-input type='number' [(ngModel)]='qty'></ion-input>
+        <button ion-button small color='light'(click)='calQty("add")' item-end>
+          <ion-icon name="add" class='add-icon'></ion-icon>
+        </button>
+        <button ion-button small color='danger' (click)='calQty("minus")' item-end>
+          <ion-icon name="remove"></ion-icon>
+        </button>
+      </ion-item>
+
+    </ion-list>
+
+  </div>
+
+
+  <div class="row">
+    <button ion-button  (click)='add()'>Add Item</button>
+  </div>
+
+  <div *ngFor="let a of arr" class="ion-item-body">
+    <ion-item class="ion-item-item1">
+      <p ALIGN=RIGHT >
+        <b>
+          <ion-icon name="trash" (click)='remove(a.row)'></ion-icon>
+        </b>
+      </p>
+      <h4 class="date">Item Code :{{a.name}}</h4>
+      <h4 class="date">Item Name :{{a.nama}}</h4>
+      <p class="date">Qty : {{a.qty}}</p>
+    </ion-item>
+  </div>
+
+</ion-content>
+
+<ion-footer>
+  <button [hidden]="hideUI" full ion-button (click)='request()'>Submit</button>
+</ion-footer>

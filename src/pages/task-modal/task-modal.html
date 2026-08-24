@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px">Accept
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)='dismiss()'>
+        <ion-icon item-right name="ios-close-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+   
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <ion-list>
+    <form novalidate (ngSubmit)="updateTask()" [formGroup]="taskForm">
+      <ion-item>
+        <ion-label stacked color="primary">Target Date</ion-label>
+        <ion-datetime
+          pickerFormat="DD MMM YYYY"
+          [(ngModel)]="target_date"
+          displayFormat="DD MM YYYY"
+          placeholder="Choose target date"
+          max="2200"
+          formControlName="target_date"
+          [class.error1]="!taskForm.controls.target_date.valid && taskForm.controls.target_date.dirty"
+        >
+        </ion-datetime>
+      </ion-item>
+      <ion-item
+        no-lines
+        *ngIf="( taskForm.get('target_date').hasError('required') ) && taskForm.get('target_date').touched"
+      >
+        <div
+          class="error"
+          *ngIf="taskForm.get('target_time').hasError('required') && taskForm.get('target_time').touched"
+        >
+          Please insert your target date
+        </div>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Target Time</ion-label>
+        <ion-datetime
+          pickerFormat="HH:mm "
+          [(ngModel)]="target_time"
+          displayFormat="HH:mm "
+          placeholder="Choose target time"
+          formControlName="target_time"
+          [class.error1]="!taskForm.controls.target_time.valid && taskForm.controls.target_time.dirty"
+        >
+        </ion-datetime>
+      </ion-item>
+      <ion-item
+        no-lines
+        *ngIf="( taskForm.get('target_time').hasError('required') ) && taskForm.get('target_time').touched"
+      >
+        <div
+          class="error"
+          *ngIf="taskForm.get('target_time').hasError('required') && taskForm.get('target_time').touched"
+        >
+          Please insert your target time
+        </div>
+      </ion-item>
+
+      <br /><br />
+      <footer>
+        <button
+          ion-button
+          block
+          color="primary"
+          type="submit"
+          [disabled]="taskForm.invalid"
+        >
+          Submit
+        </button>
+      </footer>
+    </form>
+  </ion-list>
+</ion-content>

@@ -1,0 +1,11 @@
+page-profit-and-loss-details {
+  .container {
+    overflow: auto;
+  }
+  table {
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 10px;
+  }
+}

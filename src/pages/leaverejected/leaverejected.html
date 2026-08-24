@@ -1,0 +1,23 @@
+<ion-content class="leave-list">
+
+  <div class="empty-state" *ngIf="!items?.length">
+    <ion-icon name="close-circle"></ion-icon>
+    <p>No rejected leave</p>
+  </div>
+
+  <div class="leave-card" *ngFor="let item of items;" (click)="gotoPage(item)">
+    <div class="avatar red">
+      <ion-icon name="close-circle"></ion-icon>
+    </div>
+    <div class="body">
+      <div class="top">
+        <h2>{{item.Name}}</h2>
+        <span class="new-tag" *ngIf="notifications[item.Id]">NEW</span>
+      </div>
+      <p class="range"><ion-icon name="calendar"></ion-icon> {{item.Start_Date}} &rarr; {{item.End_Date}}</p>
+      <p class="type">{{item.Leave_Type}}</p>
+    </div>
+    <span class="status-pill red">{{item.Status}}</span>
+  </div>
+
+</ion-content>

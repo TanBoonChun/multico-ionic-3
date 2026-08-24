@@ -1,0 +1,99 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Travel Details</ion-title>
+    <ion-buttons right>
+      <button ion-button icon-only class="close-btn" (click)="showConfirm()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="ion-content-body">
+  <form novalidate (ngSubmit)="submitClaim()" [formGroup]="signupform">
+
+    <!-- ..........................TRIP DETAILS.......................... -->
+    <div class="card">
+      <div class="card-title">
+        <ion-icon name="calendar"></ion-icon>
+        <span>Trip Details</span>
+      </div>
+
+      <ion-list class="form-list">
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Start Date</ion-label>
+          <ion-datetime pickerFormat="DD MMM YYYY" [(ngModel)]="newStartDate" displayFormat="DD MMM YYYY" formControlName="newStartDate" placeholder="Choose start date" max="2200">
+          </ion-datetime>
+        </ion-item>
+        <div class="field-error" *ngIf="signupform.get('newStartDate').hasError('required') && signupform.get('newStartDate').touched">
+          Please insert your start date
+        </div>
+
+        <ion-item>
+          <ion-label stacked color="primary" class="required">End Date</ion-label>
+          <ion-datetime pickerFormat="DD MMM YYYY" [(ngModel)]="newEndDate" displayFormat="DD MMM YYYY" formControlName="newEndDate" placeholder="Choose end date" max="2200">
+          </ion-datetime>
+        </ion-item>
+        <div class="field-error" *ngIf="signupform.get('newEndDate').hasError('required') && signupform.get('newEndDate').touched">
+          Please insert your end date
+        </div>
+
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Site ID</ion-label>
+          <ionic-selectable item-content [(ngModel)]="Site_Code" [items]="apps"
+            formControlName="Site_Code" itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true"
+            [canClear]="true" (onSearch)="searchApps($event)" [class.error1]="!signupform.controls.Site_Code.valid && signupform.controls.Site_Code.dirty">
+          </ionic-selectable>
+        </ion-item>
+        <div class="field-error" *ngIf="signupform.get('Site_Code').hasError('required') && signupform.get('Site_Code').touched">
+          Please select your Site ID
+        </div>
+
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Remarks</ion-label>
+          <ion-textarea autocomplete="true" spellcheck="true" rows="3" autoGrow="true" type="text" placeholder="Insert your remarks here" [(ngModel)]="Remarks" formControlName="Remarks" [class.error1]="!signupform.controls.Remarks.valid && signupform.controls.Remarks.dirty"></ion-textarea>
+        </ion-item>
+        <div class="field-error" *ngIf="signupform.get('Remarks').hasError('required') && signupform.get('Remarks').touched">
+          Please insert your remarks
+        </div>
+      </ion-list>
+    </div>
+
+    <!-- ..........................AMOUNT.......................... -->
+    <div class="card" *ngIf="Need_Advance">
+      <div class="card-title">
+        <ion-icon name="cash"></ion-icon>
+        <span>Advance Amount (RM)</span>
+      </div>
+
+      <div class="expense-block">
+        <div class="expense-head">
+          <span class="expense-label required">Amount</span>
+        </div>
+        <ion-input class="amount-input" type="number" placeholder="0.00" [(ngModel)]="Amount" formControlName="Amount" [class.error1]="!signupform.controls.Amount.valid && signupform.controls.Amount.dirty">
+        </ion-input>
+        <div class="field-error" *ngIf="signupform.get('Amount').hasError('required') && signupform.get('Amount').touched">
+          Please insert the amount
+        </div>
+      </div>
+    </div>
+
+    <div class="hint-note" *ngIf="Need_Advance">
+      <ion-icon name="information-circle"></ion-icon>
+      <span>Make sure there is no negative (-) value.</span>
+    </div>
+
+    <div class="hint-note" *ngIf="!Need_Advance">
+      <ion-icon name="information-circle"></ion-icon>
+      <span>Travel request only - no advance payment is requested.</span>
+    </div>
+
+    <div class="submit-wrap">
+      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+    </div>
+
+  </form>
+</ion-content>

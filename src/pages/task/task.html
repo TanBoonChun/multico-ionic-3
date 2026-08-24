@@ -1,0 +1,44 @@
+<!--
+  Generated template for the LeavePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title style="font-size: 12px;">Task</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <!-- Leave Application -->
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+
+      <div class="row">
+
+        <!-- redirect to leaveform.html -->
+        <div class="col a" (click)='MyTask()'>
+          <img class="image" src="assets/icon/mytask.png">
+          <h4>My Task</h4>
+          <div class="test2">
+            <ion-badge color="danger" *ngIf=" taskBadgeCount > 0" float-right>{{ taskBadgeCount }}</ion-badge>
+            <!-- <ion-badge float-right color="danger">260k</ion-badge> -->
+          </div>
+        </div>
+
+        <!-- redirect to leavestatus.html -->
+        <div class="col a" (click)='TaskReject()'>
+          <img class="image" src="assets/icon/taskkk.png">
+          <h4>Rejected Task</h4>
+          <div class="test2">
+            <ion-badge color="danger" *ngIf=" taskrejectBadgeCount > 0" float-right>{{ taskrejectBadgeCount }} </ion-badge>
+            <!-- <ion-badge float-right color="danger">260k</ion-badge> -->
+          </div>
+        </div>  
+
+      </div>
+    </ion-item>
+  </div>
+</ion-content>

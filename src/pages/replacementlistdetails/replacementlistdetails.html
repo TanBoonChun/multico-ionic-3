@@ -1,0 +1,220 @@
+<!--
+  Generated template for the ReplacementlistdetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Replacement Details</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+  <div class="ion-item-body">
+    <ion-list no-lines>
+      <ion-list>
+    
+        <h3>Stock Order Detail</h3>
+        <ion-item>
+            <ion-label stacked color="primary">Stock No</ion-label>
+            <ion-label>{{ a.stock_no ? a.stock_no : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Purpose</ion-label>
+            <ion-label>{{ a.purpose ? a.purpose : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Company</ion-label>
+            <ion-label>{{ a.company ? a.company : ' - ' }}</ion-label>
+        </ion-item> 
+        
+        <ion-item>
+            <ion-label stacked color="primary">Segment</ion-label>
+            <ion-label>{{ a.Segment ? a.Segment : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Ownership</ion-label>
+            <ion-label>{{ a.Ownership ? a.Ownership : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Project Code</ion-label>
+            <ion-label>{{ a.project_code ? a.project_code : ' - ' }}</ion-label>
+        </ion-item>
+        
+        <ion-item>
+            <ion-label stacked color="primary">Site Name</ion-label>
+            <ion-label>{{ a.site ? a.site : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Warehouse</ion-label>
+            <ion-label>{{ a.warehouse ? a.warehouse : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="a.towarehouse">
+          <ion-label stacked color="primary">To Warehouse</ion-label>
+          <ion-label>{{ a.towarehouse ? a.towarehouse : ' - ' }}</ion-label>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label stacked color="primary">Status</ion-label>
+          <ion-label>{{ a.status ? a.status : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-label stacked color="primary">Remarks</ion-label>
+          <ion-label>{{ a.remarks ? a.remarks : ' - ' }}</ion-label>
+        </ion-item>
+    
+      </ion-list>
+      <br>
+      <ion-list>
+    
+        <h3>Delivery Detail</h3>
+        <ion-item>
+            <ion-label stacked color="primary">Courier</ion-label>
+            <ion-label>{{ a.courier ? a.courier : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Tracking No </ion-label>
+            <ion-label>{{ a.cn_no ? a.cn_no : ' - ' }}</ion-label>
+        </ion-item>
+
+        <ion-item>
+            <ion-label stacked color="primary">Weight</ion-label>
+            <ion-label>{{ a.weight ? a.weight : ' - ' }}</ion-label>
+        </ion-item> 
+        
+      </ion-list>
+
+
+    <h3>Material List</h3>
+    <ion-item>
+
+      <ion-grid style="width: 100%;">
+        <div *ngFor="let item of b">
+           
+  
+            <ion-row>
+                <ion-col col-6>Material Code</ion-col>
+                <ion-col col-6>
+                    <div>{{item.Item_Code}} </div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col col-6>Material Description</ion-col>
+              <ion-col col-6>
+                  <div>{{item.Part_Name}} </div>
+              </ion-col>
+            </ion-row>
+  
+            <ion-row>
+                <ion-col col-6>BOM No</ion-col>
+                <ion-col col-6>
+                    <div>{{item.bom_no}}</div>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col col-6>MM No</ion-col>
+              <ion-col col-6>
+                  <div>{{item.mm_no}}</div>
+                  <!-- <div>Unit : {{item.unit}}</div> -->
+              </ion-col>
+            </ion-row>
+  
+            <ion-row>
+                <ion-col col-6>Requested Quantity</ion-col>
+                <ion-col col-6>
+                    <div>{{item.qty_request}}</div>
+                </ion-col>
+            </ion-row>
+  
+            <ion-row>
+                <ion-col col-6>Serial No</ion-col>
+                <ion-col col-6>
+                    <!-- <div  *ngFor="let t of a">
+                        <div *ngIf="t.Inventory_Id == item.Inventory_Id">
+                        {{t.Serial_No}}
+                        </div>
+                    </div> -->
+                    <div>{{item.Serial_No}}</div>
+
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col col-6>Condition</ion-col>
+              <ion-col col-6>
+                  <div>{{item.Condition}}</div>
+              </ion-col>
+          </ion-row>
+  
+          <br>
+  
+        </div>
+  
+    </ion-grid>
+      </ion-item>
+
+    <!-- <ion-item  no-lines>
+      <ion-label >
+        Remarks
+      </ion-label>
+      <ion-select [(ngModel)]='remarks'>
+        <ion-option value="In good condition">In good condition</ion-option>
+        <ion-option value="Need to repair">Need to repair</ion-option>
+        <ion-option value="No spareparts">No Spareparts</ion-option>
+
+      </ion-select>
+    </ion-item> -->
+    
+    <ion-item text-center>
+      <button  ion-button class="box-button-menu" small (click)="replacement()" color="primary" size="small">Utilization
+        <!-- <img  src="assets/icon/replacement.png" width="55" height="55"> -->
+      </button>
+
+      <button hidden  ion-button class="box-button-menu" small (click)="replacementnosn()" color="primary" size="small">Replace w/o SN
+        <!-- <img  src="assets/icon/replacement.png" width="55" height="55"> -->
+      </button>
+
+     
+    </ion-item>
+  </ion-list>
+
+    <!-- <div>
+      <button ion-button item-right  (click)="replacement()" color="primary" size="small" >Replacement</button>
+    </div> -->
+
+    <!-- <button ion-button full item-right class="location-button" (click)=navme()>Go to Location</button>
+
+    <br>
+
+    <button ion-button full type="button" color="secondary" (click)="Call()"><ion-icon name="call"></ion-icon></button> -->
+
+  </div>
+</ion-content>
+<!-- <ion-footer>
+  <ion-row text-center>
+      <ion-col>
+        <button ion-button (click)="start()">Start Task</button>
+      </ion-col>
+      <ion-col>
+        <button ion-button (click)="endTask()" >End Task</button>
+      </ion-col>
+      <br>
+      <ion-col>
+        <button ion-button  (click)="complete()" >Complete</button>
+      </ion-col>
+    </ion-row>
+</ion-footer> -->

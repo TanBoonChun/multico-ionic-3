@@ -1,0 +1,46 @@
+page-task-details {
+  .ion-item-body {
+    margin: 0px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+  }
+
+  .ion-item-item {
+    background: white;
+    border-radius: 8px;
+    text-align: center;
+    white-space: pre-line;
+  }
+
+  h4 {
+    white-space: normal;
+  }
+
+  .title {
+    text-align: left;
+  }
+
+  .badge {
+    width: 40px;
+    position: absolute;
+    right: -25px;
+    top: -8px;
+  }
+
+  .test2 {
+    width: 70px;
+    top: 10px;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+  }
+
+  .buttonadd {
+    background: #f5f6fa;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    border-radius: 100%;
+    box-shadow: 0 0 10px gray;
+  }
+}

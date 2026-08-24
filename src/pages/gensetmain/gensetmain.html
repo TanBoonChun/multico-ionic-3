@@ -1,0 +1,134 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title style="font-size: 12px;">Service Management Main</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <!-- =====================================================================
+       TICKET TEAM SECTION — DI-COMMENT (tidak digunakan)
+       =====================================================================
+  <div class="ion-item-body" style="padding-top: 15px;">
+    <ion-item class="ion-item-item">
+      <div class="title">
+        <h2><b>Ticket Team</b></h2>
+      </div>
+
+      <ion-row style="padding-top: 10px;">
+        <div [navPush]="'TicketteamPage'" class="iconlocation">
+          <img class="image" src="assets/icon/join.png" width="30px" height="30px">
+          <p style="font-size:10px; font-weight: bold;">Join Team</p>
+        </div>
+
+        <div [navPush]="'MyticketteamPage'" class="iconlocation" *ngIf="myteam">
+          <img class="image" src="assets/icon/workers.png" width="30px" height="30px">
+          <p style="font-size:10px; font-weight: bold;">My Team</p>
+        </div>
+
+        <div [navPush]="'TicketpointPage'" class="iconlocation">
+          <img class="image" src="assets/icon/satisfaction.png" width="30px" height="30px">
+          <p style="font-size:10px; font-weight: bold;">Point History</p>
+        </div>
+      </ion-row>
+
+    </ion-item>
+  </div>
+       ===================================================================== -->
+
+  <!-- =====================================================================
+       GENSET APPLICATION + LEADER APPLICATION SECTION 
+       ===================================================================== -->
+  <div class="ion-item-body" style="padding-top: 15px;">
+    <ion-item class="ion-item-item">
+      <div class="title">
+        <h2><b>Service Management Application</b></h2>
+      </div>
+
+        <!-- [ redirect to service.html ]
+        <div class="col a" (click)="Gensetservice()" hidden>
+          <img class="image" src="assets/icon/form.png">
+          <h4>Service</h4>
+        </div>
+
+        [ redirect to oncall.html ]
+        <div class="col a" (click)="Oncall()" hidden>
+          <img class="image" src="assets/icon/oncall.png">
+          <h4>Oncall</h4>
+        </div>
+
+        [ newticket ]
+        <div class="col a" (click)='newticket()' hidden>
+          <img class="image" src="assets/icon/ticket3.png">
+          <h4>New Ticket</h4>
+        </div> -->
+
+        <ion-row style="padding-top: 10px;">
+          <!-- [ completed ] -->
+          <div (click)='completed()' class="iconlocation">
+            <img class="image" src="assets/icon/completed2.png" width="30px" height="30px">
+            <p style="font-size:10px; font-weight: bold;">Completed</p>
+          </div>
+
+          <!-- [ approved ]
+          <div (click)='approved()' class="iconlocation">
+            <img class="image" src="assets/icon/stamp.png" width="30px" height="30px">
+            <p style="font-size:10px; font-weight: bold;">Approved</p>
+          </div>
+
+          [ stock return ]
+          <div (click)='stockReturn()' class="iconlocation">
+            <img class="image" src="assets/icon/returnstock.png" width="30px" height="30px">
+            <p style="font-size:10px; font-weight: bold;">Stock Return</p>
+          </div>
+
+          [ inventory history ]
+          <div (click)='gensetHistory()' class="iconlocation">
+            <img class="image" src="assets/icon/treasure.png" width="30px" height="30px">
+            <p style="font-size:10px; font-weight: bold;">Inventory Bag</p>
+          </div>
+
+          <div [navPush]="'TransferitemPage'" class="iconlocation">
+            <img class="image" src="assets/icon/exchange.png" width="30px" height="30px">
+            <p style="font-size:10px; font-weight: bold;">Transfer Item</p>
+          </div>
+
+          <div (click)='poItem()' class="iconlocation" *ngIf="user.Position === 'STOREKEEPER'">
+            <img class="image" src="assets/icon/toolbox.png" width="30px" height="30px">
+            <p style="font-size:10px; font-weight: bold;">PO Item</p>
+          </div>
+        </ion-row>
+
+        <br>
+        <div class="title" *ngIf="(isObject(user) && user.team_leader != '')">
+          <h2><b>Leader Application</b></h2>
+        </div>
+        <ion-row style="padding-top: 10px;" *ngIf="(isObject(user) && user.team_leader != '')">
+
+          [ assign ticket ]
+          <div (click)='assignTicket()' class="iconlocation">
+            <img class="image" src="assets/icon/ticket.png" width="30px" height="30px">
+            <p style="font-size:10px; font-weight: bold;">Assign Ticket</p>
+          </div>
+
+          [ approval ]
+          <div (click)='approval()' class="iconlocation">
+            <img class="image" src="assets/icon/approvedicon.png" width="30px" height="30px">
+            <p style="font-size:10px; font-weight: bold;">Ticket Approval</p>
+          </div> -->
+        </ion-row>
+
+    </ion-item>
+  </div>
+
+  <!-- CALENDAR — bahagian yang digunakan -->
+  <div class="box" style="padding-top:40px">
+    <ion-item class="ion-item">
+      <div *ngIf="calendarOptions">
+        <ng-fullcalendar #ucCalendar (eventClick)="eventClick($event.detail)"
+          [options]="calendarOptions"></ng-fullcalendar>
+      </div>
+    </ion-item>
+  </div>
+
+</ion-content>

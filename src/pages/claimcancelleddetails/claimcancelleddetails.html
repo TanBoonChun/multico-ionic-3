@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title text-wrap>Claim Submitted Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="adv-detail">
+
+  <div class="detail-card">
+    <div class="detail-card-title">
+      <ion-icon name="paper-plane"></ion-icon> {{ Claim_Sheet_Name }}
+    </div>
+    <div class="detail-summary">
+      <span class="detail-summary-label">Status</span>
+      <span class="detail-status-chip chip-grey">{{ Status }}</span>
+    </div>
+    <div class="detail-summary">
+      <span class="detail-summary-label">Total Expense</span>
+      <span class="detail-summary-value">RM {{ Total_Amount }}</span>
+    </div>
+    <div class="detail-summary">
+      <span class="detail-summary-label">Total Advance</span>
+      <span class="detail-summary-value">RM {{ Total_Advance }}</span>
+    </div>
+    <div class="detail-summary is-total">
+      <span class="detail-summary-label">Total Payable</span>
+      <span class="detail-summary-value">RM {{ Total_Payable }}</span>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button ion-button color="danger" (click)="Recall()">Recall</button>
+  </div>
+
+  <div class="detail-card" *ngIf="imagesO.length || imagesN.length">
+    <div class="detail-card-title">
+      <ion-icon name="images"></ion-icon> Receipts
+    </div>
+    <div class="thumbnail-container">
+      <ul class="thumbnail-list">
+        <li *ngFor="let imageO of imagesO"><span><img class="thumbnail-image" [src]="imageO" imageViewer></span></li>
+        <li *ngFor="let imageN of imagesN"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="detail-item" *ngFor="let item of items;">
+    <div class="detail-item-head">
+      <span class="detail-item-date">{{ item.Date }}</span>
+      <span class="detail-item-amt">RM {{ item.Total_Expenses }}</span>
+    </div>
+    <div class="detail-item-type">{{ item.Expenses_Type }}</div>
+    <div class="detail-divider"></div>
+
+    <div *ngIf="item.Expenses_Type != 'Mileage'">
+      <div class="detail-row"><span class="k">Project Code</span><span class="v">{{ item.project_code }}</span></div>
+      <div class="detail-row" *ngIf="item.Company_Name"><span class="k">Company Name</span><span class="v">{{ item.Company_Name }}</span></div>
+      <div class="detail-row" *ngIf="item.Company_No"><span class="k">Company No.</span><span class="v">{{ item.Company_No }}</span></div>
+      <div class="detail-row" *ngIf="item.SST_No"><span class="k">SST No.</span><span class="v">{{ item.SST_No }}</span></div>
+      <div class="detail-row" *ngIf="item.Work_Description"><span class="k">Description</span><span class="v">{{ item.Work_Description }}</span></div>
+      <div class="detail-row" *ngIf="item.Car_No"><span class="k">Car No.</span><span class="v">{{ item.Car_No }}</span></div>
+      <div class="detail-row" *ngIf="item.Receipt_No"><span class="k">Receipt No.</span><span class="v">{{ item.Receipt_No }}</span></div>
+      <div class="detail-row" *ngIf="item.Code"><span class="k">Code</span><span class="v">{{ item.Code }}</span></div>
+      <div class="detail-row" *ngIf="item.Approver"><span class="k">Approver</span><span class="v">{{ item.Approver }}</span></div>
+    </div>
+
+    <div *ngIf="item.Expenses_Type == 'Mileage'">
+      <div class="detail-row"><span class="k">Project Code</span><span class="v">{{ item.project_code }}</span></div>
+      <div class="detail-row"><span class="k">Transport Type</span><span class="v">{{ item.Transport_Type }}</span></div>
+      <div class="detail-row"><span class="k">From</span><span class="v">{{ item.Depart_From }}</span></div>
+      <div class="detail-row"><span class="k">To</span><span class="v">{{ item.Destination }}</span></div>
+      <div class="detail-row"><span class="k">Mileage</span><span class="v">{{ item.Mileage }}</span></div>
+      <div class="detail-row" *ngIf="item.Code"><span class="k">Code</span><span class="v">{{ item.Code }}</span></div>
+      <div class="detail-row" *ngIf="item.Approver"><span class="k">Approver</span><span class="v">{{ item.Approver }}</span></div>
+    </div>
+  </div>
+
+</ion-content>

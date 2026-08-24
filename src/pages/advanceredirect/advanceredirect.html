@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Admin Travel &amp; Advance Redirect</ion-title>
+  </ion-navbar>
+</ion-header>
+    
+<ion-content  class="ion-content-body">      
+  <ion-item>
+    <ion-label stacked color="primary">Approver</ion-label>
+    <ionic-selectable item-content [(ngModel)]="Approver"  [items]="apps"  itemValueField="Id" itemTextField="Name" [canSearch]="true" [canClear]="true" >
+    </ionic-selectable>
+  </ion-item>
+
+  <br><br>
+  <button ion-button block color="primary" type="submit" (click)="redirectApproval()">Submit</button>
+</ion-content>
+      

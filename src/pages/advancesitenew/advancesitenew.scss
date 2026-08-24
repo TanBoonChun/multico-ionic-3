@@ -1,0 +1,183 @@
+page-advancesitenew {
+
+    ion-content.ion-content-body {
+        --background: #f1f2f6;
+        background-color: #f1f2f6;
+    }
+
+    .close-btn {
+        ion-icon {
+            font-size: 24px;
+            color: #ffffff;
+        }
+    }
+
+    // ..........................CARD.......................... //
+    .card {
+        background: #ffffff;
+        border-radius: 12px;
+        margin: 12px;
+        padding: 4px 0 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        padding: 14px 16px 10px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #2c3038;
+        border-bottom: 1px solid #eceef2;
+
+        ion-icon {
+            color: #E67E22;
+            font-size: 20px;
+            margin-right: 8px;
+        }
+    }
+
+    // ..........................FORM FIELDS.......................... //
+    .form-list {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+
+        ion-item {
+            --background: transparent;
+            background: transparent;
+        }
+
+        ion-label[stacked] {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+    }
+
+    // ..........................EXPENSE BLOCKS.......................... //
+    .expense-block {
+        padding: 12px 16px 8px;
+        border-bottom: 1px solid #f2f3f5;
+
+        &:last-of-type {
+            border-bottom: none;
+        }
+    }
+
+    .expense-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .expense-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3038;
+    }
+
+    .acco-radio {
+        display: flex;
+        align-items: center;
+
+        .radio-pill {
+            display: flex;
+            align-items: center;
+            margin-left: 14px;
+            font-size: 14px;
+            color: #2c3038;
+
+            ion-radio {
+                margin: 0 6px 0 0;
+            }
+        }
+    }
+
+    .amount-input {
+        background: #f5f6fa;
+        border-radius: 8px;
+        padding: 0 12px !important;
+        text-align: right;
+        font-weight: 600;
+        color: #2c3038;
+    }
+
+    .purpose-input {
+        background: #f5f6fa;
+        border-radius: 8px;
+        padding: 8px 12px !important;
+        margin-bottom: 8px;
+    }
+
+    // ..........................ERRORS.......................... //
+    .field-error {
+        color: #E67E22;
+        font-size: 12px;
+        padding: 4px 16px 6px;
+    }
+
+    .error1 {
+        border: 1px solid #ff0000 !important;
+    }
+
+    .required:after {
+        content: " *";
+        color: #E67E22;
+    }
+
+    // ..........................GRAND TOTAL.......................... //
+    .grand-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 12px 12px 4px;
+        padding: 14px 16px;
+        background: #FEF3E9;
+        border-radius: 10px;
+        font-weight: 700;
+        color: #2c3038;
+
+        .grand-total-amount {
+            font-size: 18px;
+            color: #E67E22;
+        }
+    }
+
+    // ..........................HINT + SUBMIT.......................... //
+    .hint-note {
+        display: flex;
+        align-items: center;
+        margin: 4px 16px 12px;
+        color: #000000;
+        font-size: 12px;
+
+        ion-icon {
+            font-size: 16px;
+            margin-right: 6px;
+            color: #f5a623;
+        }
+    }
+
+    .submit-wrap {
+        padding: 0 12px 20px;
+
+        button {
+            --border-radius: 10px;
+            height: 48px;
+            font-weight: 700;
+            font-size: 16px;
+        }
+    }
+
+    .alert-radio-label {
+        white-space: normal !important;
+    }
+}
+
+.red {
+    button {
+        color: rgb(241, 1, 1);
+    }
+}

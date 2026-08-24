@@ -1,0 +1,67 @@
+<ion-header>
+
+  <ion-navbar color='primary'>
+    <ion-title>Task {{ status }}</ion-title>
+  </ion-navbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [(ngModel)]="searchValue"
+      placeholder="Search rollout number/project code/site code..."
+      [showCancelButton]="shouldShowCancel"
+      (ionInput)="onInput($event)"
+      (ionCancel)="onCancel($event)">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding class='ion-content-body'>
+  <ion-card *ngIf='tasks.length == 0 && !search'>
+    <ion-card-content>
+      No data available.
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf='search'>
+    <ion-card-content style="text-align: center;">
+      <ion-spinner name="bubbles"></ion-spinner>
+    </ion-card-content>
+  </ion-card>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-card *ngFor='let task of tasks' (click)="navigateToDetails(task)">
+    <ion-card-header style="font-size:14px;" text-wrap *ngIf='task.rollout_number'>
+      {{ task.rollout_number }}
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row *ngIf="task.Contract_No">
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Project Code</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ task.Contract_No }}</ion-col>
+        </ion-row>
+        <ion-row *ngIf="task.siteCode">
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Site Code</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8 innerHTML="{{ task.siteCode }}"></ion-col>
+        </ion-row>
+        <ion-row *ngIf="task.Current_Task">
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Task Description</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ task.Current_Task }}</ion-col>
+        </ion-row>
+        <ion-row *ngIf="task.assign_date">
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Assign Date</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ task.assign_date }}</ion-col>
+        </ion-row>
+        <ion-row *ngIf="task.due_date">
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Due Date</ion-col>
+          <ion-col style='font-size:12px;white-space:pre-wrap;' col-8>{{ task.due_date }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+  <ion-infinite-scroll (ionInfinite)="loadMoreData($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

@@ -1,0 +1,44 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Travel &amp; Advance Finance Ready</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content class="adv-list">
+
+  <div class="adv-loading" *ngIf="items == null">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading advances...</p>
+  </div>
+
+  <div class="adv-empty" *ngIf="items != null && items.length == 0">
+    <ion-icon name="card"></ion-icon>
+    <h3>No advances</h3>
+    <p>Advances ready for finance will appear here.</p>
+  </div>
+
+  <div class="adv-card" *ngFor="let item of items" tappable (click)="goToDetail(item)">
+    <div class="adv-card-top">
+      <span class="adv-no">{{ item.Advance_No || 'Advance' }}</span>
+      <span class="adv-chip chip-amber">{{ item.Status }}</span>
+    </div>
+    <div class="adv-amount">RM {{ item.Total_Requested || '0.00' }}</div>
+    <div class="adv-meta">
+      <div class="adv-meta-row" *ngIf="item.Name">
+        <ion-icon name="person"></ion-icon>
+        <span>{{ item.Name }}</span>
+      </div>
+      <div class="adv-meta-row">
+        <ion-icon name="calendar"></ion-icon>
+        <span>{{ item.Date }}</span>
+      </div>
+      <div class="adv-meta-row" *ngIf="item.Approver">
+        <ion-icon name="person"></ion-icon>
+        <span>Approver: {{ item.Approver }}</span>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

@@ -1,0 +1,108 @@
+<!--
+  Generated template for the SitecodeapprovalPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Project Code Approval</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+
+  <!-- redirect to noticedetails.html -->
+  <!-- notice list -->
+  <div *ngIf="items.length < 1">
+    <p>No Project Code Pending Approval</p>
+  </div>
+  <div *ngFor="let item of items;">
+    <div class="ion-item-body" (click)="gotoEdit(item)">
+      <ion-item class="ion-item-item">
+
+        <div class="content">
+          <div class="row">
+            <div class="col col-title" col-5 col-5>Company</div>
+            <div class="col col-details">: {{item.company.Option}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Department</div>
+            <div class="col col-details">: {{item.Department}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Segment</div>
+            <div class="col col-details">: {{item.Segment}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Contract No</div>
+            <div class="col col-details">: {{item.Contract_No}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Contract Ref</div>
+            <div class="col col-details">: {{item.Contract_Reference_No}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Project Name</div>
+            <div class="col col-details">: {{item.projectDesc}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Contract No</div>
+            <div class="col col-details">: {{item.Contract_No}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Start Date</div>
+            <div class="col col-details">: {{item.Start_Date}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>End Date</div>
+            <div class="col col-details">: {{item.End_Date}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Revenue</div>
+            <div class="col col-details">: {{item.Remarks}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Profit</div>
+            <div class="col col-details">: {{item.Profit}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Margin</div>
+            <div class="col col-details">: {{item.Margin}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Cost</div>
+            <div class="col col-details">: {{item.Costing_Control}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Insurance</div>
+            <div class="col col-details">: {{item.Insurance}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Insurance Remarks</div>
+            <div class="col col-details">: {{item.Insurance_Remarks}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Performance Borne</div>
+            <div class="col col-details">: {{item.Performance_Borne}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Performance Borne Period</div>
+            <div class="col col-details">: {{item.Performance_Borne_Period}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title" col-5>Agreement</div>
+            <div class="col col-details">: {{item.Agreement}}</div>
+          </div>
+
+
+        </div>
+      </ion-item>
+    </div>
+  </div>
+
+
+</ion-content>

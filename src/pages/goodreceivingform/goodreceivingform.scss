@@ -1,0 +1,187 @@
+page-goodreceivingform {
+    ion-col {
+        border: 1px solid #b1b1b1;
+        border-radius: 0;
+        background-color:#ffffff;
+        overflow-x: scroll!important;
+        overflow-y: hidden;
+        word-wrap: break-word;
+        // height:20vw;
+        // font-size:0.8em;
+        // font-weight:300;
+    }
+    .myInput {
+        width: calc(100% - 10px);
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+    .add{
+        background: white;
+        width: 150px;
+    
+    }
+
+    .error {
+        color: rgb(223, 62, 62);
+        font-size: 11px;
+    }
+
+    .error1 {
+    color: rgb(75, 75, 75);
+    border-bottom: 1px solid #ff0000;
+    }
+    
+    .add-button{
+        text-align: center;
+    
+    }
+    .profilebutton {
+        z-index: 2;
+        position: absolute;
+        left: 22%;
+        top: 8%;
+        margin: auto;
+    }
+    .profilepic {
+        border:1px solid #000;
+        width: 65%;
+        height: 65%;
+    }
+    .profilepic-border {
+        position: relative;
+        background: #a3a3a3;
+    }
+    .button1{
+        margin-top: 125px;
+    }
+    .ion-content{
+        background-color:#f1f2f6;
+        text-overflow: ellipsis;
+      white-space: normal !important;
+    }
+    .background{
+        background:transparent;
+    }
+    .doc-button{
+        border-radius: 50px;
+    }
+    .text-input::-webkit-input-placeholder {
+        // white-space: pre-line;
+
+        text-indent: 0;
+        color: rgba(0,0,0,0.55);
+    }
+    h3{
+        padding-left: 10px;
+    }
+    .required:after { content:" *"; color:red; }
+    .required2:after { 
+        content:" *"; 
+        color:red; 
+        position: absolute;
+        top: 8px;
+        right: 30px;}
+    
+        // ionic-selectable{
+        //     // padding-left: 52px;
+        //     // padding-right: 26px;
+        //     // padding-top: 13px;
+        //     // padding-bottom: 13px;
+        //     // flex: 1;
+        //     // color: var(--ion-color-step-850, #262626);
+        //     // font-size: 14px;
+        //     // text-overflow: ellipsis;
+        //     .alert-tappable.alert-radio {
+        //         height: auto;
+        //         contain: content;
+        //     }
+            
+        //     .alert-radio-label.sc-ion-alert-md,
+        //     .alert-radio-label.sc-ion-alert-ios {
+        //         white-space: normal;
+        //     }
+
+        // }
+        // .alert-tappable.alert-radio {
+        //     height: auto;
+        //     contain: content;
+        // }
+        
+        // .alert-radio-label.sc-ion-alert-md,
+        // .alert-radio-label.sc-ion-alert-ios {
+        //     white-space: normal;
+        // }
+        ionic-selectble{
+           
+        .alert-wrapper { background-color: purple!important; }
+          }
+          .alert-radio-label {
+            white-space: normal!important;
+        }
+
+        // ion-textarea{
+        //     height: 100px;
+        // }
+
+        .forecast_container{
+            overflow-x: scroll!important;
+            overflow-y: hidden;
+            word-wrap: break-word;
+            height:20vw;
+            font-size:0.8em;
+            font-weight:300;
+    }
+
+    ion-input{
+        text-align: center;
+    }
+
+    .buttonadd{
+        background: #f5f6fa;
+        top: 10px;
+        width: 20px;
+        height: 30px;
+        position: relative;
+        border-radius: 100%;
+        box-shadow: 0 0 10px gray;
+    }
+
+    .buttonremove{
+        // background: #f5f6fa;
+        // top: 10px;
+        width: 30px;
+        height: 30px;
+        position: relative;
+        // border-radius: 100%;
+        // box-shadow: 0 0 10px gray;
+    }
+
+    .thumbnail-container {
+        overflow-x:scroll;
+        width:100%;
+        // padding: 0 15px;
+      }
+
+      .thumbnail-list {
+          white-space:nowrap;
+          list-style: none;
+          padding: 0;
+      }
+      .thumbnail-list li {
+        display: inline-block;
+      }
+      .thumbnail-image {
+          display: block;
+          padding:2px;
+          max-width: 100px;
+          height:auto;
+      }
+        
+}
+.red{
+
+    button{
+        color: rgb(241, 1, 1);
+    }
+}

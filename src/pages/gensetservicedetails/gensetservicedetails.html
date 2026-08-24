@@ -1,0 +1,168 @@
+
+<ion-header>
+
+  <ion-navbar>
+    <ion-title style="font-size: 12px;">Service Management Details</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <div class="ion-item-body">
+    <ion-list no-lines>
+    <ion-item no-lines style="border: none;">
+      <div class="body">
+        <h4 class="apply">{{ serviceId }}</h4>
+      </div>
+      <div >
+        <div class="row">
+          
+          <div class="col col-title">Service ID</div>
+          <div class="col col-details">: {{ serviceId }}</div>
+        </div>
+        <div class="row">
+          
+          <div class="col col-title">Service Type</div>
+          <div class="col col-details">: {{ type }}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Asset No</div>
+          <div class="col col-details">: {{ genset }}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Site Name</div>
+          <div class="col col-details">: {{ siteName }}</div>
+        </div>
+
+        <div class="row">
+          <div class="col col-title">Site Latitude  </div>
+          <div class="col col-details">: {{ latitude }}</div>
+        </div>
+
+        <div class="row">
+          <div class="col col-title">Site Longitude</div>
+          <div class="col col-details">: {{ longitude }}</div>
+        </div>
+
+        <!-- <div class="row">
+          <div class="col col-title">Model</div>
+          <div class="col col-details">: {{ model }}</div>
+        </div>
+
+        <div class="row">
+          <div class="col col-title">KVA</div>
+          <div class="col col-details">: {{ capacity }}</div>
+        </div> -->
+      </div>
+    </ion-item>
+    <ion-item no-lines>
+      <ion-label >
+        Remarks
+      </ion-label>
+      <ion-input type="text" [(ngModel)]='remarks' placeholder="Enter remarks"></ion-input>
+    </ion-item>
+    <!-- <ion-item text-center no-lines>
+        <ion-col>
+          <button ion-button [hidden]='hideRequest'  (click)='request()' small>Request Item</button>
+          <button ion-button (click)='request()' small>Request Item</button>
+        </ion-col>
+        <ion-col>
+          <button ion-button small navPush='GensetrequestconfirmationPage' [navParams]='req' [hidden]='hideConfirm'>Confirm Item</button>
+          <button ion-button small (click)="confirmItem()" [hidden]='hideConfirm'>Confirm Item</button>
+
+        </ion-col>
+    </ion-item> -->
+  </ion-list>
+  </div>
+
+  <div class="ion-item-body buttons" *ngIf="atask.length > 0">
+    <ion-item class="ion-item-item">
+      <div class="row">
+        <div class="col col-display title">Start Task</div>
+        <div class="col col-display title">End Task</div>
+      </div>  
+      <hr>
+      <div *ngFor="let a of atask">
+        <div class="row">
+          <div class="col col-display" style="border-right: rgb(211, 211, 211) solid 1px;">{{a.Time_In}}</div>
+          <div class="col col-display">{{a.Time_Out}}</div>
+        </div>
+      </div>
+    </ion-item>
+  </div>
+
+  <div class="ion-item-body buttons" *ngIf="atraveltask.length > 0">
+    <ion-item class="ion-item-item">
+      <div class="row">
+        <div class="col col-display title">Start Travel</div>
+        <div class="col col-display title">End Travel</div>
+      </div>
+      <hr>
+      <div *ngFor="let t of atraveltask">
+        <div class="row">
+          <div class="col col-display" style="border-right: rgb(211, 211, 211) solid 1px;">{{formatDate(t.Start_Time)}}</div>
+          <div class="col col-display">{{formatDate(t.End_Time)}}</div>
+        </div>
+      </div>
+    </ion-item>
+  </div>
+
+</ion-content>
+<ion-footer>
+  <ion-row>
+    <ion-item text-center color="primary" [hidden]="false">
+      <div>Latitude: {{ Latitude_In }}
+        <input type="text" readonly="true" hidden="false" [(ngModel)]="Latitude_In">
+      </div>
+      <div>Longitude: {{ Longitude_In }}
+        <input type="text" readonly="true" hidden="false" [(ngModel)]="Longitude_In">
+      </div>
+    </ion-item>
+  </ion-row>
+  <ion-row class="buttons" text-center>
+    <ion-col>
+      <button ion-button small style="background-color: green;" class="footer-btn" (click)="starttravel()">Start Travel</button>
+    </ion-col>
+    <ion-col>
+      <button ion-button small style="background-color: red;" class="footer-btn" (click)="endtravel()">End Travel</button>
+    </ion-col>
+  </ion-row>
+  <ion-row class="buttons" text-center>
+    
+      <ion-col>
+        <button ion-button class="footer-btn" (click)="start()">Start Task</button>
+      </ion-col>
+      <ion-col>
+        <button ion-button style="background-color: red;"  class="footer-btn" (click)="endTask()" >End Task</button>
+      </ion-col>
+      <br>
+      <ion-col>
+        <button ion-button style="background-color: green;" class="footer-btn" (click)="complete()" >Complete</button>
+      </ion-col>
+  </ion-row>
+  <ion-row>
+      <!-- <button class="box-button-menu" small (click)="replacement()">
+        <img src="assets/icon/switch.png">
+      </button>
+
+      <button class="box-button-menu" small (click)="sparepart()">
+        <img src="assets/icon/wrench.png">
+      </button> -->
+
+      <button class="box-button-menu" small (click)=navme()>
+        <img src="assets/icon/map.png">
+      </button>
+
+      <button class="box-button-menu" small (click)="Call()">
+        <img src="assets/icon/telephone.png">
+      </button>
+
+      <button class="box-button-menu" small (click)="notes()">
+        <img src="assets/icon/notes.png">
+      </button>
+<!--
+      <button class="box-button-menu" small (click)="release()">
+        <img src="assets/icon/recycling-bin.png">
+      </button> -->
+  </ion-row>
+</ion-footer>

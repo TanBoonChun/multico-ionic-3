@@ -1,0 +1,79 @@
+<ion-header>
+
+  <ion-navbar color='primary'>
+    <ion-title>{{ status == 'pending' ? "Pending Approval":(status =='rejected' ? "Rejected":"Approved") }}</ion-title>
+  </ion-navbar>
+  <ion-toolbar>
+    <ion-searchbar
+      [(ngModel)]="searchValue"
+      placeholder="Search site code..."
+      [showCancelButton]="shouldShowCancel"
+      (ionInput)="onInput($event)"
+      (ionCancel)="onCancel($event)">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content padding class='ion-content-body'>
+  <ion-item *ngIf='!search && pnls.length == 0'>
+    No data available.
+  </ion-item>
+  <ion-card *ngIf='search'>
+    <ion-card-content style="text-align: center;">
+      <ion-spinner name="bubbles"></ion-spinner>
+    </ion-card-content>
+  </ion-card>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-card *ngFor='let pnl of pnls' [ngClass]="{'low-pnl' : pnl.margin < 0}" (click)="navigateToDetailsPage(pnl.Id)">
+    <ion-card-header style="font-size:14px;">
+      {{ pnl.project_code.projectCode }} {{ pnl.project_code.Description ? "["+pnl.project_code.Description+"]":"" }}
+    </ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Site Code</ion-col>
+          <ion-col style='font-size:11px;white-space:pre-wrap;' innerHTML="{{ pnl.pnl_site[0]?.siteCode || 'No Site Code' }}" col-8></ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Total Client Po (RM)</ion-col>
+          <ion-col style='font-size:12px;text-align:right;'> {{ pnl.pnl_site[0]?.totalClientPo | number : '1.2-2' || '0.00' }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Total Sub Contractor Quotation / WO Value (RM)</ion-col>
+          <ion-col style='font-size:12px;text-align:right;'> {{ (pnl.contractor[0]?.total | number : '1.2-2') || '0.00' }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Total Material Cost (RM)</ion-col>
+          <ion-col style='font-size:12px;text-align:right;'> {{ (pnl.material_cost[0]?.total | number : '1.2-2') || '0.00' }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Total Claim (RM)</ion-col>
+          <ion-col style='font-size:12px;text-align:right;'> {{ pnl.totalClaim | number : '1.2-2' || '0.00' }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Gross Margin (RM)</ion-col>
+          <ion-col style='font-size:12px;text-align:right;'> {{ pnl.grossMargin | number : '1.2-2' || '0.00' }}</ion-col>
+        </ion-row>
+        <ion-item-divider style="height:1px !important;"></ion-item-divider>
+        <ion-row>
+          <ion-col style="font-size:12px;font-weight:bold;" col-4>Gross Margin (%)</ion-col>
+          <ion-col style='font-size:12px;text-align:right;'> {{ pnl.margin | number : '1.2-2' || '0.00' }} %</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+  <ion-infinite-scroll (ionInfinite)="loadMoreData($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

@@ -1,0 +1,22 @@
+<ion-content padding class="ion-content-body">
+
+  <div class="logo">
+    <img src="assets/imgs/logo1.png" class="logo" style="max-width: 50%; max-height:50%">
+  </div>
+
+  <!-- <div class="box"> -->
+  <form [formGroup]="credentials" (ngSubmit)="login()">
+
+    <ion-item>
+      <ion-label stacked>StaffId</ion-label>
+      <ion-input type="text" formControlName="StaffId"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label stacked>Password</ion-label>
+      <ion-input type="password" formControlName="Password"></ion-input>
+    </ion-item>
+
+    <button ion-button block color="danger" class="login-button" [disabled]="!credentials.valid">Login</button>
+  </form>
+
+</ion-content>

@@ -1,0 +1,60 @@
+page-order-approval {
+  .app {
+    background: #42dff4;
+    color: black;
+    padding-bottom: 5px;
+  }
+
+  .ion-title {
+    text-align: center;
+    color: white;
+  }
+
+  .ion-content {
+    background-color: #f1f2f6;
+  }
+
+  div.a {
+    text-align: center;
+    color: #000000;
+  }
+
+  #notifications-badge {
+    background-color: red;
+    position: absolute;
+    border-radius: 100%;
+  }
+  .item-title {
+    padding-left: 8px;
+  }
+  ion-searchbar {
+    margin: 0 auto;
+  }
+  .grid {
+    padding: 0 !important;
+  }
+  ion-item-divider {
+    min-height: 0 !important;
+  }
+  .card-md {
+    border-radius: 15px !important;
+  }
+  .label-success {
+    background-color: #5cb85c;
+  }
+  .label {
+    display: inline;
+    padding: 0.2em 0.6em 0.3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25em;
+  }
+  .label-danger {
+    background-color: #d9534f;
+  }
+}

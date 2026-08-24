@@ -1,0 +1,242 @@
+<!-- <ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>Good Return Note</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="ion-content-body">
+  
+  <ion-list>
+    <form novalidate (ngSubmit)="submitList()" [formGroup]="signupform">
+
+      <br>
+
+      <ion-item>
+        <ion-label stacked color="primary">Type</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Type" formControlName="Type">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+    
+      <ion-item>
+        <ion-label stacked color="primary">Receiving Date</ion-label>
+        <ion-datetime pickerFormat="DD MMM YYYY" displayFormat="DD MMM YYYY" placeholder="Choose Assign Date" max="2200" [(ngModel)]="ReceivingDate" formControlName="ReceivingDate"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+          <ion-label stacked color="primary">Receiving Time</ion-label>
+          <ion-datetime pickerFormat="h m a" displayFormat="h m a" placeholder="Choose Due Date" max="2200" [(ngModel)]="ReceivingTime"  formControlName="ReceivingTime"></ion-datetime>
+      </ion-item>
+     
+      <ion-item>
+        <ion-label stacked color="primary">Bay</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Bay" formControlName="Bay">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Project</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Project" formControlName="Project">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Site</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Site" formControlName="Site">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Company</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Company" formControlName="Company">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Ownership</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Ownership" formControlName="Ownership">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Segment</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Segment" formControlName="Segment">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+      
+      <br>
+      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+    </form>
+  </ion-list>
+
+</ion-content> -->
+
+<ion-header>
+
+  <ion-navbar color="primary">
+      <ion-title>GOOD RETURN NOTE</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content class="ion-content-body">
+  <ion-list>
+    <form novalidate (ngSubmit)="submit()" [formGroup]="signupform">
+
+      <h3>Good Return Note</h3>
+
+      <ion-item>
+        <ion-label stacked color="primary">Type</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Type" formControlName="Type">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+      
+      <ion-item>
+        <ion-label stacked color="primary">Receiving Date</ion-label>
+        <ion-datetime pickerFormat="DD MMM YYYY" displayFormat="DD MMM YYYY" placeholder="Choose Assign Date" max="2200" [(ngModel)]="ReceivingDate" formControlName="ReceivingDate"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+          <ion-label stacked color="primary">Receiving Time</ion-label>
+          <ion-datetime pickerFormat="h m a" displayFormat="h m a" placeholder="Choose Due Date" max="2200" [(ngModel)]="ReceivingTime"  formControlName="ReceivingTime"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Warehouse/Bay</ion-label>
+        <ion-select item-content [(ngModel)]="Bay"  formControlName="Bay">
+        <ion-option *ngFor="let bays of bay" value="{{bays.Name}} - {{bays.Code}} ">{{bays.Name}} - {{bays.Code}} </ion-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary" class="required">Project</ion-label>
+        <ionic-selectable item-content [(ngModel)]="Project"  formControlName="Project" itemValueField="Project_Code" itemTextField="Project_Code" [items]="items" [canSearch]="true" 
+        [canClear]="true">
+        </ionic-selectable>
+      </ion-item>
+
+
+      <ion-item>
+        <ion-label stacked color="primary">Site Code</ion-label>
+        <ionic-selectable item-content [(ngModel)]="SiteCode" [items]="apps" formControlName="SiteCode" 
+      itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true" [canClear]="true">
+      </ionic-selectable>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Site Name</ion-label>
+        <ion-textarea  [(ngModel)]="SiteName" formControlName="SiteName">
+        </ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Company</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Company" formControlName="Company">
+          <ion-option *ngFor="let com of company" value="{{com.Company}}">1</ion-option>
+        </ion-select> 
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Ownership</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Ownership" formControlName="Ownership">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+
+      <ion-item>
+        <ion-label stacked color="primary">Segment</ion-label>
+        <ion-select placeholder="please select" [(ngModel)]="Segment" formControlName="Segment">
+          <ion-option value="">1</ion-option>
+          <ion-option value="2">2</ion-option>
+          <ion-option value="3">3</ion-option>
+          <ion-option value="4">4</ion-option>
+        </ion-select> 
+      </ion-item>
+    
+      <div class="row">
+        <div>
+          <h3 left style="color: black;">Material Code &nbsp;</h3>
+        </div>
+        <div>
+          <button start ion-button type="button" class="buttonadd" (click)="addrow(i)">
+            <ion-icon color="primary" class="icon" name="add"></ion-icon>
+          </button>
+        </div>
+      </div>
+        
+      <ion-grid>
+        <div *ngFor="let item of itemarray; let i = index" (click)="goto(item)" >
+
+          <ion-row  nowrap >
+            <ion-col col-6>
+              <!-- <img (click)='edit(i)' class="buttonremove"  src='assets/icon/pencil.png' end />
+              <img (click)="remove(i)" class="buttonremove" src='assets/icon/rubbish.png'  /> -->
+              <div>Material Code/ Description</div>
+            </ion-col>
+            <ion-col col-3><div style="text-align: center;">Unit</div></ion-col>
+            <ion-col col-3><div style="text-align: center;">Quantity</div></ion-col>
+          </ion-row>
+
+          <ion-row>
+            <!-- <ion-col col-6>Start Date</ion-col> -->
+            <ion-col col-6>
+                <div>{{item.newMaterial}} </div>
+            </ion-col>
+            <ion-col col-3>
+              <div>{{item.newUnit}} </div>
+            </ion-col>
+            <ion-col col-3>
+              <div>{{item.newQuantity}} </div>
+            </ion-col>
+          </ion-row>  
+          <br>
+
+        </div>
+      </ion-grid>
+
+      <br>
+      <div style="color: red; font-size: x-small;"> *Make sure no negative (-) value</div>
+      <br>
+      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">Submit</button>
+
+    </form>
+  </ion-list>
+</ion-content>
+
