@@ -18,7 +18,14 @@ import { SERVER_URL } from '../../environment';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { Observable } from 'rxjs';
 
-
+/**
+ * One line of an advance request, which is one job.
+ *
+ * An advance is asked for per job, so a line says which job, what the money is
+ * for and how much - nothing else. The job is a service ticket, and it carries
+ * the customer, the site and the project code the request is filed under, so
+ * none of those are asked for again.
+ */
 @IonicPage()
 @Component({
   selector: 'page-advancesitenew',
@@ -27,18 +34,12 @@ import { Observable } from 'rxjs';
 export class AdvancesitenewPage {
 
   public signupform: FormGroup;
-  public Site_Name: any = "";
 
-  newStartDate:any;
-  newEndDate:any;
-  Amount:any="";
-  Project_Code:any;
-  Site_Code: any;
-  SiteId:any;
-  Remarks: any = "";
-  Need_Advance: any = false;
-  apps: any;
-  items: any;
+  Service_Ticket: any;
+  serviceTickets: any[] = [];
+  Purpose: any = "";
+  Amount: any = "";
+  Need_Advance: any = true;
 
   constructor(public navCtrl: NavController,
     private toastCtrl: ToastController,
@@ -51,24 +52,25 @@ export class AdvancesitenewPage {
     private storage: Storage,
     private toast: Toast,
     public loadingCtrl: LoadingController) {
-      this.Project_Code = navParams.get('Project_Code');
-      this.SiteId = navParams.get('Site_ID'),
-      this.Site_Code = navParams.get('Site_Code'),
-      this.newStartDate = this.navParams.get('newStartDate')
-      this.newEndDate = this.navParams.get('newEndDate')
-      this.Site_Name = this.navParams.get('Site_Name')
-      this.Remarks = this.navParams.get('Remarks')
-      this.Amount = this.navParams.get('Amount')
-      this.Need_Advance = this.navParams.get('Need_Advance') ? true : false;
+      this.Service_Ticket = this.navParams.get('Service_Ticket');
+      this.Purpose = this.navParams.get('Purpose') ? this.navParams.get('Purpose') : "";
+      this.Amount = this.navParams.get('Amount');
+      // The amount is asked for by default, only a caller that says otherwise
+      // turns it off
+      this.Need_Advance = this.navParams.get('Need_Advance') === false ? false : true;
+
+      // The job already picked has to be on the list for the picker to show it
+      // as selected, and the list only arrives from the server afterwards.
+      if (this.Service_Ticket) {
+        this.serviceTickets = [this.Service_Ticket];
+      }
     }
 
 
   ngOnInit() {
     this.signupform = new FormGroup({
-      Site_Code: new FormControl("", [Validators.required]),
-      newStartDate: new FormControl("", [Validators.required]),
-      newEndDate: new FormControl("", [Validators.required]),
-      Remarks: new FormControl("", [Validators.required]),
+      Service_Ticket: new FormControl("", [Validators.required]),
+      Purpose: new FormControl("", [Validators.required]),
       Amount: new FormControl("", this.Need_Advance ? [Validators.required, Validators.min(0)] : []),
     });
   }
@@ -77,39 +79,49 @@ export class AdvancesitenewPage {
     this.loadData();
   }
 
-  noSpace(string){
-    this.Site_Name = string.split(' ').join('');
-    return string.split(' ').join('');
+  loadData() {
+    this.loadServiceTickets();
   }
 
-  loadData() {
-
+  /**
+   * The jobs an advance can be raised against. The search is done on the server
+   * so a job further down than the first page can still be reached by typing
+   * its number.
+   */
+  loadServiceTickets(search?: string, component?: IonicSelectableComponent) {
     let data: Observable<any>;
 
     this.storage.get("token").then((val) => {
-      data = this.http.get(
-        SERVER_URL + "/getsitecodes/"+ this.Project_Code + "?token=" + val.token + ""
-      );
+      let url = SERVER_URL + "/getadvanceserviceticket?token=" + val.token;
+
+      if (search) {
+        url += "&search=" + encodeURIComponent(search);
+      }
+
+      data = this.http.get(url);
       data.subscribe((result) => {
-        this.apps = result;
+        this.serviceTickets = result && result.serviceTickets ? result.serviceTickets : [];
+
+        if (component) {
+          component.items = this.serviceTickets;
+          component.endSearch();
+        }
+      },
+      (err) => {
+        console.log(err);
+
+        if (component) {
+          component.endSearch();
+        }
       });
     });
   }
 
-  myFunction(date) {
-    var d = new Date(date);
-    var monthNames = [
-      "Jan", "Feb", "Mar",
-      "Apr", "May", "Jun", "Jul",
-      "Aug", "Sep", "Oct",
-      "Nov", "Dec"
-    ];
+  searchServiceTickets(event: { component: IonicSelectableComponent; text: string }) {
+    let text = event.text.trim();
 
-    var day = ('0'+ d.getDate()).slice(-2);
-    var monthIndex = d.getMonth();
-    var year = d.getFullYear();
-
-    return day + '-' + monthNames[monthIndex] + '-' + year;
+    event.component.startSearch();
+    this.loadServiceTickets(text, event.component);
   }
 
   showConfirm() {
@@ -147,32 +159,6 @@ export class AdvancesitenewPage {
     return total.toFixed(2);
   }
 
-  searchApps(event: { component: IonicSelectableComponent; text: string }) {
-      let text = event.text.trim().toLowerCase();
-      event.component.items = this.apps.filter(a=> a.siteCode.toLowerCase().indexOf(text) !== -1);
-      event.component.endSearch();
-    }
-
-    siteCode() {
-      let data: Observable<any>;
-      let selectedProjectCode= this.Project_Code;
-      if(typeof selectedProjectCode['Site_Code'] !== 'undefined'){
-        let options=selectedProjectCode['Site_Code'].map(function(item){
-          let siteCode= "";
-          switch(item.Level){
-            case 1 :siteCode= item.Department;break;
-            case 2 :siteCode= item.Segment;break;
-            case 3 :siteCode= item.Contract_No;break;
-            case 4 :siteCode= item.PO_No;break;
-            case 5 :siteCode= item.Site_ID;break;
-          }
-          let obj={Id:item['Id'],siteCode:siteCode};
-          return obj;
-        });
-        this.apps =options;
-        console.log(this.apps)
-      }
-    }
   presentToastOut() {
     let toast = this.toastCtrl.create({
       message: "No negative value (-)",
@@ -194,37 +180,19 @@ export class AdvancesitenewPage {
     return typeof variable === "object";
   }
 
-  setSiteName(Project_Code) {
-    if (typeof Project_Code === "object") {
-      let str = "";
-
-      if (Project_Code["Site Id"]) {
-        str = Project_Code["Site Id"];
-      }
-
-      if (str != "" && Project_Code["Site LRD"]) {
-        str = str + " - " + Project_Code["Site LRD"];
-      } else if (Project_Code["Site LRD"]) {
-        str = Project_Code["Site LRD"];
-      }
-
-      if (str != "" && Project_Code["Site Name"]) {
-        str = str + " - " + Project_Code["Site Name"];
-      } else if (Project_Code["Site Name"]) {
-        str = Project_Code["Site Name"];
-      }
-      this.Site_Name = Project_Code["Site Name"];
-    }
-  }
-
   closeModal() {
     this.viewCtrl.dismiss();
   }
 
   submitClaim() {
 
-    if(this.Remarks == ""){
-      this.displayErrorAlert("Remarks cannot be blank");
+    if (!this.Service_Ticket) {
+      this.displayErrorAlert("Please select the job");
+      return;
+    }
+
+    if (this.Purpose == "") {
+      this.displayErrorAlert("Purpose cannot be blank");
       return;
     }
 
@@ -234,23 +202,17 @@ export class AdvancesitenewPage {
       return;
     }
 
-    this.storage.get("token").then((val) => {
+    let data = {
+      ServiceTicketId: this.Service_Ticket.Id,
+      // Kept alongside the Id so the list on the form can name the job without
+      // asking the server for it again.
+      Service_Ticket: this.Service_Ticket,
+      Purpose: this.Purpose,
+      Amount: this.Need_Advance ? this.newcalculateTotal() : "0",
+      Total_Requested: this.newcalculateTotal(),
+    };
 
-      let data = {
-        newStartDate: this.newStartDate,
-        newEndDate: this.newEndDate,
-        Amount: this.Need_Advance ? this.newcalculateTotal() : "0",
-        Site_Name: this.Site_Name,
-        Total_Requested: this.newcalculateTotal(),
-        Project_Code: this.Project_Code,
-        SiteId:this.SiteId,
-        Site_Code:this.Site_Code,
-        Remarks: this.Remarks,
-        Need_Advance: this.Need_Advance,
-      };
-
-      this.viewCtrl.dismiss(data);
-    });
+    this.viewCtrl.dismiss(data);
   }
 
   displayErrorAlert(err) {

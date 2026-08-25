@@ -85,6 +85,14 @@ export class AttendancePage {
   selectedTeamMembers: any[] = [];
   user: any;
 
+  /** Brand the time is booked to. Staff serving several book to "Common". */
+  Branch: any;
+  branches: any[] = [];
+  branchesMultiple: boolean = false;
+
+  /** How far the phone is from the selected site, filled on selection. */
+  siteDistance: any;
+
   @ViewChild("myInput") myInput: ElementRef;
   resize() {
     var element =
@@ -158,9 +166,21 @@ export class AttendancePage {
       isWorkFromHome: new FormControl(false),
       isDriving: new FormControl(false),
       teamMembers: new FormControl([]),
+      Branch: new FormControl("", [Validators.required]),
     });
     this.Check_In_Type = "On Duty";
     this.loadTeamMembers();
+  }
+
+  // Keep the reactive-form controls in step with the properties the template
+  // interpolates, otherwise the required validators never see a value.
+  setCoords(pos) {
+    this.Latitude_In = pos.coords.latitude;
+    this.Longitude_In = pos.coords.longitude;
+    this.signupform.patchValue({
+      Latitude_In: this.Latitude_In,
+      Longitude_In: this.Longitude_In,
+    });
   }
 
   enableLocation() {
@@ -413,8 +433,7 @@ export class AttendancePage {
     this.geo
       .getCurrentPosition()
       .then((pos) => {
-        this.Latitude_In = pos.coords.latitude;
-        this.Longitude_In = pos.coords.longitude;
+        this.setCoords(pos);
       })
       .catch((err) => console.log(err));
 
@@ -425,6 +444,71 @@ export class AttendancePage {
       data.subscribe((result) => {
         this.departs = result;
       });
+    });
+
+    this.loadBranches();
+  }
+
+  loadBranches() {
+    this.storage.get("token").then((val) => {
+      this.http
+        .get(SERVER_URL + "/getbranches?token=" + val.token)
+        .subscribe((result: any) => {
+          this.branches = result.branches || [];
+          this.branchesMultiple = result.multiple;
+
+          // One brand needs no decision, so the server's default is applied
+          // rather than made into another thing to tap.
+          if (!this.Branch && result.default) {
+            this.Branch = this.branches.filter(
+              (b) => b.Branch == result.default
+            )[0];
+          }
+        });
+    });
+  }
+
+  /**
+   * How far the phone is from the site just picked.
+   *
+   * Measured on the server against the site and its far ends - the same points
+   * time in geofences against - so the distance on screen is the one the time in
+   * will be judged by.
+   */
+  onSiteChange() {
+    this.siteDistance = null;
+
+    if (!this.Project_Code || !this.Project_Code.Id) {
+      return;
+    }
+
+    if (!this.Latitude_In || !this.Longitude_In) {
+      this.siteDistance = { Distance_Text: "Waiting for your location..." };
+      return;
+    }
+
+    this.storage.get("token").then((val) => {
+      this.http
+        .get(
+          SERVER_URL +
+            "/getsitedistance/" +
+            this.Project_Code.Id +
+            "/" +
+            this.Latitude_In +
+            "/" +
+            this.Longitude_In +
+            "?token=" +
+            val.token
+        )
+        .subscribe(
+          (result: any) => {
+            this.siteDistance = result;
+          },
+          (err) => {
+            console.log(err);
+            this.siteDistance = null;
+          }
+        );
     });
   }
 
@@ -445,8 +529,7 @@ export class AttendancePage {
       };
 
       const onSuccess = (pos) => {
-        this.Latitude_In = pos.coords.latitude;
-        this.Longitude_In = pos.coords.longitude;
+        this.setCoords(pos);
         loading.dismiss();
         alert("Location Refreshed");
       };
@@ -463,8 +546,7 @@ export class AttendancePage {
         .getCurrentPosition({ timeout: 20000, enableHighAccuracy: true, maximumAge: 0 })
         .then(
           (pos) => {
-            this.Latitude_In = pos.coords.latitude;
-            this.Longitude_In = pos.coords.longitude;
+            this.setCoords(pos);
             loading.dismiss();
             alert("Location Refreshed");
           },
@@ -524,8 +606,7 @@ export class AttendancePage {
     this.geo
       .getCurrentPosition({ enableHighAccuracy: true })
       .then((pos) => {
-        this.Latitude_In = pos.coords.latitude;
-        this.Longitude_In = pos.coords.longitude;
+        this.setCoords(pos);
         this.storage.get("token").then((val) => {
           var Location_Name = "";
           if (this.Site_Name) {
@@ -643,6 +724,12 @@ export class AttendancePage {
               this.formData.append("Remarks", this.Remarks);
               this.formData.append("Work_Description", "");
               this.formData.append("Scope", "");
+              this.formData.append("Attendance_Type", "Project");
+              this.formData.append("Branch", this.Branch ? this.Branch.Branch : "");
+
+              if (this.siteDistance && this.siteDistance.Distance_Km !== null && this.siteDistance.Distance_Km !== undefined) {
+                this.formData.append("Distance_Km", this.siteDistance.Distance_Km);
+              }
          
               // this.formData.append("TaskId", this.Task);
               resolveReady();

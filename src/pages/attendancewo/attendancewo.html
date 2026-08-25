@@ -1,0 +1,161 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>{{ Attendance_Type }} Attendance</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+      <h2 class="title">{{Name}}</h2>
+      <h4>{{Date | date: 'dd MMM yyyy' }}</h4>
+      <h4>{{ clock }}</h4>
+    </ion-item>
+  </div>
+
+  <form novalidate (ngSubmit)="submitTimeIn()" [formGroup]="signupform">
+    <ion-item text-center color="danger">
+      <div>
+        Latitude: {{ Latitude_In }}
+        <input type="text" readonly="true" [(ngModel)]="Latitude_In" formControlName="Latitude_In">
+      </div>
+      <div>
+        Longitude: {{ Longitude_In }}
+        <input type="text" readonly="true" [(ngModel)]="Longitude_In" formControlName="Longitude_In">
+      </div>
+    </ion-item>
+    <ion-item no-lines *ngIf="signupform.get('Latitude_In').hasError('required') && signupform.get('Latitude_In').touched">
+      <div class="error">Please check your latitude</div>
+    </ion-item>
+    <ion-item no-lines *ngIf="signupform.get('Longitude_In').hasError('required') && signupform.get('Longitude_In').touched">
+      <div class="error">Please check your longitude</div>
+    </ion-item>
+
+    <br>
+    <div class="a">
+      <button ion-button color="danger" type="button" (click)="doRefresh()">Refresh</button>
+    </div>
+    <br>
+
+    <div class="thumbnail-container">
+      <ul class="thumbnail-list">
+        <li *ngFor="let imageN of imagesN"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+      </ul>
+    </div>
+
+    <button type="button" ion-button color="danger" icon-right full (click)="onTakePicture()">
+      Take Picture <ion-icon name="camera"></ion-icon>
+    </button>
+
+    <button type="button" ion-button color="danger" icon-right full (click)="clearImage()">
+      Clear
+    </button>
+
+    <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary" class="required">Type</ion-label>
+      <ion-select [(ngModel)]="Attendance_Type" formControlName="Attendance_Type" (ngModelChange)="onTypeChange()"
+        [class.error1]="!signupform.controls.Attendance_Type.valid && signupform.controls.Attendance_Type.dirty">
+        <ion-option value="Work Order">Work Order</ion-option>
+        <ion-option value="Sales">Sales</ion-option>
+        <ion-option value="Cold Call">Cold Call</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Brand the time is booked to. Staff serving several book to Common. -->
+    <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary" class="required">Branch</ion-label>
+      <ionic-selectable item-content [(ngModel)]="Branch" [items]="branches" formControlName="Branch"
+        itemValueField="Branch" itemTextField="Branch" [canSearch]="true" (onChange)="onBranchChange()"
+        [class.error1]="!signupform.controls.Branch.valid && signupform.controls.Branch.dirty">
+      </ionic-selectable>
+    </ion-item>
+    <ion-item no-lines *ngIf="signupform.get('Branch').hasError('required') && signupform.get('Branch').touched">
+      <div class="error">Please select your branch</div>
+    </ion-item>
+    <ion-item no-lines [hidden]="hideUI || !branchesMultiple">
+      <div class="hint">Serving more than one brand today? Choose <strong>Common</strong>.</div>
+    </ion-item>
+
+    <!-- Cold call: which side of the house is calling. -->
+    <ion-item class="ion-item" [hidden]="hideUI || !isColdCall()">
+      <ion-label stacked color="primary" class="required">Department</ion-label>
+      <ion-select [(ngModel)]="Sub_Department" formControlName="Sub_Department"
+        [class.error1]="!signupform.controls.Sub_Department.valid && signupform.controls.Sub_Department.dirty">
+        <ion-option value="Sales">Sales</ion-option>
+        <ion-option value="Service">Service</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item no-lines *ngIf="isColdCall() && signupform.get('Sub_Department').hasError('required') && signupform.get('Sub_Department').touched">
+      <div class="error">Please select Sales or Service</div>
+    </ion-item>
+
+    <!-- Work order. Its customer and site come with it. -->
+    <ion-item class="ion-item" [hidden]="hideUI || !isWorkOrder()">
+      <ion-label stacked color="primary" class="required">Work Order</ion-label>
+      <ionic-selectable item-content [(ngModel)]="Work_Order" [items]="workOrders" formControlName="Work_Order"
+        itemValueField="Id" itemTextField="Label" [canSearch]="true" [canClear]="true" (onSearch)="searchWorkOrders($event)"
+        [class.error1]="!signupform.controls.Work_Order.valid && signupform.controls.Work_Order.dirty">
+      </ionic-selectable>
+    </ion-item>
+    <ion-item no-lines *ngIf="isWorkOrder() && signupform.get('Work_Order').hasError('required') && signupform.get('Work_Order').touched">
+      <div class="error">Please select your work order</div>
+    </ion-item>
+
+    <div class="ion-item summary" *ngIf="isWorkOrder() && Work_Order && !hideUI">
+      <p><strong>Customer:</strong> {{ Work_Order.Customer_Name || 'Not set on this work order' }}</p>
+      <p><strong>Site:</strong> {{ Work_Order.Site_Label || 'Not set on this work order' }}</p>
+      <p *ngIf="Work_Order.service_type"><strong>Service:</strong> {{ Work_Order.service_type }}</p>
+      <p *ngIf="Work_Order.genset_no"><strong>Asset:</strong> {{ Work_Order.genset_no }}</p>
+      <!-- How far the phone is from the site right now. -->
+      <p class="distance"><strong>Distance:</strong> {{ Work_Order.Distance_Text }}</p>
+    </div>
+
+    <!-- Sales and cold call: who is being visited. -->
+    <ion-item class="ion-item" [hidden]="hideUI || isWorkOrder()">
+      <ion-label stacked color="primary" class="required">Customer</ion-label>
+      <ionic-selectable item-content [(ngModel)]="Customer" [items]="customers" formControlName="Customer"
+        itemValueField="Id" itemTextField="Label" [canSearch]="true" [canClear]="true" (onSearch)="searchCustomers($event)"
+        (onChange)="onCustomerChange()"
+        [class.error1]="!signupform.controls.Customer.valid && signupform.controls.Customer.dirty">
+      </ionic-selectable>
+    </ion-item>
+    <ion-item no-lines *ngIf="!isWorkOrder() && signupform.get('Customer').hasError('required') && signupform.get('Customer').touched">
+      <div class="error">Please select your customer</div>
+    </ion-item>
+
+    <!-- The visit may be to a customer that was never created. -->
+    <ion-item class="ion-item" [hidden]="hideUI || isWorkOrder() || !isOtherCustomer()">
+      <ion-label stacked color="primary" class="required">Customer Name</ion-label>
+      <ion-textarea type="text" [(ngModel)]="Customer_Name" formControlName="Customer_Name"
+        placeholder="Type the customer name"
+        [class.error1]="!signupform.controls.Customer_Name.valid && signupform.controls.Customer_Name.dirty"></ion-textarea>
+    </ion-item>
+    <ion-item no-lines *ngIf="isOtherCustomer() && signupform.get('Customer_Name').hasError('required') && signupform.get('Customer_Name').touched">
+      <div class="error">Please type the customer name</div>
+    </ion-item>
+
+    <div class="ion-item summary" *ngIf="!isWorkOrder() && Customer && !isOtherCustomer() && !hideUI">
+      <p *ngIf="Customer.Account_Code"><strong>Account:</strong> {{ Customer.Account_Code }}</p>
+      <p *ngIf="Customer.Address"><strong>Address:</strong> {{ Customer.Address }}</p>
+      <p *ngIf="Customer.Contact_No"><strong>Contact:</strong> {{ Customer.Contact_No }}</p>
+    </div>
+
+    <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary">Team Members</ion-label>
+      <ionic-selectable item-content [(ngModel)]="selectedTeamMembers" [items]="teamMembers"
+        formControlName="teamMembers" [isMultiple]="true" itemValueField="Id" itemTextField="Name"
+        [canSearch]="true" (onSearch)="searchTeamMembers($event)">
+      </ionic-selectable>
+    </ion-item>
+
+    <ion-item class="ion-item" [hidden]="hideUI">
+      <ion-label stacked color="primary">Remarks</ion-label>
+      <ion-textarea type="text" [(ngModel)]="Remarks" placeholder="State your remarks here"
+        formControlName="Remarks"></ion-textarea>
+    </ion-item>
+
+    <button ion-button full color="danger" type="submit" [hidden]="hideUI" [disabled]="signupform.invalid">Time in</button>
+  </form>
+
+  <button ion-button full color="danger" type="button" (click)="submitTimeOut()" [hidden]="!hideUI">Time out</button>
+</ion-content>

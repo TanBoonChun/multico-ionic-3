@@ -19,6 +19,17 @@ import { Base64 } from '@ionic-native/base64';
 import { FormControl, FormGroup, Validators} from '@angular/forms';
 import { SERVER_URL } from '../../environment';
 
+/**
+ * An advance request, raised per job.
+ *
+ * Each line is one job - a service ticket - with what the money is for and how
+ * much. The job carries the project code, the customer and the site, so none of
+ * those are asked for on the form.
+ *
+ * How the advance is paid follows from the total rather than from a choice:
+ * below the petty cash limit it is handed over at the counter, from the limit
+ * upwards it is transferred, and only a transfer needs a bank account.
+ */
 @IonicPage()
 
 @Component({
@@ -26,6 +37,13 @@ import { SERVER_URL } from '../../environment';
   templateUrl: "advancesite.html",
 })
 export class AdvancesitePage {
+
+  /**
+   * The most an advance can be and still come out of petty cash, in RM. The
+   * server owns the figure - this is what it last said, and it is only used to
+   * show the requestor which way their request is going.
+   */
+  pettyCashLimit: number = 300;
 
   images = [];
   imagesO = [];
@@ -62,7 +80,8 @@ export class AdvancesitePage {
   DSum6: any = "";
   DSum7: any = "";
   Total_Requested: any=0;
-  Need_Advance: any = false;
+  // The form is only used to ask for an advance, so the amount is always asked for
+  Need_Advance: any = true;
   private token: string = "";
   public userImage: string;
   public Name: string = "";
@@ -129,11 +148,11 @@ export class AdvancesitePage {
   ngOnInit() {
     this.signupform = new FormGroup({
       Bank_Name: new FormControl("", []),
-      Project_Code: new FormControl("", [Validators.required]),
+      Project_Code: new FormControl("", []),
       Site_Code: new FormControl("", []),
       Site_Name: new FormControl("", []),
       Vendor: new FormControl("", []),
-      Need_Advance: new FormControl(false, []),
+      Need_Advance: new FormControl(true, []),
       // NoPartner: new FormControl("", []),
       // Partner1: new FormControl("",[]),
       // Partner2: new FormControl("",[]),
@@ -167,24 +186,16 @@ export class AdvancesitePage {
     this.toggleAdvance();
   }
 
-  // The bank account and the amounts only matter when an advance payment is requested
+  // The amounts only matter when an advance payment is requested, and the bank
+  // account only when that payment is a transfer.
   toggleAdvance() {
-    let bank = this.signupform.get("Bank_Name");
-
-    if (this.Need_Advance) {
-      bank.setValidators([Validators.required]);
-    } else {
-      bank.setValidators(null);
-    }
-
-    bank.updateValueAndValidity();
-
     this.recalculateTotal();
   }
 
   recalculateTotal() {
     if (!this.Need_Advance) {
       this.Total_Requested = 0;
+      this.applyBankAccountRule();
       return;
     }
 
@@ -198,6 +209,38 @@ export class AdvancesitePage {
     });
 
     this.Total_Requested = total.toFixed(2);
+    this.applyBankAccountRule();
+  }
+
+  /** How the advance will be paid out, which the total decides. */
+  get Payment_Method() {
+    if (!this.Need_Advance) {
+      return "";
+    }
+
+    return this.needsBankAccount ? "Online Transfer" : "Petty Cash";
+  }
+
+  /** Petty cash is collected in person, only a transfer needs an account. */
+  get needsBankAccount() {
+    let total = Number.parseFloat(this.Total_Requested);
+
+    if (isNaN(total)) {
+      total = 0;
+    }
+
+    return this.Need_Advance && total >= this.pettyCashLimit;
+  }
+
+  private applyBankAccountRule() {
+    let bank = this.signupform.get("Bank_Name");
+
+    if (!bank) {
+      return;
+    }
+
+    bank.setValidators(this.needsBankAccount ? [Validators.required] : null);
+    bank.updateValueAndValidity();
   }
 
   ionViewWillEnter() {
@@ -323,27 +366,30 @@ export class AdvancesitePage {
       });
     });
 
+    // The limit that decides petty cash against a transfer is the server's, so
+    // the form shows the same answer the request will be saved with.
+    this.storage.get("token").then((val) => {
+      data = this.http.get(
+        SERVER_URL + "/getadvanceserviceticket?token=" + val.token
+      );
+      data.subscribe((result) => {
+        if (result && result.pettyCashLimit) {
+          this.pettyCashLimit = Number.parseFloat(result.pettyCashLimit);
+          this.applyBankAccountRule();
+        }
+      },
+      (err) => {
+        console.log(err);
+      });
+    });
+
   }
 
   addrow(){
 
-    const alertA = this.alertCtrl.create({
-      title: 'Error',
-      subTitle: "Project Code must be insert first",
-      buttons:['Ok']
-    });
-
-    if(!this.Project_Code ){
-      // this.displayErrorAlert("Project Code must be insert first");
-      return alertA.present();
-    }
-
-    // Pax and partners used to drive the accommodation rate - the amount is entered by hand now
-
+    // A row is one job, and the job carries the project code - so there is
+    // nothing to pick before adding one.
     let modal = this.modalController.create('AdvancesitenewPage',{
-      'Project_Code': this.Project_Code.Id,
-      // 'NoPartner': this.NoPartner,
-      'Site_ID': this.SiteId,
       'Need_Advance': this.Need_Advance,
     })
 
@@ -678,7 +724,7 @@ export class AdvancesitePage {
 
     const alert = this.alertCtrl.create({
       title: 'Error',
-      subTitle: this.Need_Advance ? "Amount cannot be 0" : "Please add at least one travel detail",
+      subTitle: this.Need_Advance ? "Amount cannot be 0" : "Please add at least one job",
       buttons:['Ok']
     });
 
@@ -692,22 +738,11 @@ export class AdvancesitePage {
       buttons:['Ok']
     });
 
-    if (this.Need_Advance && !this.Bank_Name) {
+    // Only a transfer needs somewhere to transfer to.
+    if (this.needsBankAccount && !this.Bank_Name) {
       return alertBank.present();
     }
 
-    const alert2 = this.alertCtrl.create({
-      title: 'Error',
-      subTitle: "Project Code must be insert first",
-      buttons:['Ok']
-    });
-
-    if(!this.Project_Code ){
-
-      return alert2.present();
-    }
-
-    // Partners were tied to the pax based accommodation rate, which the form no longer has
 
     let loading = this.loadingCtrl.create({
       content: "Submitting ...",
@@ -767,7 +802,9 @@ export class AdvancesitePage {
         });
 
         Promise.all(defs).then((res) => {
-          this.formData.append("ProjectId", this.Project_Code.Id);
+          // Left empty on purpose - the server reads the project code off the
+          // job the first row was raised against.
+          this.formData.append("ProjectId", this.Project_Code ? this.Project_Code.Id : "");
           this.formData.append("Bank_Account_No", this.Bank_Name ? this.Bank_Name : "");
           this.formData.append("Site_Name", this.Site_Name);
           this.formData.append("SiteId", "0");

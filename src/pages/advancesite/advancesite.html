@@ -22,18 +22,15 @@
                     <div item-content class="static-value">{{Name ? Name : "-"}}</div>
                 </ion-item>
 
-                <ion-item>
-                    <ion-label stacked color="primary" class="required">Project Code</ion-label>
-                    <ionic-selectable item-content [(ngModel)]="Project_Code" (ngModelChange)="siteCode()" [items]="items" formControlName="Project_Code" itemValueField="Project_Code" itemTextField="Project_Code" [canSearch]="true"
-                        [canClear]="true" (onSearch)="searchItems($event)" [class.error1]="!signupform.controls.Project_Code.valid && signupform.controls.Project_Code.dirty">
-                    </ionic-selectable>
+                <!-- How the advance is paid follows from the total, it is not a choice -->
+                <ion-item *ngIf="Need_Advance">
+                    <ion-label stacked color="primary">Payment Method</ion-label>
+                    <div item-content class="static-value">{{Payment_Method}}</div>
                 </ion-item>
-                <div class="field-error" *ngIf="signupform.get('Project_Code').hasError('required') && signupform.get('Project_Code').touched">
-                    Please select your project code
-                </div>
 
-                <ion-item>
-                    <ion-label stacked color="primary" [class.required]="Need_Advance">Bank Account</ion-label>
+                <!-- Petty cash is collected in person, only a transfer needs an account -->
+                <ion-item *ngIf="needsBankAccount">
+                    <ion-label stacked color="primary" class="required">Bank Account</ion-label>
                     <ion-select placeholder="Please select" [(ngModel)]="Bank_Name" formControlName="Bank_Name" [class.error1]="!signupform.controls.Bank_Name.valid && signupform.controls.Bank_Name.dirty">
                         <ion-option *ngFor="let bank of banks" value="{{bank.Bank_Name}} - {{bank.Bank_Account_No}} ">{{bank.Bank_Name}} - {{bank.Bank_Account_No}} </ion-option>
                     </ion-select>
@@ -41,14 +38,6 @@
                 <div class="field-error" *ngIf="signupform.get('Bank_Name').hasError('required') && signupform.get('Bank_Name').touched">
                     Please select your bank account
                 </div>
-
-                <ion-item>
-                    <ion-label stacked color="primary">Vendor</ion-label>
-                    <ionic-selectable item-content [(ngModel)]="Vendor" [items]="vendors"
-                        formControlName="Vendor" itemValueField="Id" itemTextField="Vendor_Name" [canSearch]="true"
-                        [canClear]="true" (onSearch)="searchVendors($event)" [class.error1]="!signupform.controls.Vendor.valid && signupform.controls.Vendor.dirty">
-                    </ionic-selectable>
-                </ion-item>
 
                 <ion-item>
                     <ion-label stacked color="primary">Position</ion-label>
@@ -64,21 +53,39 @@
                 <span>Advance Payment</span>
             </div>
 
-            <ion-list class="form-list">
+            <!-- Every request on this form asks for an advance, so the choice is
+                 not put to the user, the control is only kept for the form -->
+            <div hidden>
                 <ion-item>
                     <ion-label color="primary">Require Advance Payment</ion-label>
                     <ion-toggle [(ngModel)]="Need_Advance" formControlName="Need_Advance" (ionChange)="toggleAdvance()"></ion-toggle>
                 </ion-item>
-            </ion-list>
+            </div>
 
-            <div class="hint-note">
+            <div class="hint-note" *ngIf="Need_Advance">
                 <ion-icon name="information-circle"></ion-icon>
-                <span>Turn this on only if you need an advance payment. Left off, this is a travel request only.</span>
+                <span>Below RM {{pettyCashLimit}}.00 the advance is paid from petty cash. From RM {{pettyCashLimit}}.00 it is transferred to your bank account.</span>
             </div>
         </div>
 
         <!-- ..........................HIDDEN LEGACY FIELDS.......................... -->
         <div hidden>
+            <!-- The job says which project code the advance belongs to, so the
+                 form leaves this unset and the server reads it off the job -->
+            <ion-item>
+                <ion-label stacked color="primary">Project Code</ion-label>
+                <ionic-selectable item-content [(ngModel)]="Project_Code" (ngModelChange)="siteCode()" [items]="items" formControlName="Project_Code" itemValueField="Project_Code" itemTextField="Project_Code" [canSearch]="true"
+                    [canClear]="true" (onSearch)="searchItems($event)">
+                </ionic-selectable>
+            </ion-item>
+            <!-- The vendor is not part of a job advance -->
+            <ion-item>
+                <ion-label stacked color="primary">Vendor</ion-label>
+                <ionic-selectable item-content [(ngModel)]="Vendor" [items]="vendors"
+                    formControlName="Vendor" itemValueField="Id" itemTextField="Vendor_Name" [canSearch]="true"
+                    [canClear]="true" (onSearch)="searchVendors($event)">
+                </ionic-selectable>
+            </ion-item>
             <ion-item>
                 <ion-label stacked color="primary" class="required">Site Code</ion-label>
                 <ionic-selectable item-content [(ngModel)]="Site_Code" [items]="apps"
@@ -105,12 +112,12 @@
             -->
         </div>
 
-        <!-- ..........................TRAVEL DETAILS.......................... -->
+        <!-- ..........................JOB DETAILS.......................... -->
         <div class="card">
             <div class="card-title with-action">
                 <div class="title-text">
-                    <ion-icon name="calendar"></ion-icon>
-                    <span>Travel Details</span>
+                    <ion-icon name="clipboard"></ion-icon>
+                    <span>Job Details</span>
                 </div>
                 <button ion-button round type="button" class="add-fab" (click)="addrow(i)">
                     <ion-icon name="add"></ion-icon>
@@ -119,14 +126,14 @@
 
             <div class="empty-state" *ngIf="itemarray.length === 0">
                 <ion-icon name="document"></ion-icon>
-                <p>No travel detail added yet.</p>
+                <p>No job added yet.</p>
                 <small>Tap the <ion-icon name="add"></ion-icon> button above to add an entry.</small>
             </div>
 
             <div class="advance-item" *ngFor="let item of itemarray; let i = index">
                 <div class="advance-item-header">
                     <span class="advance-amount" *ngIf="Need_Advance">RM {{item.Total_Requested}}</span>
-                    <span class="advance-amount" *ngIf="!Need_Advance">Travel Only</span>
+                    <span class="advance-amount" *ngIf="!Need_Advance">Job Only</span>
                     <div class="advance-actions">
                         <button ion-button clear type="button" (click)="edit(i)">
                             <ion-icon name="create"></ion-icon>
@@ -137,10 +144,8 @@
                     </div>
                 </div>
 
-                <div class="advance-row"><span class="k">Start Date</span><span class="v">{{item.newStartDate}}</span></div>
-                <div class="advance-row"><span class="k">End Date</span><span class="v">{{item.newEndDate}}</span></div>
-                <div class="advance-row"><span class="k">Site ID / LRD / Name</span><span class="v">{{item.Site_Code.siteCode}}</span></div>
-                <div class="advance-row" *ngIf="item.Remarks"><span class="k">Remarks</span><span class="v">{{item.Remarks}}</span></div>
+                <div class="advance-row"><span class="k">Job / Service Ticket No</span><span class="v">{{item.Service_Ticket?.Label}}</span></div>
+                <div class="advance-row"><span class="k">Purpose</span><span class="v">{{item.Purpose}}</span></div>
 
                 <div *ngIf="Need_Advance">
                     <div class="advance-divider"></div>

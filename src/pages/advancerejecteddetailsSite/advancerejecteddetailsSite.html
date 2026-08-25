@@ -28,6 +28,10 @@
             <span class="detail-value">{{ advance.Bank_Account_No ? advance.Bank_Account_No : '-' }}</span>
         </div>
         <div class="detail-field">
+            <span class="detail-label">Payment Method</span>
+            <span class="detail-value">{{ advance.Payment_Method ? advance.Payment_Method : '-' }}</span>
+        </div>
+        <div class="detail-field">
             <span class="detail-label">Vendor</span>
             <span class="detail-value">{{ advance.Vendor_Name ? advance.Vendor_Name : '-' }}</span>
         </div>
@@ -41,7 +45,7 @@
         </div>
         <div class="detail-field">
             <span class="detail-label">Advance Payment Required</span>
-            <span class="detail-value">{{ advance.Need_Advance ? 'Yes' : 'No (Travel Request Only)' }}</span>
+            <span class="detail-value">{{ advance.Need_Advance ? 'Yes' : 'No (Request Only)' }}</span>
         </div>
         <div class="detail-field" *ngIf="partner && partner.length">
             <span class="detail-label">Partner</span>
@@ -53,15 +57,17 @@
     <div class="detail-card">
         <div class="detail-card-title">
             <ion-icon name="cash"></ion-icon>
-            <span>Travel Details</span>
+            <span>Advance Details</span>
         </div>
 
         <div class="detail-item" *ngFor="let item of advancedetails">
             <div class="detail-item-amount" *ngIf="advance.Need_Advance"><span>RM {{ item.Total }}</span></div>
-            <div class="detail-item-amount" *ngIf="!advance.Need_Advance"><span>Travel Only</span></div>
-            <div class="detail-row"><span class="k">Start Date</span><span class="v">{{ item.Start_Date }}</span></div>
-            <div class="detail-row"><span class="k">End Date</span><span class="v">{{ item.End_Date }}</span></div>
-            <div class="detail-row"><span class="k">Site ID / LRD / Name</span><span class="v">{{ item.Site_ID }}</span></div>
+            <div class="detail-item-amount" *ngIf="!advance.Need_Advance"><span>No Advance</span></div>
+            <div class="detail-row" *ngIf="item.serviceticket_id"><span class="k">Job / Service Ticket No</span><span class="v">{{ item.Job_No }}{{ item.Job_Summary ? ' - ' + item.Job_Summary : '' }}</span></div>
+            <div class="detail-row" *ngIf="item.Purpose"><span class="k">Purpose</span><span class="v">{{ item.Purpose }}</span></div>
+            <div class="detail-row" *ngIf="!item.serviceticket_id"><span class="k">Start Date</span><span class="v">{{ item.Start_Date }}</span></div>
+            <div class="detail-row" *ngIf="!item.serviceticket_id"><span class="k">End Date</span><span class="v">{{ item.End_Date }}</span></div>
+            <div class="detail-row" *ngIf="!item.serviceticket_id"><span class="k">Site ID / LRD / Name</span><span class="v">{{ item.Site_ID }}</span></div>
             <div class="detail-row" *ngIf="item.Remarks"><span class="k">Remarks</span><span class="v">{{ item.Remarks }}</span></div>
             <div *ngIf="advance.Need_Advance">
                 <div class="detail-divider"></div>

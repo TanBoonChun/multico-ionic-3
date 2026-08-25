@@ -1,17 +1,17 @@
-page-attendance {
-  .ion-content{
+page-attendancewo {
+  .ion-content {
     background-color: #f1f2f6;
   }
-  .a{
+  .a {
     text-align: center;
   }
-  .ion-item{
+  .ion-item {
     background: white;
     white-space: normal !important;
   }
   .text-input::-webkit-input-placeholder {
     text-indent: 0;
-    color: rgba(0,0,0,0.55);
+    color: rgba(0, 0, 0, 0.55);
   }
   .center {
     margin: auto;
@@ -26,57 +26,58 @@ page-attendance {
     color: rgb(75, 75, 75);
     border-bottom: 1px solid #ff0000;
   }
-
-  .required:after {
-    content:" *";
-    color:red;
-  }
-
   .hint {
-    color: rgba(0,0,0,0.55);
+    color: rgba(0, 0, 0, 0.55);
     font-size: 11px;
   }
 
-  // How far away the selected site is. Read before pressing Time in, so it
-  // stays plain text rather than another input row.
-  .distance-row {
+  .required:after {
+    content: " *";
+    color: red;
+  }
+
+  // What the picked work order or customer turns out to be, including how far
+  // away the site is - read before pressing Time in, so it stays plain text
+  // rather than another row of inputs.
+  .summary {
     padding: 8px 16px;
     font-size: 13px;
-    color: #1d6fb8;
 
     p {
       margin: 2px 0;
     }
+
+    .distance {
+      color: #1d6fb8;
+    }
   }
 
-
-
   .thumbnail-container {
-    overflow-x:scroll;
-    width:100%;
-    // padding: 0 15px;
+    overflow-x: scroll;
+    width: 100%;
   }
 
   .thumbnail-list {
-      white-space:nowrap;
-      list-style: none;
-      padding: 0;
+    white-space: nowrap;
+    list-style: none;
+    padding: 0;
   }
   .thumbnail-list li {
     display: inline-block;
   }
   .thumbnail-image {
-      display: block;
-      padding:2px;
-      max-width: 100px;
-      height:auto;
+    display: block;
+    padding: 2px;
+    max-width: 100px;
+    height: auto;
   }
 
   .label-md {
     margin: 13px 8px 13px 0;
   }
-  
-  ion-label,ion-item {
+
+  ion-label,
+  ion-item {
     margin: 0;
     display: block;
     overflow: hidden;
@@ -93,7 +94,6 @@ page-attendance {
     margin: 0px;
     padding-bottom: 5px;
     padding-top: 10px;
-    // background: white;
   }
 
   .ion-item-item {
@@ -102,13 +102,5 @@ page-attendance {
     text-align: center;
     white-space: pre-line;
     padding-top: 2px;
-  }
-
-
-}
-.green{
-
-  button{
-      color: rgb(9, 247, 9);
   }
 }

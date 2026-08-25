@@ -127,6 +127,23 @@ export class AttendancemainPage {
     this.navCtrl.push('AttendancePage');
   }
 
+  /**
+   * Work order, sales and cold call time in share one page - they differ only
+   * in what identifies the visit, so the type is passed in rather than each
+   * getting a page of its own.
+   */
+  WorkOrderAttendance() {
+    this.navCtrl.push('AttendancewoPage', { Attendance_Type: 'Work Order' });
+  }
+
+  SalesAttendance() {
+    this.navCtrl.push('AttendancewoPage', { Attendance_Type: 'Sales' });
+  }
+
+  ColdCallAttendance() {
+    this.navCtrl.push('AttendancewoPage', { Attendance_Type: 'Cold Call' });
+  }
+
   OfficeAttendance() {
     this.navCtrl.push('Attendance2Page');
   }
