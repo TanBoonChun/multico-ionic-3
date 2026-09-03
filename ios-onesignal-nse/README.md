@@ -20,6 +20,13 @@ completion handler. Neither exists in 2.16.1. In 2.16.1 the module is `OneSignal
 two extension helpers return the content, so the extension calls `contentHandler` itself.
 See `NotificationService.swift`.
 
+## The `after_prepare` hook does most of this for you
+
+`hooks/onesignal-nse.js` (registered in `config.xml` under `<platform name="ios">`) runs
+after every `cordova prepare` and re-applies items 2-4 below plus `objectVersion`. Only
+step 1 - creating the target in Xcode - is manual. The hook is idempotent and silent when
+there is nothing to fix.
+
 ## Steps to recreate after regenerating platforms/ios
 
 1. In Xcode: File > New > Target > Notification Service Extension.
@@ -67,3 +74,45 @@ OneSignal 2.16.1 ships a pre-XCFramework fat binary with device arm64 and simula
 x86_64/i386 only — no arm64 simulator slice. On Apple Silicon the extension links only for
 a real device (or a Rosetta simulator). `ld: building for 'iOS-simulator', but linking in
 object file ... built for 'iOS'` means you targeted an arm64 simulator.
+
+## Known gotcha: `cordova prepare` steals the extension's bundle id
+
+cordova-ios 5's `prepare.js` does:
+
+    var origPkg = project.xcode.getBuildProperty('PRODUCT_BUNDLE_IDENTIFIER');
+    if (origPkg !== pkg) project.xcode.updateBuildProperty('PRODUCT_BUNDLE_IDENTIFIER', pkg);
+
+Neither call takes a target argument. `getBuildProperty` returns the **last** config that
+defines the property, and `updateBuildProperty` writes **every** config - so as soon as the
+extension's id is the last one in the file, prepare decides the project is stale and stamps
+`com.softoya.multico` onto the extension too. An .appex sharing its parent's identifier
+cannot be installed:
+
+    Unable to Install "Multico TOTG"
+    MIInstallerErrorDomain Code 57 / LegacyErrorString = DuplicateIdentifier
+    The parent bundle has the same identifier (com.softoya.multico) as sub-bundle at
+    .../Multico TOTG.app/PlugIns/OneSignalNotificationServiceExtension.appex
+
+`hooks/onesignal-nse.js` restores it after every prepare. If you ever build without the
+hook, reset both extension configs to
+`com.softoya.multico.OneSignalNotificationServiceExtension` by hand.
+
+## Known gotcha: `ionic cordova build ios` defaults to the simulator
+
+Without `--device`, cordova builds `Release-iphonesimulator` for arm64, which hits the
+missing-simulator-slice problem above and fails at link time in the extension only:
+
+    Ld .../Release-iphonesimulator/OneSignalNotificationServiceExtension.build/
+       Objects-normal/arm64/Binary/OneSignalNotificationServiceExtension normal arm64
+
+So the build command is:
+
+    nvm use 14
+    ionic cordova build ios --prod --release --device
+
+## Note: aps-environment follows the signing identity
+
+`platforms/ios/Multico TOTG/Entitlements-Release.plist` says `production`, but a build
+signed with an "Apple Development" identity is re-stamped `development` and talks to the
+APNs **sandbox**. That is correct for device testing; a TestFlight/App Store build needs a
+distribution identity or OneSignal will not be able to reach it.

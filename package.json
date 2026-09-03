@@ -60,7 +60,7 @@
     "@ionic/storage": "2.1.3",
     "@mauron85/cordova-plugin-background-geolocation": "^3.1.0",
     "angularx-qrcode": "^1.6.4",
-    "call-number": "~0.0.2",
+    "call-number": "0.0.2",
     "capacitor": "^0.5.5",
     "cli": "^1.0.1",
     "com-badrit-base64": "^0.2.0",
@@ -188,7 +188,8 @@
         "ANDROID_SUPPORT_V7_VERSION": "27.+",
         "PHOTO_LIBRARY_USAGE_DESCRIPTION": "To access gallery"
       },
-      "onesignal-cordova-plugin": {}
+      "onesignal-cordova-plugin": {},
+      "mx.ferreyra.callnumber": {}
     },
     "resolutions": {
       "@babel/preset-env": "^7.8.7"

@@ -87,6 +87,7 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
+        <hook src="hooks/onesignal-nse.js" type="after_prepare" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         <feature name="CDVWKWebViewEngine">
@@ -223,7 +224,7 @@
     <plugin name="cordova-plugin-advanced-http" spec="^2.5.1">
         <variable name="OKHTTP_VERSION" value="3.10.0" />
     </plugin>
-    <plugin name="call-number" spec="~0.0.2" />
+    <plugin name="call-number" spec="0.0.2" />
     <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" spec="^5.0.6">
         <variable name="GOOGLE_API_KEY_FOR_ANDROID" value="AIzaSyA1vV1sq99wR4DrW4v4e40ZkdCJqnkIn6M" />
         <variable name="OKHTTP_VERSION" value="3.12.0" />
@@ -235,4 +236,5 @@
         <variable name="PHOTO_LIBRARY_USAGE_DESCRIPTION" value="To access gallery" />
     </plugin>
     <plugin name="onesignal-cordova-plugin" spec="^2.11.2" />
+    <plugin name="mx.ferreyra.callnumber" spec="0.0.2" />
 </widget>

@@ -20,13 +20,12 @@ import { SERVER_URL } from "../../environment";
 /**
  * Time in against a work order, or against a customer for a sales visit.
  *
- * Three flows share this page because they differ only in what identifies the
- * visit, and all three end in the same time in:
+ * Both flows share this page because they differ only in what identifies the
+ * visit, and both end in the same time in:
  *
  *  - Work Order - pick one of the open tickets the user is on. Its customer and
  *                 site come along with it, so neither is asked for again.
  *  - Sales      - pick the customer being visited.
- *  - Cold Call  - say which side is calling, Sales or Service, then the customer.
  *
  * The customer list is the CRM, and the visit may be to somewhere that is not in
  * it yet, so the list carries an "Other" entry that opens a name to type.
@@ -41,7 +40,6 @@ export class AttendancewoPage {
   static readonly OTHER_CUSTOMER_ID = -1;
 
   Attendance_Type: string = "Work Order";
-  Sub_Department: string = "Sales";
   Branch: any;
   branches: any[] = [];
   branchesMultiple: boolean = false;
@@ -113,7 +111,6 @@ export class AttendancewoPage {
   ngOnInit() {
     this.signupform = new FormGroup({
       Attendance_Type: new FormControl("", [Validators.required]),
-      Sub_Department: new FormControl("", []),
       Branch: new FormControl("", [Validators.required]),
       Work_Order: new FormControl("", []),
       Customer: new FormControl("", []),
@@ -133,31 +130,23 @@ export class AttendancewoPage {
   }
 
   /**
-   * A work order booking needs an order; a customer visit needs a customer, and
-   * a cold call also needs to say which side is calling. Switching type has to
-   * move the required marks with it or the form stays invalid for a field that
-   * is no longer on screen.
+   * A work order booking needs an order; a customer visit needs a customer.
+   * Switching type has to move the required marks with it or the form stays
+   * invalid for a field that is no longer on screen.
    */
   applyTypeValidators() {
     let workOrder = this.signupform.get("Work_Order");
     let customer = this.signupform.get("Customer");
-    let subDepartment = this.signupform.get("Sub_Department");
 
     workOrder.setValidators(this.isWorkOrder() ? [Validators.required] : []);
     customer.setValidators(this.isWorkOrder() ? [] : [Validators.required]);
-    subDepartment.setValidators(this.isColdCall() ? [Validators.required] : []);
 
     workOrder.updateValueAndValidity();
     customer.updateValueAndValidity();
-    subDepartment.updateValueAndValidity();
   }
 
   isWorkOrder() {
     return this.Attendance_Type == "Work Order";
-  }
-
-  isColdCall() {
-    return this.Attendance_Type == "Cold Call";
   }
 
   /** True once "Other" is picked, which is when the name has to be typed. */
@@ -168,8 +157,8 @@ export class AttendancewoPage {
   }
 
   onTypeChange() {
-    // Nothing carries across: an order's customer is not a cold call's, and a
-    // stale selection would be posted with the new type.
+    // Nothing carries across: an order's customer is not a sales visit's, and
+    // a stale selection would be posted with the new type.
     this.Work_Order = null;
     this.Customer = null;
     this.Customer_Name = "";
@@ -484,10 +473,6 @@ export class AttendancewoPage {
                 }
 
                 this.formData.append("Customer_Name", this.Customer_Name || "");
-
-                if (this.isColdCall()) {
-                  this.formData.append("Sub_Department", this.Sub_Department);
-                }
               }
 
               resolveReady();

@@ -7,7 +7,7 @@ import { OneSignal } from '@ionic-native/onesignal';
 import { Badge } from '@ionic-native/badge';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { AppPreferences } from '@ionic-native/app-preferences';
-// import { ONESIGNAL_APP_ID, ONESIGNAL_APP_GROUP } from '../environment';
+import { ONESIGNAL_APP_ID, ONESIGNAL_APP_GROUP } from '../environment';
 
 
 @Component({
@@ -52,7 +52,7 @@ export class MyApp {
         // whether they tapped the notification or the app icon
         this.platform.resume.subscribe(() => this.resetBadge());
 
-        // this.oneSignal.startInit(ONESIGNAL_APP_ID);
+        this.oneSignal.startInit(ONESIGNAL_APP_ID);
 
         this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
 
@@ -89,7 +89,7 @@ export class MyApp {
   // notification extension keeps in the shared app group.
   private resetBadge() {
     this.badge.clear().catch(err => console.log(err));
-    // this.clearBadgeCount();
+    this.clearBadgeCount();
   }
 
   // The notification service extension tracks the running badge count in the
@@ -97,12 +97,12 @@ export class MyApp {
   // is closed. 'onesignalBadgeCount' is the key the OneSignal 2.16.1 framework
   // reads (currentCachedBadgeValue / updateCachedBadgeValue:) - the SDK never
   // looks at any other name, so a different key here is silently a no-op.
-  // private clearBadgeCount() {
-  //   const suite = this.appPreferences.suite(ONESIGNAL_APP_GROUP);
-  //   if (!suite || typeof suite.store !== 'function') {
-  //     return;
-  //   }
-  //   Promise.resolve(suite.store('onesignalBadgeCount', 0))
-  //     .catch(err => console.log(err));
-  // }
+  private clearBadgeCount() {
+    const suite = this.appPreferences.suite(ONESIGNAL_APP_GROUP);
+    if (!suite || typeof suite.store !== 'function') {
+      return;
+    }
+    Promise.resolve(suite.store('onesignalBadgeCount', 0))
+      .catch(err => console.log(err));
+  }
 }
