@@ -1,0 +1,46 @@
+<!--
+  Generated template for the CustomerPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <ion-navbar>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+      <ion-title>Client</ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content>
+  
+    <ion-row>
+      <div class="schedule-list" *ngFor="let s of items;" [navPush]="clientdetails" [navParams]="s">
+        <ion-row>
+          <ion-col col-12>
+            <h6>{{s.PIC_name}}</h6>
+            <p class="schedule-details">{{s.PIC_no}}</p>
+            <p class="schedule-details">{{s.Company_Name}}</p>
+          </ion-col>
+        </ion-row>
+      </div>
+      <!-- <div class="schedule-list">
+        <ion-row>
+          <ion-col col-12>
+            <h6>Company Name</h6>
+            <p class="schedule-details">PIC Name</p>
+            <p class="schedule-details">PIC No</p>
+          </ion-col>
+        </ion-row>
+      </div> -->
+    </ion-row>
+  
+    <ion-fab bottom right (click)="newclient()">
+      <button ion-fab mini class="ion-fab">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-fab>
+  
+  </ion-content>
+  

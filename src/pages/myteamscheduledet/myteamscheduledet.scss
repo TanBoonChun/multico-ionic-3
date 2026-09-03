@@ -1,0 +1,70 @@
+page-myteamscheduledet {
+    ion-header {
+        .toolbar {
+          .toolbar-title-md {
+          color: black;
+          // text-align: center;
+          // padding-right: 10%;
+          }
+        }
+        .bar-button-default-md:hover:not(.disable-hover), .bar-button-clear-md-default:hover:not(.disable-hover), .bar-button-md-default:hover:not(.disable-hover) {
+          color: white;
+        }
+        .bar-button-default-ios, .bar-button-default.bar-button-ios-default, .bar-button-clear-ios-default {
+          color:rgb(0, 0, 0);
+        }
+        .bar-button-default-md, .bar-button-clear-md-default, .bar-button-md-default {
+          color: black;
+        }
+      }
+    
+      .ion-content-body {
+        background: linear-gradient(to bottom, rgb(234, 238, 255) 0%,  rgb(213, 221, 255) 100%);
+      }
+    
+      .ion-item-body {
+        // margin: 0px;
+        // padding-bottom: 5px;
+        // padding-top: 5px;
+        // background: white;
+        border-radius: 8px;
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 5px;
+        height: auto;
+        width: 100%;
+        // margin: 10px;
+        margin-bottom: 5px;
+
+      }
+    
+      .ion-item-item {
+        // background: white;
+        border-radius: 8px;
+        text-align: left;
+        // white-space: pre-line;
+      }
+    
+      .image {
+        max-height: 80px;
+        max-width: 80px;
+      }
+    
+      .title {
+        text-align: left;
+        padding-top: 5px;
+      }
+    
+      .badge {
+        width:40px;
+        position: absolute;
+        right: 0px;
+        top: -5px;
+      }
+      .date {
+        font-size: 14px;
+        color: black;
+      }
+    }
+    
+

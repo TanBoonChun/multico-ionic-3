@@ -1,0 +1,93 @@
+<!--
+  Generated template for the CustomerdetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <ion-navbar>
+      <ion-title>Client Details</ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content>
+  
+    <ion-row>
+      <div class="notice-content">
+        <div class="notice-title">
+          <!-- <h3>Apologize for short notice</h3> -->
+  
+          <!-- afiq -->
+          <h3>{{PIC_name}}</h3>
+          <!-- /afiq  -->
+        </div>
+  
+        <div class="notice-details">
+          <!-- afiq -->
+          <div class="row">
+            <div class="col col-title">Client Status: </div>
+            <div class="col col-details">{{Status}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Company: </div>
+            <div class="col col-details">{{Company_Name}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Customer Of: </div>
+            <div class="col col-details">{{Customer_Of}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Contact Person: </div>
+            <div class="col col-details">{{PIC_name}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Contact No: </div>
+            <!-- <a class="col col-details" (click)="callSupport()">{{PIC_no}}</a> -->
+            <a class="col col-details">{{PIC_no}}</a>
+          </div>
+          <div class="row">
+            <div class="col col-title">Contact Email: </div>
+            <a class="col col-details" [href]="'mailto:'+ Email + '?Subject=LSH'">{{PIC_email}}</a>
+          </div>
+          <div class="row">
+            <div class="col col-title">Remarks : </div>
+            <div class="col col-details">{{Remarks2}}</div>
+          </div>
+          <!-- <div class="row">
+            <div class="col col-title">Client No: </div>
+            <div class="col col-details">{{PIC_no}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Status: </div>
+            <div class="col col-details">{{Status}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Address: </div>
+            <div class="col col-details">{{Address}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Email: </div>
+            <div class="col col-details">{{Email}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Office No: </div>
+            <div class="col col-details">{{Office_No}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Fax No:</div>
+            <div class="col col-details">{{Fax_No}}</div>
+          </div>
+          <div class="row">
+            <div class="col col-title">Remarks:</div>
+            <div class="col col-details">{{Remarks}}</div>
+          </div> -->
+          <!-- /afiq -->
+        <button ion-button block type="button" margin-bottom (click)="gotoEdit()">Update</button>
+
+        </div>
+  
+      </div>
+    </ion-row>
+  
+  </ion-content>
+  

@@ -1,0 +1,169 @@
+<!--
+  Generated template for the CustomernewPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>New Client</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- <form> -->
+    
+    <ion-grid>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Status</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert status</p>
+          </ion-label>
+          <ion-select placeholder="please select" [(ngModel)]="Status">
+            <ion-option value="">Active</ion-option>
+            <ion-option value="Inactive">Inactive</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Company</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert company</p>
+          </ion-label>
+          <!-- <ion-select placeholder="{{Company_Name}}" [(ngModel)]="Company">
+            <ion-option *ngFor="let c of com" value="{{c.Id}}">{{c.Company_Name}}</ion-option>
+          </ion-select> -->
+          <ionic-selectable item-content [(ngModel)]="Company" [items]="com"  itemValueField="Company" itemValueField="Id" itemTextField="Company_Name" [canSearch]="true" 
+          [canClear]="true" >
+          </ionic-selectable>
+        </ion-item>
+      </ion-row>
+
+      <!-- <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Customer of</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert customer of</p>
+          </ion-label>
+          <ionic-selectable item-content [(ngModel)]="Salesman" [items]="sales" itemValueField="Name" itemTextField="Name" [canSearch]="true" 
+          [canClear]="true" >
+          </ionic-selectable>
+        </ion-item>
+      </ion-row> -->
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Contact Person</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert contact name</p>
+          </ion-label>
+          <ion-input type="text" placeholder="State Client Name" [(ngModel)]="PIC_name"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Contact No</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert contact no</p>
+          </ion-label>
+          <ion-input type="text" placeholder="State Contact No" [(ngModel)]="PIC_no"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Contact Email</ion-label>
+          <!-- <ion-label no-margin no-lines>
+            <p class="error">Please insert contact email</p>
+          </ion-label> -->
+          <ion-input type="text" placeholder="State contacte email" [(ngModel)]="PIC_email"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Remarks</ion-label>
+          <!-- <ion-label no-margin no-lines>
+            <p class="error">Please insert remarks</p>
+          </ion-label> -->
+          <ion-input type="text" placeholder="State remarks" [(ngModel)]="Remarks"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      
+
+      <!-- <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Office No</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert office no</p>
+          </ion-label>
+          <ion-input type="text" placeholder="State Office No" [(ngModel)]="Office_No"></ion-input>
+        </ion-item>e
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Company Name</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert company name</p>
+          </ion-label>
+          <ion-input type="text" placeholder="State Company Name" [(ngModel)]="CO_Name"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Fax No</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert fax no</p>
+          </ion-label>
+          <ion-input type="text" placeholder="State Fax No" [(ngModel)]="Fax_No"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Email</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert email</p>
+          </ion-label>
+          <ion-input type="text" placeholder="State Email" [(ngModel)]="Email"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Address</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error">Please insert address</p>
+          </ion-label>
+          <ion-input type="text" placeholder="State Address No" [(ngModel)]="Address"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Remarks</ion-label>
+          <ion-textarea type="text" rows="3" placeholder="State Remarks Here" [(ngModel)]="Remarks"></ion-textarea>
+        </ion-item>
+      </ion-row> -->
+
+      <ion-row>
+        <button ion-button block type="button" (click)="submit()">Submit</button>
+      </ion-row>
+
+      <ion-row>
+        <button ion-button block type="button" (click)="cancel()">Cancel</button>
+      </ion-row>
+
+    </ion-grid>
+  <!-- </form> -->
+
+</ion-content>
