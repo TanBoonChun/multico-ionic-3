@@ -60,7 +60,7 @@
       </ion-select>
     </ion-item>
 
-    <!-- Brand the time is booked to. Staff serving several book to Common. -->
+    <!-- Where the time is booked. Not the brand - see below. -->
     <ion-item class="ion-item" [hidden]="hideUI">
       <ion-label stacked color="primary" class="required">Branch</ion-label>
       <ionic-selectable item-content [(ngModel)]="Branch" [items]="branches" formControlName="Branch"
@@ -71,8 +71,26 @@
     <ion-item no-lines *ngIf="signupform.get('Branch').hasError('required') && signupform.get('Branch').touched">
       <div class="error">Please select your branch</div>
     </ion-item>
-    <ion-item no-lines [hidden]="hideUI || !branchesMultiple">
-      <div class="hint">Serving more than one brand today? Choose <strong>Common</strong>.</div>
+
+    <!-- What is being sold, on a sales visit. A work order's brand is on the
+         ticket, so it is not asked for again. -->
+    <ion-item class="ion-item" [hidden]="hideUI || !isSales()">
+      <ion-label stacked color="primary" [class.required]="isBrandRequired()">Brand</ion-label>
+      <ionic-selectable item-content [(ngModel)]="Brand" [items]="brands" formControlName="Brand"
+        itemValueField="Brand" itemTextField="Brand" [canSearch]="true"
+        [class.error1]="!signupform.controls.Brand.valid && signupform.controls.Brand.dirty">
+      </ionic-selectable>
+    </ion-item>
+    <ion-item no-lines *ngIf="signupform.get('Brand').hasError('required') && signupform.get('Brand').touched">
+      <div class="error">Please select the brand you are visiting for</div>
+    </ion-item>
+    <ion-item no-lines [hidden]="hideUI || !isSales() || !brandsMultiple">
+      <div class="hint">Visiting for more than one brand? Choose <strong>Common</strong>.</div>
+    </ion-item>
+    <!-- No brands set up yet. Said plainly rather than left as an empty
+         dropdown, and not required, so the visit can still be booked. -->
+    <ion-item no-lines [hidden]="hideUI || !isSales() || brands.length > 0">
+      <div class="hint">No brands have been set up yet - ask the office to add them under Option Control &gt; Timesheet &gt; Brand.</div>
     </ion-item>
 
     <!-- Work order. Its customer and site come with it. -->

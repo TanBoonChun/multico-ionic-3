@@ -61,6 +61,7 @@
         <ion-item>
           <ion-label stacked color="primary" class="required">Date</ion-label>
           <ion-datetime displayFormat="MMM DD YYYY" [(ngModel)]="Date" floating formControlName="Date"
+            (ngModelChange)="onClaimDateChange()"
             [class.error1]="!signupform.controls.Date.valid && signupform.controls.Date.dirty"></ion-datetime>
         </ion-item>
         <ion-item no-lines *ngIf="( signupform.get('Date').hasError('required') ) && signupform.get('Date').touched">
@@ -97,7 +98,7 @@
 
           <ionic-selectable item-content [(ngModel)]="Site_Code" [items]="apps"
             formControlName="Site_Code" itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true"
-            (onChange)="clearVendor()"
+            (onChange)="onSiteCodeChange()"
             [canClear]="true" [class.error1]="!signupform.controls.Site_Code.valid && signupform.controls.Site_Code.dirty">
 
           </ionic-selectable>
@@ -140,6 +141,23 @@
             Please select your expenses type
           </div>
         </ion-item>
+
+        <!-- Outstation meal allowance: one claim line for whichever meals are
+             ticked, the total summed from their rates by the server. -->
+        <ng-container *ngIf="!hideMealComponents">
+          <ion-item-divider color="light">Meals</ion-item-divider>
+          <ion-item *ngFor="let meal of mealOptions">
+            <ion-label color="primary">{{ meal.label }}</ion-label>
+            <ion-checkbox
+              [(ngModel)]="mealComponents[meal.value]"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="updateMealTotal()"
+            ></ion-checkbox>
+          </ion-item>
+          <ion-item no-lines *ngIf="tickedMeals().length == 0">
+            <div class="error">Please tick at least one meal</div>
+          </ion-item>
+        </ng-container>
 
         <ion-item *ngIf="!hidePartnerName">
           <ion-label stacked color="primary" [class.required]="signupform.controls.PartnerName.invalid">Partner</ion-label>
@@ -249,12 +267,24 @@
 
           <ion-item>
             <ion-label stacked color="primary" [class.required]="signupform.controls.Mileage.invalid">Total (Km)</ion-label>
-            <ion-input type="number" placeholder="" [(ngModel)]="Mileage" formControlName="Mileage"
+            <!-- Measured from the attendance for the claim date - the site timed
+                 in to, out to where the day was timed out - so it is read-only
+                 and filled by updateAutoMileage(). -->
+            <ion-input type="number" placeholder="" readonly [(ngModel)]="Mileage" formControlName="Mileage"
               [class.error1]="!signupform.controls.Mileage.valid && signupform.controls.Mileage.dirty"></ion-input>
           </ion-item>
-          <ion-item no-lines *ngIf="( signupform.get('Mileage').hasError('required') ) && signupform.get('Mileage').touched">
-            <div class="error" *ngIf="signupform.get('Mileage').hasError('required') && signupform.get('Mileage').touched">
-              Please insert your total km travelled
+          <ion-item no-lines *ngIf="isMeasuringMileage">
+            <div class="hint">Measuring the distance from your attendance...</div>
+          </ion-item>
+          <!-- Why there is nothing to claim, in the claimant's terms: no
+               attendance on that date, or a site with no coordinates. The save
+               is refused with this same reason. -->
+          <ion-item no-lines *ngIf="autoMileageReason">
+            <div class="error">{{ autoMileageReason }}</div>
+          </ion-item>
+          <ion-item no-lines *ngIf="!autoMileageReason && ( signupform.get('Mileage').hasError('required') ) && signupform.get('Mileage').touched">
+            <div class="error">
+              Please select a claim date with attendance so the distance can be measured
             </div>
           </ion-item>
         </div>

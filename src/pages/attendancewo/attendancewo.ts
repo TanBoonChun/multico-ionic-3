@@ -44,6 +44,15 @@ export class AttendancewoPage {
   branches: any[] = [];
   branchesMultiple: boolean = false;
 
+  // The brand being sold or serviced, which is not the branch the time is
+  // booked at. Asked for on a Sales visit, where it is the point of the visit;
+  // a work order's brand is on the ticket. Staff who covered several brands in
+  // one visit book to "Common", which the list carries when there is more than
+  // one brand to span.
+  Brand: any;
+  brands: any[] = [];
+  brandsMultiple: boolean = false;
+
   Work_Order: any;
   workOrders: any[] = [];
 
@@ -112,6 +121,7 @@ export class AttendancewoPage {
     this.signupform = new FormGroup({
       Attendance_Type: new FormControl("", [Validators.required]),
       Branch: new FormControl("", [Validators.required]),
+      Brand: new FormControl("", []),
       Work_Order: new FormControl("", []),
       Customer: new FormControl("", []),
       Customer_Name: new FormControl("", []),
@@ -137,16 +147,33 @@ export class AttendancewoPage {
   applyTypeValidators() {
     let workOrder = this.signupform.get("Work_Order");
     let customer = this.signupform.get("Customer");
+    let brand = this.signupform.get("Brand");
 
     workOrder.setValidators(this.isWorkOrder() ? [Validators.required] : []);
     customer.setValidators(this.isWorkOrder() ? [] : [Validators.required]);
+    // A work order carries its brand on the ticket; a sales visit is made for
+    // one and nothing else on the record says which. Only required once there
+    // are brands to pick, though - the list is maintained in Option Control and
+    // a required field with an empty list would stop the visit being booked at
+    // all rather than record a brand.
+    brand.setValidators(this.isBrandRequired() ? [Validators.required] : []);
 
     workOrder.updateValueAndValidity();
     customer.updateValueAndValidity();
+    brand.updateValueAndValidity();
   }
 
   isWorkOrder() {
     return this.Attendance_Type == "Work Order";
+  }
+
+  isSales() {
+    return this.Attendance_Type == "Sales";
+  }
+
+  /** Whether there is a brand to pick, which is when it has to be picked. */
+  isBrandRequired() {
+    return this.isSales() && this.brands.length > 0;
   }
 
   /** True once "Other" is picked, which is when the name has to be typed. */
@@ -162,6 +189,9 @@ export class AttendancewoPage {
     this.Work_Order = null;
     this.Customer = null;
     this.Customer_Name = "";
+    // The brand is only asked for on a sales visit, so switching away from one
+    // drops it rather than posting a brand against a work order.
+    this.Brand = null;
 
     this.applyTypeValidators();
   }
@@ -232,7 +262,28 @@ export class AttendancewoPage {
 
           this.loadWorkOrders();
           this.loadCustomers();
+          this.loadBrands();
         });
+    });
+  }
+
+  loadBrands() {
+    this.storage.get("token").then((val) => {
+      this.http
+        .get(SERVER_URL + "/getbrands?token=" + val.token)
+        .subscribe(
+          (result: any) => {
+            this.brands = result.brands || [];
+            this.brandsMultiple = result.multiple;
+            // The list decides whether the field is required, so the marks have
+            // to be re-applied now it is known.
+            this.applyTypeValidators();
+          },
+          (err) => {
+            console.log(err);
+            this.brands = [];
+          }
+        );
     });
   }
 
@@ -446,6 +497,7 @@ export class AttendancewoPage {
                 "Branch",
                 this.Branch ? this.Branch.Branch : ""
               );
+              this.formData.append("Brand", this.Brand ? this.Brand.Brand : "");
               this.formData.append("Remarks", this.Remarks || "");
               this.formData.append("isWorkFromHome", "0");
               this.formData.append("isDriving", "0");

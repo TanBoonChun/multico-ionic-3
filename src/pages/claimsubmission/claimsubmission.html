@@ -50,6 +50,7 @@
           [(ngModel)]="Date"
           floating
           formControlName="Date"
+          (ngModelChange)="onClaimDateChange()"
           [class.error1]="!signupform.controls.Date.valid && signupform.controls.Date.dirty"
         ></ion-datetime>
       </ion-item>
@@ -114,7 +115,7 @@
           [items]="apps"
           formControlName="Site_Code"
           itemValueField="siteCode"
-          (onChange)="clearVendor()"
+          (onChange)="onSiteCodeChange()"
           itemTextField="siteCode"
           [canSearch]="true"
           [canClear]="true"
@@ -205,6 +206,23 @@
           Please select your expenses type
         </div>
       </ion-item>
+
+      <!-- Outstation meal allowance: one claim line for whichever meals are
+           ticked, the total summed from their rates by the server. -->
+      <ng-container *ngIf="!hideMealComponents">
+        <ion-item-divider color="light">Meals</ion-item-divider>
+        <ion-item *ngFor="let meal of mealOptions">
+          <ion-label color="primary">{{ meal.label }}</ion-label>
+          <ion-checkbox
+            [(ngModel)]="mealComponents[meal.value]"
+            [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="updateMealTotal()"
+          ></ion-checkbox>
+        </ion-item>
+        <ion-item no-lines *ngIf="tickedMeals().length == 0">
+          <div class="error">Please tick at least one meal</div>
+        </ion-item>
+      </ng-container>
 
       <ion-item *ngIf="!hidePartnerName">
         <ion-label
@@ -448,23 +466,34 @@
             [class.required]="signupform.controls.Mileage.invalid"
             >Total (Km)</ion-label
           >
+          <!-- Measured from the attendance for the claim date - the site timed
+               in to, out to where the day was timed out - so it is read-only
+               and filled by updateAutoMileage(). -->
           <ion-input
             type="number"
             placeholder=""
+            readonly
             [(ngModel)]="Mileage"
             formControlName="Mileage"
             [class.error1]="!signupform.controls.Mileage.valid && signupform.controls.Mileage.dirty"
           ></ion-input>
         </ion-item>
+        <ion-item no-lines *ngIf="isMeasuringMileage">
+          <div class="hint">Measuring the distance from your attendance...</div>
+        </ion-item>
+        <!-- Why there is nothing to claim, in the claimant's terms: no
+             attendance on that date, or a site with no coordinates. The save is
+             refused with this same reason. -->
+        <ion-item no-lines *ngIf="autoMileageReason">
+          <div class="error">{{ autoMileageReason }}</div>
+        </ion-item>
         <ion-item
           no-lines
-          *ngIf="( signupform.get('Mileage').hasError('required') ) && signupform.get('Mileage').touched"
+          *ngIf="!autoMileageReason && ( signupform.get('Mileage').hasError('required') ) && signupform.get('Mileage').touched"
         >
-          <div
-            class="error"
-            *ngIf="signupform.get('Mileage').hasError('required') && signupform.get('Mileage').touched"
-          >
-            Please insert your total km travelled
+          <div class="error">
+            Please select a claim date with attendance so the distance can be
+            measured
           </div>
         </ion-item>
       </div>

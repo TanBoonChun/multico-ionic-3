@@ -84,6 +84,24 @@ export class ClaimsubmissionPage {
   expenses_rate: {} = {};
   public isFixedRate: boolean = false;
 
+  // The outstation meal allowance is one expense type with the meals ticked
+  // beside it, instead of a type per meal: the claim is worth the sum of
+  // whichever are ticked, priced by the server for the claimant's own region.
+  public mealOptions = [
+    { value: "BREAKFAST", label: "Breakfast" },
+    { value: "LUNCH", label: "Lunch" },
+    { value: "DINNER", label: "Dinner" },
+  ];
+  public mealComponents: any = {};
+  public hideMealComponents: boolean = true;
+
+  // A mileage claim is priced from a distance nobody types: the road between the
+  // site timed in to on the claim date and where the day was timed out,
+  // measured by the server. The field is read-only, so this holds what came
+  // back - and the reason there is nothing, when there is nothing.
+  public autoMileageReason: string = "";
+  public isMeasuringMileage: boolean = false;
+
   public Company_Name: any = "";
   public Company_No: any = "";
   public SST_No: any = "";
@@ -651,6 +669,16 @@ export class ClaimsubmissionPage {
       }
     }
 
+    if (
+      this.isOutstationMealAllowance(this.Expenses_Type) &&
+      this.tickedMeals().length == 0
+    ) {
+      this.displayErrorAlert(
+        "Please tick at least one meal (breakfast, lunch or dinner)."
+      );
+      return;
+    }
+
     if (!this.Remarks) {
       this.displayErrorAlert("Must input remarks");
       return;
@@ -751,6 +779,11 @@ export class ClaimsubmissionPage {
           this.formData.append("PartnerNo", this.PartnerName.length);
           this.formData.append('vendor_id', this.vendor_id ? this.vendor_id.Id : "");
           this.formData.append('polisting_id', this.polisting_id ? this.polisting_id.Id : "");
+          // One claim line for however many meals were ticked: the server sums
+          // the rates and records which in the expense type's own label.
+          this.tickedMeals().forEach((meal) => {
+            this.formData.append("meal_components[]", meal);
+          });
           resolveReady();
         }, rejectReady);
       });
@@ -863,6 +896,145 @@ export class ClaimsubmissionPage {
   }
 
 
+  /** Whether an expense type is the single outstation meal allowance entry. */
+  isOutstationMealAllowance(Expenses_Type) {
+    return (
+      String(Expenses_Type || "").trim().toUpperCase() ==
+      "OUTSTATION MEAL ALLOWANCE"
+    );
+  }
+
+  /** The meals ticked, in the order the policy lists them. */
+  tickedMeals() {
+    return this.mealOptions
+      .filter((meal) => this.mealComponents[meal.value])
+      .map((meal) => meal.value);
+  }
+
+  /**
+   * Re-measures the mileage when the claim date changes.
+   *
+   * The date is what decides the distance - it is the day whose attendance the
+   * journey is read off - so it matters as much as the expense type.
+   */
+  onClaimDateChange() {
+    this.updateAutoMileage();
+  }
+
+  /**
+   * The site code only picks BETWEEN attendances on a day that has more than
+   * one, but that is enough to change which journey is measured.
+   */
+  onSiteCodeChange() {
+    this.clearVendor();
+    this.updateAutoMileage();
+  }
+
+  /**
+   * Fills the read-only kilometres from the claimant's own attendance.
+   *
+   * Measured server side from the site timed in to out to where they timed out
+   * - see App\Services\ClaimMileageService. Measured again on save, so what is
+   * shown here and what the claim is stored with are the same number.
+   *
+   * When it cannot be measured the reason is shown under the field and the
+   * kilometres are left empty: the save is refused with the same reason, so
+   * saying so now is better than after they have filled the rest in.
+   */
+  updateAutoMileage() {
+    if (this.hideMileage) {
+      this.autoMileageReason = "";
+      return;
+    }
+
+    if (!this.Date) {
+      this.Mileage = "";
+      this.autoMileageReason =
+        "Pick the claim date and the distance will be measured from your attendance.";
+      return;
+    }
+
+    this.isMeasuringMileage = true;
+    this.autoMileageReason = "";
+
+    this.storage.get("token").then((val) => {
+      this.http
+        .post(
+          SERVER_URL + "/automileage?token=" + val.token,
+          {
+            Date: this.myFunction(this.Date),
+            Site_Code: this.Site_Code ? this.Site_Code.Id : "",
+            Expenses_Type: this.Expenses_Type,
+            Transport_Type: this.Transport_Type,
+          },
+          httpOptions
+        )
+        .subscribe(
+          (result: any) => {
+            this.isMeasuringMileage = false;
+
+            if (!result || !result.available) {
+              this.Mileage = "";
+              this.autoMileageReason =
+                (result && result.reason) ||
+                "The distance for this date could not be measured.";
+              return;
+            }
+
+            this.Mileage = result.mileage;
+            this.Depart_From = result.depart_from;
+            this.Destination = result.destination;
+            this.autoMileageReason = "";
+          },
+          (error) => {
+            this.isMeasuringMileage = false;
+            console.error("Could not measure the mileage", error);
+            this.Mileage = "";
+            this.autoMileageReason =
+              "The distance could not be measured. Please try again.";
+          }
+        );
+    });
+  }
+
+  /**
+   * What the ticked meals come to.
+   *
+   * The rate follows the claimant's home base and staff category, so only the
+   * server can answer it - and it is worked out again on save, so this fill is
+   * for the claimant's benefit, not the figure the claim is stored with.
+   */
+  updateMealTotal() {
+    let meals = this.tickedMeals();
+
+    if (meals.length == 0) {
+      this.Total_Expenses = "";
+      return;
+    }
+
+    this.storage.get("token").then((val) => {
+      this.http
+        .post(
+          SERVER_URL + "/mealallowance?token=" + val.token,
+          {
+            Expenses_Type: "OUTSTATION MEAL ALLOWANCE",
+            meal_components: meals,
+          },
+          httpOptions
+        )
+        .subscribe(
+          (result: any) => {
+            if (result && result.rate !== null && result.rate !== undefined) {
+              this.Total_Expenses = Number(result.rate).toFixed(2);
+            }
+          },
+          (error) => {
+            console.error("Could not price the meal allowance", error);
+          }
+        );
+    });
+  }
+
   setMandatoryField(Expenses_Type) {
     let data: Observable<any>;
 
@@ -874,6 +1046,17 @@ export class ClaimsubmissionPage {
       this.Total_Expenses = Number(rate).toFixed(2);
     } else {
       this.isFixedRate = false;
+      this.Total_Expenses = "";
+    }
+
+    // Switching type drops whatever was ticked, so a meal cannot be carried
+    // over onto a claim that is no longer a meal allowance. The outstation meal
+    // allowance is priced from the ticks, so its total is locked straight away
+    // rather than only once /onchange answers.
+    this.mealComponents = {};
+
+    if (this.isOutstationMealAllowance(Expenses_Type)) {
+      this.isFixedRate = true;
       this.Total_Expenses = "";
     }
 
@@ -935,6 +1118,10 @@ export class ClaimsubmissionPage {
     this.hideDocket = true;
     this.hideTrip = true;
     this.hideSubcon = true;
+    this.hideMealComponents = true;
+    // Nothing measured yet for the type just picked; a stale reason under the
+    // field would be describing the previous one.
+    this.autoMileageReason = "";
 
     this.storage.get("token").then((val) => {
       return this.http
@@ -990,6 +1177,9 @@ export class ClaimsubmissionPage {
           if (this.exptype.includes("mileageControl")) {
             this.hideMileage = false;
             mileageControl.setValidators([Validators.required]);
+            // The distance is measured, not typed - fill it from the attendance
+            // for whatever date is already on the form.
+            this.updateAutoMileage();
           }
 
           if (this.exptype.includes("partnerControl")) {
@@ -1025,6 +1215,11 @@ export class ClaimsubmissionPage {
             this.hideSubcon = false;
             polistingControl.setValidators([Validators.required]);
             vendorControl.setValidators([Validators.required]);
+          }
+          if (this.exptype.includes("mealComponentsControl")) {
+            this.hideMealComponents = false;
+            // The amount comes from the meals ticked, never typed.
+            this.isFixedRate = true;
           }
         });
     });
