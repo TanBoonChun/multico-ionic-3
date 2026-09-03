@@ -1,0 +1,114 @@
+<!--
+  Generated template for the CustomerdetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>Lead Info</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-row>
+    <div class="notice-content">
+
+      <div class="notice-details" >
+          <p><b>Company:</b> {{Company_Name}}</p>
+          <p><b>Customer Name:</b> {{Customer_Name}}</p>
+          <p><b>Contact No:</b><a [href]="'tel:' + Contact_No" (click)="$event.stopPropagation()">{{Contact_No}}</a> </p>
+          <p><b>Email:</b> <a [href]="'mailto:' + Email" (click)="$event.stopPropagation()">{{Email}}</a></p>
+          <p><b>Address:</b> {{Address}}</p>
+          <p><b>Country:</b> {{Country}} - {{StateRegion}}</p>
+          <p>
+            <b>Business Type:</b>
+            {{ Type === 'OTHERS' ? Type + ' - ' + custom_type : Type }}
+          </p>
+          <p><b>Priority:</b> {{Priority}}</p>
+          <p><b>Lead From:</b> {{Source}}</p>
+          <p><b>Remarks:</b> {{Remarks}}</p>
+          <p><b>Created_at:</b> {{Created_at}} </p>
+          <p><b>Status:</b> Cold Call {{ cold_call == 1 ? '✅' : '❌' }} Appointment  '❌' </p>
+
+        
+      </div>
+      
+    </div>
+
+    <div class="schedule-content" >
+      <ion-list>
+        <ion-list-header>
+          Remarks 
+        </ion-list-header>
+         <ion-item>
+            <h3>{{Remarks}}</h3>
+         </ion-item>
+      </ion-list>
+      <ion-list *ngIf="existingFiles.length > 0">
+        <ion-list-header>
+          <ion-icon name="folder-open" item-start></ion-icon>
+          Existing Files ({{ existingFiles.length }})
+        </ion-list-header>
+        
+        <ion-item *ngFor="let file of existingFiles; let i = index">
+          <ion-icon 
+            [name]="isImageByName(file.File_Name) ? 'image' : 'document'" 
+            item-start 
+            [color]="isImageByName(file.File_Name) ? 'secondary' : 'primary'">
+          </ion-icon>
+          <div>
+            <h3>{{ file.File_Name }}</h3>
+            <p *ngIf="file.created_at">Uploaded: {{ file.created_at | date:'short' }}</p>
+            <p *ngIf="file.File_Size">Size: {{ (file.File_Size / 1024 / 1024).toFixed(2) }} MB</p>
+          </div>
+          <button type="button" ion-button clear item-end (click)="previewExistingFile(i)">
+            <ion-icon name="eye" color="success"></ion-icon>
+          </button>
+        </ion-item>
+      </ion-list>
+    </div>
+  </ion-row>
+
+  <button ion-button block type="button" margin-bottom (click)="gotoEdit()">Update Lead Info</button>
+  <button ion-button block type="button" margin-bottom (click)="addAgent()">Add Agent</button>
+</ion-content>
+
+
+<div *ngIf="showAgentModal" class="agent-modal-overlay">
+  <div class="agent-modal">
+    <div class="modal-header">
+      <h3>Select Agent</h3>
+      <ion-icon name="close" (click)="closeAgentModal()" class="close-btn"></ion-icon>
+    </div>
+    
+    <div class="modal-content">
+      <ion-searchbar 
+        [(ngModel)]="searchTerm" 
+        (ionInput)="filterAgents()" 
+        placeholder="Search agents...">
+      </ion-searchbar>
+
+      <div class="agent-list">
+        <div class="agent-item" *ngFor="let agent of filteredAgents" (click)="selectAgent(agent)">
+          <div class="agent-info">
+            <h4>{{agent.Name}}</h4>
+            <p>{{agent.Name}}</p>
+          </div>
+          <ion-icon name="checkmark-circle" class="select-icon"></ion-icon>
+        </div>
+      </div>
+
+      <div *ngIf="filteredAgents.length === 0 && agents.length > 0" class="no-results">
+        <ion-icon name="search"></ion-icon>
+        <p>No agents found matching "{{searchTerm}}"</p>
+      </div>
+
+      <div *ngIf="agents.length === 0" class="no-agents">
+        <ion-icon name="person"></ion-icon>
+        <p>Loading agents...</p>
+      </div>
+    </div>
+  </div>
+</div>

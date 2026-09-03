@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Unassigned Lead</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-searchbar row="2" #mySearchbar (ionInput)="getList($event)" ionClear="onCancel($event)" cancelButtonText="Custom Cancel" placeholder="Company,Co_No,Salesperson"></ion-searchbar>
+
+  <ion-row>
+    <div class="schedule-list" *ngFor="let s of items;" >
+      <ion-row>
+        <ion-col col-11 (click)="goto(s)">
+          <h5>{{s.Company_Name}}</h5>
+          <p class="schedule-details">{{s.Customer_Name}}</p>
+
+        </ion-col>
+        <ion-col col-1 *ngIf="this.department === 'ADMIN'">
+          <h5>
+            <button (click)="deleteUnassign(s.Id)">
+              <ion-icon name="trash"></ion-icon>
+            </button>
+          </h5>
+
+        </ion-col>
+      </ion-row>
+    </div>
+  </ion-row>
+
+</ion-content>

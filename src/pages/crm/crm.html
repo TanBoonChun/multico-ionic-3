@@ -1,0 +1,118 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>CRM</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="ion-content-body">
+
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="ion-item-body">
+    <ion-item class="ion-item-item">
+      <ion-grid>
+        <ion-row>
+          <ion-col col-4>
+            <button class="round-button button1" (click)="goToMyTeam()">
+              <ion-icon name="people"></ion-icon>
+            </button>
+            <div>My Team</div>
+          </ion-col>
+          <ion-col col-4>
+            <button class="round-button button7" (click)="goToLead()">
+              <ion-icon name="person-add"></ion-icon>
+            </button>
+            <div>Lead</div>
+          </ion-col>
+          <ion-col col-4>
+            <button class="round-button button5" (click)="navigateToSchedule()">
+              <ion-icon name="calendar"></ion-icon>
+            </button>
+            <div>Schedule</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </div>
+
+  <div class="stats-grid">
+    <ion-row>
+      <ion-col col-4>
+        <div class="stat-card stat-green" (click)="navigateToDeals('New')">
+          <div class="card-number">{{ dealStats.new || 0 }}</div>
+          <ion-icon name="add-circle" class="card-icon"></ion-icon>
+          <div class="card-label">FRESH LEAD</div>
+        </div>
+      </ion-col>
+      <ion-col col-4>
+        <div class="stat-card stat-yellow" (click)="navigateToDeals('Pending')">
+          <div class="card-number">{{ dealStats.pending || 0 }}</div>
+          <ion-icon name="time" class="card-icon"></ion-icon>
+          <div class="card-label">PENDING</div>
+        </div>
+      </ion-col>
+      <ion-col col-4>
+        <div class="stat-card stat-green" (click)="navigateToDeals('Opportunity')">
+          <div class="card-number">{{ dealStats.opportunity || 0 }}</div>
+          <ion-icon name="people" class="card-icon"></ion-icon>
+          <div class="card-label">OPPORTUNITY</div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col col-4>
+        <div class="stat-card stat-green" (click)="navigateToDeals('Dealed')">
+          <div class="card-number">{{ dealStats.dealed || 0 }}</div>
+          <ion-icon name="checkmark-circle" class="card-icon"></ion-icon>
+          <div class="card-label">DEALED</div>
+        </div>
+      </ion-col>
+      <ion-col col-4>
+        <div class="stat-card stat-red" (click)="navigateToDeals('Lost')">
+          <div class="card-number">{{ dealStats.lost || 0 }}</div>
+          <ion-icon name="close-circle" class="card-icon"></ion-icon>
+          <div class="card-label">LOST</div>
+        </div>
+      </ion-col>
+      <ion-col col-4>
+        <div class="stat-card stat-red" (click)="navigateToDeals('Void')">
+          <div class="card-number">{{ dealStats.void || 0 }}</div>
+          <ion-icon name="remove-circle" class="card-icon"></ion-icon>
+          <div class="card-label">VOID</div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col col-4>
+        <div class="stat-card stat-yellow" (click)="navigateToUnassigned()">
+          <div class="card-number">{{ leadStats.unassigned || 0 }}</div>
+          <ion-icon name="person-add" class="card-icon"></ion-icon>
+          <div class="card-label">UNASSIGNED</div>
+        </div>
+      </ion-col>
+      <ion-col col-4>
+        <div class="stat-card stat-yellow" (click)="navigateToLeads('year')">
+          <div class="card-number">{{ leadStats.currentyear || 0 }}</div>
+          <ion-icon name="calendar" class="card-icon"></ion-icon>
+          <div class="card-label">LEADS / YEAR</div>
+        </div>
+      </ion-col>
+      <ion-col col-4>
+        <div class="stat-card stat-green" (click)="navigateToLeads('month')">
+          <div class="card-number">{{ leadStats.currentmonth || 0 }}</div>
+          <ion-icon name="stats" class="card-icon"></ion-icon>
+          <div class="card-label">LEADS / MONTH</div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </div>
+
+</ion-content>

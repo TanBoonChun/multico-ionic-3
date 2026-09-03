@@ -108,6 +108,21 @@
             <div class="icon-label">Service Management</div>
           </div>
         </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-chip>
+              <ion-label color="light">CRM</ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.User_Type == 'Staff' && user.Active == 1)">
+            <button class="round-button button13" (click)='onGoToCrm()'>
+              <img src="assets/img/user.png" width="45px" height="45px">
+            </button>
+            <div class="icon-label">CRM</div>
+          </div>
+        </ion-row>
 
         <!-- <ion-row>
           <ion-col>

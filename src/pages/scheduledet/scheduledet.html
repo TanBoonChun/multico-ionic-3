@@ -1,0 +1,77 @@
+<ion-header>
+    <ion-navbar >
+      <ion-title style="font-size: 12px;">Schedule List</ion-title>
+    </ion-navbar>
+  </ion-header>
+
+  <ion-content padding class="ion-content-body">
+
+    <ion-searchbar (ionInput)="getList($event)" [showCancelButton]="shouldShowCancel" [debounce]="500" placeholder="Title,Company,Deal,Salesperson,Project_Name"></ion-searchbar>
+
+    <!-- <div>
+      <ion-item class="ion-item-item">
+        <ion-label stacked color="primary">Status Type</ion-label>
+        <ion-select cancelText="Cancel" okText="OK" placeholder="Please Select" (ionChange)="onChange($event)">
+          <ion-option value="Open">Open</ion-option>
+          <ion-option value="Closed">Closed</ion-option>
+          <ion-option value="Cancel">Cancel</ion-option>
+        </ion-select>
+      </ion-item>
+    </div> -->
+
+    <!-- <div class="ion-item-body">
+      <ion-item class="ion-item-item">
+        <div class="title">
+          <h2><b>Genset Services</b></h2>
+        </div>
+
+        <div class="row">
+          <div class="col a">
+            <img class="image" src="assets/icon/gscservice.png">
+            <h4>GSC</h4>
+          </div>
+          <div class="col a">
+            <img class="image" src="assets/icon/gst.png">
+            <h4>GST</h4>
+          </div>
+        </div>
+      </ion-item>
+    </div> -->
+
+    <div *ngIf="data && data.length < 1" class="ion-item-body">
+      <p class="none">No record found</p>
+    </div>
+    <div *ngFor="let d of temp;" class="ion-item-body" (click)="page(d)">
+      <ion-item class="ion-item-item">
+        <h1 class="title"><b>{{d.appointment_date}} ({{d.Time}})</b></h1>
+        <br>
+        <p class="date" *ngIf="d.status == 'Open'" style="color: orange; text-transform: uppercase;"><b>{{d.status}}</b></p>
+        <p class="date" *ngIf="d.status == 'Closed'" style="color: green; text-transform: uppercase;"><b>{{d.status}}</b></p>
+        <p class="date" *ngIf="d.status == 'Cancel'" style="color: red; text-transform: uppercase;"><b>{{d.status}}</b></p>
+
+        <p class="date"><b>Schedule Title:</b> {{d.Title}}</p>
+        <p class="date"><b>Company:</b> {{d.Company_Name}}</p>
+        <p class="date"><b>Project Name:</b> {{d.Project_Name}}</p>
+
+        <p class="date"><b>Deal:</b> {{d.Deal_Name}}</p>
+        <p class="date"><b>Client:</b> {{d.PIC_Name}}</p>
+        <p class="date"><b>Location:</b> {{d.Location}}</p>
+        <p class="date"><b>Time In:</b> {{d.Time_In}}</p>
+        <p class="date"><b>Time Out:</b> {{d.Time_Out}}</p>
+        <p class="date"><b>Salesperson:</b> {{d.Name}}</p>
+
+
+        <!-- <p class="date" *ngIf='d.Status && d.Status == "In-Progress"' style="color:darkorange;">{{d.Status}}</p>
+        <p class="date" *ngIf='d.Status && d.Status == "Completed"' style="color:rgb(55, 0, 255);">{{d.Status}}</p>
+        <p class="date" *ngIf='d.Status && d.Status == "Repair"' style="color:rgb(255, 0, 0);">{{d.Status}}</p> -->
+        <!-- <p class="date" *ngIf='d.Status == "Service "' style="color:darkorange;">{{d.Status}}</p> -->
+      </ion-item>
+    </div>
+    <!-- <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content
+        loadingSpinner="bubbles"
+        loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll> -->
+  </ion-content>
+

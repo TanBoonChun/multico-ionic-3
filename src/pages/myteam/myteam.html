@@ -1,0 +1,37 @@
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>My Team</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-row>
+    <div class="schedule-list" *ngFor="let s of items;" (click)="myteamschedule(s)">
+      <ion-row>
+        <ion-col col-12>
+          <!-- <h6>{{s.StaffId}}</h6> -->
+          <div style="text-align: center;" *ngIf="s.Web_Path != null">
+            <img center class="user-profile" [src]="serverUrl + s.Web_Path">
+          </div>
+          <div style="text-align: center;" *ngIf="s.Web_Path == null">
+            <img  class="user-profile" src="assets/imgs/default-user.png">
+          </div>
+          <p class="schedule-details">Staff Id : {{s.Staff_ID}}</p>
+          <p class="schedule-details">Name : {{s.Name}}</p>
+          <p class="schedule-details">Contact No : {{s.Contact_No_1}}</p>
+          <p class="schedule-details">Email : {{s.Company_Email}}</p>
+          <p class="schedule-details">Superior : {{s.uplineName}}</p>
+
+        </ion-col>
+      </ion-row>
+    </div>
+  </ion-row>
+
+ 
+
+</ion-content>

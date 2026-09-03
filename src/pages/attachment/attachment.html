@@ -1,0 +1,329 @@
+<!--
+  Generated template for the AttachmentPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title *ngIf="this.type === 'quo'">Update Quotation Info</ion-title>
+    <ion-title *ngIf="this.type === 'po'">Update PO Info</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-row>
+    <div class="customer-details">
+      <ion-row>
+        <ion-col text-center>
+          <h6 no-margin>{{Title}}</h6>
+          <h6 no-margin>{{Company_Name}}</h6>
+          <!-- <h6 no-margin>Cust Name, Cust No</h6> -->
+        </ion-col>
+      </ion-row>
+    </div>
+  </ion-row>
+
+
+  <div *ngFor="let s of details">
+    <!-- <p>{{s.Quotation_No}}</p>
+  </div> -->
+
+  <ion-row *ngIf="this.type === 'quo'">
+    <div class="schedule-content" >
+      <ion-row>
+        <h6 no-margin>Quotation Section</h6>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>Quo</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="text" placeholder="State Quotation" [(ngModel)]="Quo"></ion-input>
+        </ion-col>
+      </ion-row> -->
+      <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>Quo No</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="text" placeholder="Please insert Quo No" placeholder="{{s.Quotation_No}}" [(ngModel)]="Quo_No"></ion-input>
+        </ion-col>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>Quo Date</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-datetime pickerFormat="DD MMM YYYY" displayFormat="DD MM YYYY" placeholder="Choose Quotation Date" placeholder="{{s.Quotation_Date}}" max="2200" [(ngModel)]="Quo_Date"></ion-datetime>
+        </ion-col>
+      </ion-row> -->
+      <!-- <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>Currency</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="text" placeholder="State Quotation" [(ngModel)]="Quo_Currency"></ion-input>
+        </ion-col>
+      </ion-row> -->
+      <!-- <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>Quo Amount</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="number" placeholder="State Quotation Amount" placeholder="{{s.Quotation_Amount}}" [(ngModel)]="Quo_Amount"></ion-input>
+        </ion-col>
+      </ion-row> -->
+      <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>Remarks</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-textarea type="text" placeholder="Insert Remarks" placeholder="{{s.Quotation_Remarks}}" [(ngModel)]="Quo_Remarks"></ion-textarea>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-label stacked>Attachment</ion-label>
+          <div class="thumbnail-container">
+            <ul class="thumbnail-list">
+              <li *ngFor="let imageN of imagesN2"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+            </ul>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <button ion-button block type="button" (click)="onTakePicture2()">Take Photo</button>
+      </ion-row>
+  
+      <ion-row>
+        <button ion-button block type="button" (click)="getImage2()">Get Photo</button>
+      </ion-row>
+  
+      <ion-row>
+        <button ion-button block type="button" (click)="clearImage2()">Clear Photo</button>
+      </ion-row>
+
+      <ion-list *ngIf="existingQuoFiles.length > 0">
+        <ion-list-header>
+          <ion-icon name="folder-open" item-start></ion-icon>
+          Existing Quotation Files ({{ existingQuoFiles.length }})
+        </ion-list-header>
+        
+        <ion-item *ngFor="let file of existingQuoFiles; let i = index">
+          <ion-icon 
+            [name]="isImageByName(file.File_Name) ? 'image' : 'document'" 
+            item-start 
+            [color]="isImageByName(file.File_Name) ? 'secondary' : 'primary'">
+          </ion-icon>
+          <div>
+            <h3>{{ file.File_Name }}</h3>
+            <p *ngIf="file.created_at">Uploaded: {{ file.created_at | date:'short' }}</p>
+            <p *ngIf="file.File_Size">Size: {{ (file.File_Size / 1024 / 1024).toFixed(2) }} MB</p>
+          </div>
+          <button type="button" ion-button clear item-end (click)="previewExistingQuoFile(i)">
+            <ion-icon name="eye" color="success"></ion-icon>
+          </button>
+          <button type="button" ion-button clear item-end (click)="deleteExistingQuoFile(i)">
+            <ion-icon name="trash" color="danger"></ion-icon>
+          </button>
+        </ion-item>
+      </ion-list>
+
+      <!-- Separator if both sections exist -->
+      <div *ngIf="existingQuoFiles.length > 0" style="margin: 10px 0; border-bottom: 1px solid #ddd;"></div>
+
+      <ion-row>
+        <button ion-button block type="button" (click)="chooseFiles2()">
+          SELECT FILE
+        </button>
+      </ion-row>
+
+      <ion-list *ngIf="selectedFiles2.length > 0">
+        <ion-list-header>
+          Selected Files / Photo ({{ selectedFiles2.length }})
+        </ion-list-header>
+        
+        <ion-item *ngFor="let file of selectedFiles2; let i = index">
+          <ion-icon name="document" item-start></ion-icon>
+          <div>
+            <h3>{{ file.name }}</h3>
+            <p>{{ (file.size / 1024 / 1024).toFixed(2) }} MB</p>
+          </div>
+          <button type="button" ion-button clear item-end (click)="previewFile2(i)">
+            <ion-icon name="eye" color="success"></ion-icon>
+          </button>
+          <button type="button" ion-button clear item-end (click)="removeFile2(i)">
+            <ion-icon name="trash" color="danger"></ion-icon>
+          </button>
+        </ion-item>
+        
+        <ion-item>
+          <button ion-button clear full type="button" (click)="chooseFiles2()">
+            <ion-icon name="add"></ion-icon>
+            Add Another File
+          </button>
+        </ion-item>
+      </ion-list>
+      <br>
+      <ion-row>
+        <button ion-button block type="button" margin-bottom (click)="submitQO()">Submit</button>
+      </ion-row>
+    </div>
+  </ion-row>
+
+  <ion-row *ngIf="this.type === 'po'">
+    <div class="schedule-content">
+      <ion-row>
+        <h6 no-margin>PO Section</h6>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>PO</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="text" placeholder="State PO" [(ngModel)]="PO"></ion-input>
+        </ion-col>
+      </ion-row> -->
+      <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>PO No. / Debtor Code</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="text" placeholder="PO No" placeholder="{{s.PO_No}}" [(ngModel)]="PO_No">{{PO_No}} </ion-input>
+        </ion-col>
+      </ion-row>
+      <!-- <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>PO Date</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-datetime pickerFormat="DD MMM YYYY" displayFormat="DD MM YYYY" placeholder="Choose PO Date" placeholder="{{s.PO_Date}}" max="2200" [(ngModel)]="PO_Date"></ion-datetime>
+        </ion-col>
+      </ion-row> -->
+      <!-- <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>Currency</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="text" placeholder="State Quotation" [(ngModel)]="PO_Currency"></ion-input>
+        </ion-col>
+      </ion-row> -->
+      <!-- <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>PO Amount</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input type="number" placeholder="Insert PO amount" placeholder="{{s.PO_Amount}}" [(ngModel)]="PO_Amount"></ion-input>
+        </ion-col>
+      </ion-row> -->
+      <ion-row>
+        <ion-col col-4>
+          <ion-label stacked>Remarks</ion-label>
+        </ion-col>
+        <ion-col col-8>
+          <ion-textarea type="text" placeholder="Insert Remarks" placeholder="{{s.PO_Remarks}}" [(ngModel)]="PO_Remarks"></ion-textarea>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-label stacked>Attachment</ion-label>
+          <div class="thumbnail-container">
+            <ul class="thumbnail-list">
+              <li *ngFor="let imageN of imagesN"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+            </ul>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <button ion-button block type="button" (click)="onTakePicture()">Take Photo</button>
+      </ion-row>
+  
+      <ion-row>
+        <button ion-button block type="button" (click)="getImage()">Get Photo</button>
+      </ion-row>
+  
+      <ion-row>
+        <button ion-button block type="button" (click)="clearImage()">Clear Photo</button>
+      </ion-row>
+
+      <ion-list *ngIf="existingPoFiles.length > 0">
+        <ion-list-header>
+          <ion-icon name="folder-open" item-start></ion-icon>
+          Existing PO Files ({{ existingPoFiles.length }})
+        </ion-list-header>
+        
+        <ion-item *ngFor="let file of existingPoFiles; let i = index">
+          <ion-icon 
+            [name]="isImageByName(file.File_Name) ? 'image' : 'document'" 
+            item-start 
+            [color]="isImageByName(file.File_Name) ? 'secondary' : 'primary'">
+          </ion-icon>
+          <div>
+            <h3>{{ file.File_Name }}</h3>
+            <p *ngIf="file.created_at">Uploaded: {{ file.created_at | date:'short' }}</p>
+            <p *ngIf="file.File_Size">Size: {{ (file.File_Size / 1024 / 1024).toFixed(2) }} MB</p>
+          </div>
+          <button type="button" ion-button clear item-end (click)="previewExistingPoFile(i)">
+            <ion-icon name="eye" color="success"></ion-icon>
+          </button>
+          <button type="button" ion-button clear item-end (click)="deleteExistingPoFile(i)">
+            <ion-icon name="trash" color="danger"></ion-icon>
+          </button>
+        </ion-item>
+      </ion-list>
+
+      <!-- Separator if both sections exist -->
+      <div *ngIf="existingPoFiles.length > 0" style="margin: 10px 0; border-bottom: 1px solid #ddd;"></div>
+
+      <ion-row>
+        <button ion-button block type="button" (click)="chooseFiles()">
+          SELECT FILE
+        </button>
+      </ion-row>
+
+      <ion-list *ngIf="selectedFiles.length > 0">
+        <ion-list-header>
+          Selected Files / Photo ({{ selectedFiles.length }})
+        </ion-list-header>
+        
+        <ion-item *ngFor="let file of selectedFiles; let i = index">
+          <ion-icon name="document" item-start></ion-icon>
+          <div>
+            <h3>{{ file.name }}</h3>
+            <p>{{ (file.size / 1024 / 1024).toFixed(2) }} MB</p>
+          </div>
+          <button type="button" ion-button clear item-end (click)="previewFile(i)">
+            <ion-icon name="eye" color="success"></ion-icon>
+          </button>
+          <button type="button" ion-button clear item-end (click)="removeFile(i)">
+            <ion-icon name="trash" color="danger"></ion-icon>
+          </button>
+        </ion-item>
+        
+        <ion-item>
+          <button ion-button clear full type="button" (click)="chooseFiles()">
+            <ion-icon name="add"></ion-icon>
+            Add Another File
+          </button>
+        </ion-item>
+      </ion-list>
+      <br>
+      <ion-row>
+        <button ion-button block type="button" margin-bottom (click)="submitPO()">Submit</button>
+      </ion-row>
+      
+    </div>
+      
+  </ion-row>
+
+  </div>
+  
+  <!-- <div padding-left padding-right>
+    <ion-row>
+      <button ion-button block type="button" margin-bottom (click)="submit()">Submit</button>
+    </ion-row>
+  </div> -->
+
+</ion-content>

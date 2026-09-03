@@ -1,0 +1,162 @@
+<!--
+  Generated template for the CustomernewPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>New Deal</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  
+    
+    <ion-grid>
+      <form novalidate (ngSubmit)="submit()" [formGroup]="signupform">
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Company</ion-label>
+            <ion-label no-margin no-lines>
+              <p class="error">Please select company</p>
+            </ion-label>
+            <!-- <ion-select placeholder="please select" [(ngModel)]="Company" formControlName="Company">
+              <ion-option *ngFor="let c of company" value="{{c.Id}}">{{c.Company_Name}}</ion-option>
+            </ion-select> -->
+            <ionic-selectable formControlName="Company" item-content [(ngModel)]="Company" [items]="company" (onChange)="setContactOptions($event)" itemValueField="Id" itemTextField="Company_Name" [canSearch]="true" [canClear]="true" >
+            </ionic-selectable>
+          </ion-item>
+        </ion-row>
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Deal Name</ion-label>
+            <ion-label no-margin no-lines>
+              <p class="error">Please insert deal name</p>
+            </ion-label>
+            <ion-input type="text" placeholder="Deal Name" [(ngModel)]="Deal_Name" formControlName="Deal_Name"></ion-input>
+          </ion-item>
+        </ion-row>
+
+         <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>ROC</ion-label>
+            <ion-label no-margin no-lines>
+              <p class="error">Please insert ROC</p>
+            </ion-label>
+            <ion-input type="text" placeholder="ROC" [(ngModel)]="CO_No" formControlName="CO_No"></ion-input>
+          </ion-item>
+        </ion-row>
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Status</ion-label>
+            <!-- <ion-label no-margin no-lines>
+              <p class="error">Please insert status</p>
+            </ion-label> -->
+            <ionic-selectable formControlName="Status" item-content [(ngModel)]="Status" [items]="status" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
+            </ionic-selectable>
+          </ion-item>
+        </ion-row>
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Project Name</ion-label>
+            <ion-label no-margin no-lines>
+              <p class="error">Please insert project name</p>
+            </ion-label>
+            <ion-input type="text" placeholder="Project Name" [(ngModel)]="Project_Name" formControlName="Project_Name"></ion-input>
+          </ion-item>
+        </ion-row>
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Deal Remarks </ion-label>
+            <!-- <ion-label no-margin no-lines>
+              <p class="error">Please insert remarks</p>
+            </ion-label> -->
+            <ion-input type="text" placeholder="Remarks" [(ngModel)]="Remarks" formControlName="Remarks"></ion-input>
+          </ion-item>
+        </ion-row>
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Contact Person</ion-label>
+            <!-- <ion-label no-margin no-lines>
+              <p class="error">Please insert contact person</p>
+            </ion-label> -->
+            <ion-select placeholder="please select" [(ngModel)]="Contact" formControlName="Contact">
+              <ion-option *ngFor="let app of contact" value="{{app.Id}}">{{app.PIC_name}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-row>
+        
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Existing / New Customer</ion-label>
+            <ion-label no-margin no-lines>
+              <p class="error">Please select Existing / New</p>
+            </ion-label>
+            <ion-select placeholder="please select" [(ngModel)]="Business_Type" formControlName="Business_Type">
+              <ion-option value="New">New</ion-option>
+              <ion-option value="Existing">Existing</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-row>
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Priority</ion-label>
+            <ion-label no-margin no-lines>
+              <p class="error">Please select priority</p>
+            </ion-label>
+           <ionic-selectable formControlName="Priority" item-content [(ngModel)]="Priority" [items]="priority" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
+            </ionic-selectable>
+          </ion-item>
+        </ion-row>
+
+        <!-- <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Potential</ion-label>
+            <ion-select placeholder="please select" [(ngModel)]="Potential" formControlName="Potential">
+             
+              <ion-option value="High">High</ion-option>
+              <ion-option value="Medium">Medium</ion-option>
+              <ion-option value="Low">Low</ion-option>
+
+            </ion-select>
+          </ion-item>
+        </ion-row> -->
+
+        <ion-row no-margin no-padding>
+          <ion-item class="ion-item" no-margin no-padding padding-left>
+            <ion-label stacked>Salesperson</ion-label>
+           
+            <!-- <ion-select placeholder="please select" [(ngModel)]="Salesman" formControlName="Salesman">
+              <ion-option *ngFor="let s of sales" value="{{s.Id}}">{{s.Name}}</ion-option>
+            </ion-select> -->
+            <ionic-selectable item-content formControlName="Salesman" [(ngModel)]="Salesman" [items]="companyAgent" itemValueField="Id" itemTextField="Name" [canSearch]="true" [canClear]="true" >
+          </ionic-selectable>
+          </ion-item>
+        </ion-row>
+
+        
+
+        <ion-row>
+          <!-- <button ion-button block type="button" (click)="submit()">Submit</button> -->
+        <button ion-button block [disabled]="signupform.invalid">Submit</button>
+
+        </ion-row>
+      </form>
+
+      <ion-row>
+        <button ion-button block type="button" (click)="cancel()">Cancel</button>
+      </ion-row>
+
+    </ion-grid>
+
+</ion-content>

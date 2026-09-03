@@ -1,0 +1,177 @@
+<!--
+  Generated template for the CustomerdetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>Customer Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-row>
+    <div class="notice-content">
+      <div class="notice-title">
+        <!-- <h3>Apologize for short notice</h3> -->
+
+        <!-- afiq -->
+        <h3>{{Title}}</h3>
+        <!-- /afiq  -->
+      </div>
+
+      <div class="notice-details" >
+        <!-- afiq -->
+        <div class="row">
+          <div class="col col-title">Company Name: </div>
+          <div class="col col-details">{{Company_Name}}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Company Code: </div>
+          <div class="col col-details">{{Company_Code}}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Contact No: </div>
+          <div class="col col-details">{{Contact_No}}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Country: </div>
+          <div class="col col-details">{{Country}} - {{StateRegion}}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Business type: </div>
+          <div class="col col-details">{{ Type === 'OTHERS' ? Type + ' - ' + custom_type : Type }}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Address: </div>
+          <div class="col col-details">{{Address}}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Email: </div>
+          <a class="col col-details" [href]="'mailto:'+ Email + '?Subject=LSH'">{{Email}}</a>
+        </div>
+        <div class="row">
+          <div class="col col-title">Remarks:</div>
+          <div class="col col-details">{{Remarks}}</div>
+        </div>
+        <!-- /afiq -->
+
+        <button ion-button block type="button" margin-bottom (click)="gotoEdit()">Update</button>
+      </div>
+      <button *ngIf="this.department?.toUpperCase() === 'ADMIN'" ion-button block type="button" margin-bottom (click)="addAgent()">Add Agent</button>
+      <button *ngIf="this.department?.toUpperCase() === 'ADMIN'" ion-button block type="button" margin-bottom (click)="removeAgent()">Remove Agent</button>
+
+    </div>
+  </ion-row>
+
+  <ion-row>
+    <div class="notice-content">
+      <div class="notice-title">
+        <!-- <h3>Apologize for short notice</h3> -->
+
+        <!-- afiq -->
+        <h3>Client Details
+          <ion-fab (click)="newclient()">
+            <button class="a1" style="height: 15px; width: 15px;" ion-fab mini class="ion-fab">
+              <ion-icon class="a2" style="font-size: 15px;" name="add"></ion-icon>
+            </button>
+          </ion-fab>
+        </h3>
+        
+        <!-- /afiq  -->
+      </div>
+
+      <div class="notice-details" *ngFor="let a of items"> 
+        <!-- afiq -->
+        <div class="row">
+          <div class="col col-title">Contact Person: </div>
+          <div class="col col-details">{{a.PIC_name}}</div>
+        </div>
+        <div class="row">
+          <div class="col col-title">Contact No: </div>
+          <!-- <a class="col col-details" (click)="callSupport()">{{a.PIC_no}}</a> -->
+          <a class="col col-details">{{a.PIC_no}}</a>
+        </div>
+        <div class="row">
+          <div class="col col-title">Contact Email: </div>
+          <a class="col col-details" [href]="'mailto:'+ Email + '?Subject=LSH'">{{a.PIC_email}}</a>
+        </div>
+        <br>
+      </div>
+
+    </div>
+  </ion-row>
+
+  
+
+</ion-content>
+
+<div *ngIf="showAgentModal" class="agent-modal-overlay">
+  <div class="agent-modal">
+    <div class="modal-header">
+      <h3>Select Agent</h3>
+      <ion-icon name="close" (click)="closeAgentModal()" class="close-btn"></ion-icon>
+    </div>
+    
+    <div class="modal-content">
+      <ion-searchbar 
+        [(ngModel)]="searchTerm" 
+        (ionInput)="filterAgents()" 
+        placeholder="Search agents...">
+      </ion-searchbar>
+
+      <div class="agent-list">
+        <div class="agent-item" *ngFor="let agent of filteredAgents" (click)="selectAgent(agent)">
+          <div class="agent-info">
+            <h4>{{agent.Name}}</h4>
+            <p>{{agent.Name}}</p>
+          </div>
+          <ion-icon name="checkmark-circle" class="select-icon"></ion-icon>
+        </div>
+      </div>
+
+      <div *ngIf="filteredAgents.length === 0 && agents.length > 0" class="no-results">
+        <ion-icon name="search"></ion-icon>
+        <p>No agents found matching "{{searchTerm}}"</p>
+      </div>
+
+      <div *ngIf="agents.length === 0" class="no-agents">
+        <ion-icon name="person"></ion-icon>
+        <p>Loading agents...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showRemoveAgentModal" class="agent-modal-overlay">
+  <div class="agent-modal">
+    <div class="modal-header">
+      <h3>Remove Agent</h3>
+      <ion-icon name="close" (click)="closeRemoveAgentModal()" class="close-btn"></ion-icon>
+    </div>
+    
+    <div class="modal-content">
+      <div class="agent-list">
+        <div class="agent-item" *ngFor="let agent of agents" (click)="selectRemoveAgent(agent)">
+          <div class="agent-info">
+            <h4>{{agent.Name}}</h4>
+            <p>{{agent.Name}}</p>
+          </div>
+          <ion-icon name="checkmark-circle" class="select-icon"></ion-icon>
+        </div>
+      </div>
+
+      <div *ngIf="agents.length == 0" class="no-results">
+        <ion-icon name="search"></ion-icon>
+        <p>No agents found matching "{{searchTerm}}"</p>
+      </div>
+
+      <div *ngIf="agents.length === 0" class="no-agents">
+        <ion-icon name="person"></ion-icon>
+        <p>Loading agents...</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,8 +2,10 @@
 // export const SERVER_URL_WITHOUT_API = "http://172.20.10.2:8000"; // Own Data
 // export const SERVER_URL = "http://192.168.68.57:8000/api";
 // export const SERVER_URL_WITHOUT_API = "http://192.168.68.57:8000";
-export const SERVER_URL = "http://192.168.0.8:8000/api";
-export const SERVER_URL_WITHOUT_API = "http://192.168.0.8:8000";
+// export const SERVER_URL = "http://192.168.0.8:8000/api";
+// export const SERVER_URL_WITHOUT_API = "http://192.168.0.8:8000";
+export const SERVER_URL = "http://192.168.0.2:8000/api";
+export const SERVER_URL_WITHOUT_API = "http://192.168.0.2:8000";
 
 
 // OneSignal (dashboard -> Settings -> Keys & IDs -> OneSignal App ID)
@@ -21,5 +23,3 @@ export const environment = {
     credentialsLoginUrl: SERVER_URL + '/login'
   },
 };
-
-

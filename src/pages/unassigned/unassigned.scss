@@ -1,0 +1,58 @@
+page-unassigned {
+
+    // ion-header
+    .bar-button-default-ios, .bar-button-default.bar-button-ios-default, .bar-button-clear-ios-default {
+        color: #000;
+        background-color: transparent;
+    }
+
+    .toolbar-background-ios {
+        background: transparent;
+    }
+
+    .header-ios .toolbar-background-ios, .footer-ios .toolbar-background-ios {
+        border-style: none;
+        border-color: transparent;
+    }
+
+    .toolbar-background-md {
+        border-color: transparent;
+        background: transparent;
+    }
+
+    .header-md::after, .tabs-md[tabsPlacement="top"] > .tabbar::after, .footer-md::before, .tabs-md[tabsPlacement="bottom"] > .tabbar::before {
+        left: 0;
+        bottom: -5px;
+        background-position: left 0 top -2px;
+        position: absolute;
+        width: 100%;
+        height: 5px;
+        /* background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAHBAMAAADzDtBxAAAAD1BMV…h/TXEAAAAaSURBVAjXYxCEAgY4UIICBmMogMsgFLtAAQCNSwXZKOdPxgAAAABJRU5ErkJggg==); */
+        background-image: none;
+        background-repeat: repeat-x;
+        content: "";
+    }
+
+    // background
+    .content-ios, .content-md {
+        color: #000;
+        background: linear-gradient(to bottom, rgb(234, 238, 255) 0%,  rgb(213, 221, 255) 100%);
+    }
+
+    .schedule-list {
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 5px;
+        height: auto;
+        width: 100%;
+        margin: 10px;
+        margin-bottom: 5px;
+    }
+
+    .schedule-details {
+        font-size: 14px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+}

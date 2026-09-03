@@ -1,0 +1,108 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Lead</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+   <div>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content pullingIcon="arrow-dropdown"
+        pullingText="Pull to refresh"
+        refreshingSpinner="circles"
+        refreshingText="Refreshing...">
+      
+      </ion-refresher-content>
+    </ion-refresher>
+  </div>
+
+  <!-- Searchbar -->
+  <ion-searchbar 
+    (ionInput)="getList($event)" 
+    [showCancelButton]="shouldShowCancel" 
+    [debounce]="500" 
+    placeholder="Search">
+  </ion-searchbar>
+
+  <!-- Status filter dropdown -->
+  <ion-item class="ion-item-item">
+    <ion-label stacked color="primary">Status Type</ion-label>
+    <ion-select 
+      cancelText="Cancel" 
+      okText="OK" 
+      [(ngModel)]="status" 
+      (ionChange)="onChange($event)">
+      <ion-option *ngFor="let s of statuses" [value]="s">{{ s }}</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item class="ion-item-item">
+    <ion-label stacked color="primary">Start Date</ion-label>
+    <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY" [(ngModel)]="startDate" (ionChange)="onDateChange($event)"></ion-datetime>
+  </ion-item>
+
+  <ion-item class="ion-item-item">
+    <ion-label stacked color="primary">End Date</ion-label>
+    <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DD/MM/YYYY" [(ngModel)]="endDate" (ionChange)="onDateChange($event)"></ion-datetime>
+  </ion-item>
+
+  <!-- Deals list -->
+  <ion-row>
+    <div class="schedule-list" *ngFor="let item of items" > 
+      <ion-row>
+        <ion-col col-11 (click)="dealdetails(item)">
+          
+          <div *ngIf="item.status == 'New'">
+            <p class="bluestatus" no-margin>{{ item.status }}</p>
+          </div>
+          <div *ngIf="item.status == 'Pending'">
+            <p class="purplestatus" no-margin>{{ item.status }}</p>
+          </div>
+          <div *ngIf="item.status == 'Opportunity'">
+            <p class="orangestatus" no-margin>{{ item.status }}</p>
+          </div>
+          <div *ngIf="item.status == 'Dealed'">
+            <p class="greenstatus" no-margin>{{ item.status }}</p>
+          </div>
+          <div *ngIf="item.status == 'Lost'">
+            <p class="redstatus" no-margin>{{ item.status }}</p>
+          </div>
+          <div *ngIf="item.status == 'Void'">
+            <p class="yellowstatus" no-margin>{{ item.status }}</p>
+          </div>
+
+          <h6><b>Company Name:</b> [{{ item.Company_Name }}]</h6>
+          <p class="schedule-details"><b>Customer Name:</b> {{ item.Customer_Name }}</p>
+          <p class="schedule-details"><b>Contact No:</b> <a [href]="'tel:' + item.Contact_No" (click)="$event.stopPropagation()">{{ item.Contact_No }}</a></p>
+          <p class="schedule-details"><b>Business Type:</b> {{ item.Business_Type }}</p>
+          <p class="schedule-details"><b>Lead From:</b> {{ item.Source }}</p>
+          <p *ngIf="this.department === 'Admin'" class="schedule-details"><b>Sales Agent:</b> {{ item.Name }}</p>
+          <p class="schedule-details"><b>Created Time:</b> {{ item.Created_at }}</p>
+          <p class="schedule-details"><b>Lead Aging:</b> {{ getLeadAging(item) }}</p>
+          <p class="schedule-details"><b>Status:</b> Cold Call {{ item.cold_call == 1 ? '✅' : '❌' }} Appointment {{ item.has_schedule == 1 ? '✅' : '❌' }}</p>
+          <p *ngIf="item.status == 'Lost'" class="schedule-details"><b>Lost Reason:</b> {{ item.Lost_Cause }}</p>
+          <p *ngIf="item.status == 'Lost'" class="schedule-details"><b>Lost Remarks:</b> {{ item.Lost_Remarks }}</p>
+          <p *ngIf="item.status == 'Void' && this.department === 'Admin'" class="schedule-details"><b>Void Remarks:</b> {{ item.Void_Remarks }}</p>
+        </ion-col>
+        <ion-col col-1 *ngIf="this.department === 'Admin'">
+          <h5>
+            <button (click)="deleteDeal(item.DealId, item.companyId)">
+              <ion-icon name="trash"></ion-icon>
+            </button>
+          </h5>
+
+        </ion-col>
+      </ion-row>
+    </div>
+  </ion-row>
+
+ <ion-fab bottom right (click)="newcustomers()">
+    <button ion-fab mini class="ion-fab">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+</ion-content>

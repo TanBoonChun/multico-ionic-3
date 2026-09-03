@@ -1,0 +1,373 @@
+<!--
+  Generated template for the DealdetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>Deal Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content>
+
+  <div>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content pullingIcon="arrow-dropdown"
+        pullingText="Pull to refresh"
+        refreshingSpinner="circles"
+        refreshingText="Refreshing...">
+      
+      </ion-refresher-content>
+    </ion-refresher>
+  </div>
+
+  <ion-row *ngFor="let det of details;">
+    <div class="schedule-content">
+      
+      <div *ngIf="Status == 'New'">
+        <p class="bluestatus" no-margin>{{Status}}</p>
+        </div>
+        <div *ngIf="Status == 'Opportunity'">
+          <p class="orangestatus" no-margin>{{Status}}</p>
+        </div>
+        <div *ngIf="Status == 'Dealed'">
+          <p class="greenstatus" no-margin>{{Status}}</p>
+        </div>
+        <div *ngIf="Status == 'Lost'">
+          <p class="redstatus" no-margin>{{Status}}</p>
+        </div>
+        <div *ngIf="Status == 'Lost'">
+          <p class="redstatus" no-margin>{{Status}}</p>
+          <p><b>Cause of Lost Deal:</b> {{Lost_Cause}}</p>
+          <p><b>Lost Deal Remarks:</b> {{Lost_Remarks}}</p>
+        </div>
+
+      <!-- <p><b>Deal Name:</b> {{det.Deal_Name}}</p>
+      <p><b>Deal Remarks:</b> {{Remarks}}</p> -->
+      <p><b>Company:</b> {{Company_Name}}</p>
+      <p><b>Customer Name:</b> {{Customer_Name}}</p>
+      <p><b>Contact No:</b><a [href]="'tel:' + Contact_No" (click)="$event.stopPropagation()">{{Contact_No}}</a> </p>
+      <p><b>Email:</b> <a [href]="'mailto:' + Email" (click)="$event.stopPropagation()">{{Email}}</a></p>
+      <p><b>Address:</b> {{Address}}</p>
+      <p><b>Country:</b> {{Country}} - {{StateRegion}}</p>
+      <p>
+        <b>Business Type:</b>
+        {{ Business_Type === 'OTHERS' ? Business_Type + ' - ' + custom_type : Business_Type }}
+      </p>
+      <p><b>Priority:</b> {{Priority.Option}}</p>
+      <p><b>Lead From:</b> {{lead_from}}</p>
+      <p><b>Created_at:</b> {{Created_at}} </p>
+      <p><b>Status:</b> Cold Call {{ cold_call == 1 ? '✅' : '❌' }} Appointment {{ has_schedule == 1 ? '✅' : '❌' }} </p>
+
+    </div>
+
+   
+    <div class="schedule-content" *ngIf='det.Quotation_No != "" '>
+      <h4><b>Quotation Details</b></h4>
+      <h6><b>Quotation No:</b> {{det.Quotation_No}}</h6>
+      <!-- <h6><b>Quotation Date:</b> {{det.Quotation_Date}}</h6>
+      <h6><b>Quotation Amount:</b> {{det.Quotation_Amount}}</h6> -->
+      <h6><b>Quotation Remarks:</b> {{det.Quotation_Remarks}}</h6>
+    </div>
+    <div class="schedule-content" *ngIf='det.PO_No != ""'>
+      <h4><b>PO Details</b></h4>
+      <h6><b>PO No:</b> {{det.PO_No}}</h6>
+      <!-- <h6><b>PO Date:</b> {{det.PO_Date}}</h6>
+      <h6><b>PO Amount:</b> {{det.PO_Amount}}</h6> -->
+      <h6><b>PO Remarks:</b> {{det.PO_Remarks}}</h6>
+    </div>
+
+    <div class="schedule-content" >
+      <ion-list>
+        <ion-list-header>
+          Remarks 
+        </ion-list-header>
+         <ion-item>
+            <h3>{{Remarks}}</h3>
+         </ion-item>
+      </ion-list>
+      <ion-list *ngIf="existingFiles.length > 0">
+        <ion-list-header>
+          <ion-icon name="folder-open" item-start></ion-icon>
+          Existing Files ({{ existingFiles.length }})
+        </ion-list-header>
+        
+        <ion-item *ngFor="let file of existingFiles; let i = index">
+          <ion-icon 
+            [name]="isImageByName(file.File_Name) ? 'image' : 'document'" 
+            item-start 
+            [color]="isImageByName(file.File_Name) ? 'secondary' : 'primary'">
+          </ion-icon>
+          <div>
+            <h3>{{ file.File_Name }}</h3>
+            <p *ngIf="file.created_at">Uploaded: {{ file.created_at | date:'short' }}</p>
+            <p *ngIf="file.File_Size">Size: {{ (file.File_Size / 1024 / 1024).toFixed(2) }} MB</p>
+          </div>
+          <button type="button" ion-button clear item-end (click)="previewExistingFile(i)">
+            <ion-icon name="eye" color="success"></ion-icon>
+          </button>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <div class="schedule-content">
+      <h6><b>Appointment</b>
+      </h6>
+      <hr>
+      <ion-row *ngFor="let s of items;" [navParams]="s" class="divider" [navPush]="scheduledetails">
+        <ion-col col-12>
+          <p><b>Company Name:</b> {{s.Company_Name}}</p>
+          <p><b>Contact Person:</b> {{s.PIC_name}}</p>
+          <p><b>Location:</b> {{s.Location}}</p>
+          <p><b>Date:</b> {{s.appointment_date}}</p>
+        </ion-col>
+      </ion-row>
+    </div>
+    <button ion-button block type="button" margin-bottom (click)="gotoEdit()">Update Lead Info</button>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-6>
+          <button *ngIf="cold_call === 0" ion-button block type="button" (click)="coldCall()">Cold Call</button>
+          <button *ngIf="cold_call === 1" ion-button block type="button" (click)="removeColdCall()">Remove Cold Call</button>
+        </ion-col>
+
+        <ion-col col-6>
+          <button ion-button block type="button" (click)="newschedule()">Appointment</button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-6>
+          <button ion-button block type="button" (click)="attachment('quo')">Quotation</button>
+        </ion-col>
+
+        <ion-col col-6>
+          <button ion-button block type="button" (click)="attachment('po')">Deal</button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-6>
+          <button ion-button block type="button" (click)="lostDeal()">Lost</button>
+        </ion-col>
+        <ion-col col-6 *ngIf="this.department?.toUpperCase() === 'ADMIN'">
+          <button ion-button block type="button" (click)="voidDeal()">Void</button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-6>
+          <button *ngIf="this.department?.toUpperCase() === 'ADMIN' && this.has_agent === 0" ion-button block type="button" margin-bottom (click)="addAgent()">Add Agent</button>
+          <button *ngIf="this.department?.toUpperCase() === 'ADMIN' && this.has_agent === 1" ion-button block type="button" margin-bottom (click)="removeAgent()">Remove Agent</button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+   
+
+  </ion-row>
+
+</ion-content>
+
+<div *ngIf="showLostModal" class="lost-modal-overlay">
+  <div class="lost-modal-container">
+    <form (ngSubmit)="submitLostCause()">
+      <!-- Header -->
+      <div class="lost-modal-header">
+        <div class="header-content">
+          <ion-icon name="alert-circle" class="header-icon"></ion-icon>
+          <h2>Mark Deal as Lost</h2>
+        </div>
+        <ion-icon name="close" (click)="closeLostModal()" class="close-btn"></ion-icon>
+      </div>
+      
+      <!-- Content -->
+      <div class="lost-modal-content">
+        <!-- Lost Cause Selection -->
+        <div class="form-group">
+          <label class="form-label">Lost Reason</label>
+          <ion-item class="custom-select-item">
+            <ion-label placeholder="Select a reason">Select Reason</ion-label>
+            <ion-select 
+              [(ngModel)]="selectedCause"
+              name="lostCause"
+              class="custom-select">
+              <ion-option *ngFor="let cause of lostcauses" [value]="cause.Option">
+                {{cause.Option}}
+              </ion-option>
+            </ion-select>
+          </ion-item>
+        </div>
+
+        <!-- Lost Remarks -->
+        <div class="form-group">
+          <label class="form-label">
+            Remarks 
+            <span class="optional" *ngIf="selectedCause !== 'Others'">(Optional)</span>
+            <span class="required" *ngIf="selectedCause === 'Others'">(Required)</span>
+          </label>
+          <ion-item class="custom-textarea-item" [ngClass]="{'has-error': selectedCause === 'Others' && !lostRemarks}">
+            <ion-textarea 
+              [(ngModel)]="lostRemarks"
+              name="remarks"
+              placeholder="Enter additional remarks..."
+              rows="5"
+              class="custom-textarea">
+            </ion-textarea>
+          </ion-item>
+        </div>
+
+        <!-- No lost causes message -->
+        <div *ngIf="lostcauses.length === 0" class="no-causes-message">
+          <ion-icon name="alert-circle"></ion-icon>
+          <p>Loading reasons...</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="lost-modal-footer">
+        <button 
+          ion-button
+          type="button" 
+          class="btn-cancel"
+          (click)="closeLostModal()">
+          <ion-icon name="close-circle" class="btn-icon"></ion-icon>
+          Cancel
+        </button>
+        <button 
+          ion-button
+          type="submit" 
+          class="btn-submit"
+          [disabled]="!selectedCause || (selectedCause === 'Others' && !lostRemarks)">
+          <ion-icon name="checkmark-circle" class="btn-icon"></ion-icon>
+          Mark as Lost
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="showVoidModal" class="lost-modal-overlay">
+  <div class="lost-modal-container">
+    <form (ngSubmit)="submitVoidDeal()">
+      <!-- Header -->
+      <div class="lost-modal-header">
+        <div class="header-content">
+          <ion-icon name="alert-circle" class="header-icon"></ion-icon>
+          <h2>Mark Deal as Void</h2>
+        </div>
+        <ion-icon name="close" (click)="closeVoidModal()" class="close-btn"></ion-icon>
+      </div>
+      
+      <!-- Content -->
+      <div class="lost-modal-content">
+        <!-- Lost Cause Selection -->
+        <!-- Lost Remarks -->
+        <div class="form-group">
+          <label class="form-label">
+            Remarks 
+            <span class="required">(Required)</span>
+          </label>
+          <ion-item class="custom-textarea-item" [ngClass]="{'has-error': !lostRemarks}">
+            <ion-textarea 
+              [(ngModel)]="voidRemarks"
+              name="remarks"
+              placeholder="Enter remarks..."
+              rows="5"
+              class="custom-textarea">
+            </ion-textarea>
+          </ion-item>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="lost-modal-footer">
+        <button 
+          ion-button
+          type="button" 
+          class="btn-cancel"
+          (click)="closeVoidModal()">
+          <ion-icon name="close-circle" class="btn-icon"></ion-icon>
+          Cancel
+        </button>
+        <button 
+          ion-button
+          type="submit" 
+          class="btn-submit"
+          [disabled]="!voidRemarks">
+          <ion-icon name="checkmark-circle" class="btn-icon"></ion-icon>
+          Mark as Void
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="showAgentModal" class="agent-modal-overlay">
+  <div class="agent-modal">
+    <div class="modal-header">
+      <h3>Select Agent</h3>
+      <ion-icon name="close" (click)="closeAgentModal()" class="close-btn"></ion-icon>
+    </div>
+    
+    <div class="modal-content">
+      <ion-searchbar 
+        [(ngModel)]="searchTerm" 
+        (ionInput)="filterAgents()" 
+        placeholder="Search agents...">
+      </ion-searchbar>
+
+      <div class="agent-list">
+        <div class="agent-item" *ngFor="let agent of filteredAgents" (click)="selectAgent(agent)">
+          <div class="agent-info">
+            <h4>{{agent.Name}}</h4>
+            <p>{{agent.Name}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="filteredAgents.length === 0 && agents.length > 0" class="no-results">
+        <ion-icon name="search"></ion-icon>
+        <p>No agents found matching "{{searchTerm}}"</p>
+      </div>
+
+      <div *ngIf="agents.length === 0" class="no-agents">
+        <ion-icon name="person"></ion-icon>
+        <p>Loading agents...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showRemoveAgentModal" class="agent-modal-overlay">
+  <div class="agent-modal">
+    <div class="modal-header">
+      <h3>Remove Agent</h3>
+      <ion-icon name="close" (click)="closeRemoveAgentModal()" class="close-btn"></ion-icon>
+    </div>
+    
+    <div class="modal-content">
+      <div class="agent-list">
+        <div class="agent-item" *ngFor="let agent of agents" (click)="selectRemoveAgent(agent)">
+          <div class="agent-info">
+            <h4>{{agent.Name}}</h4>
+            <p>{{agent.Name}}</p>
+          </div>
+          <ion-icon name="checkmark-circle" class="select-icon"></ion-icon>
+        </div>
+      </div>
+
+      <div *ngIf="agents.length == 0" class="no-results">
+        <ion-icon name="search"></ion-icon>
+        <p>No agents found matching "{{searchTerm}}"</p>
+      </div>
+
+      <div *ngIf="agents.length === 0" class="no-agents">
+        <ion-icon name="person"></ion-icon>
+        <p>Loading agents...</p>
+      </div>
+    </div>
+  </div>
+</div>

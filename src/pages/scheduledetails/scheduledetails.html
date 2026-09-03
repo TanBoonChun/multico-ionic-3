@@ -1,0 +1,129 @@
+<!--
+  Generated template for the ScheduledetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>Schedule Details</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-row>
+    <div class="schedule-content">
+      <div>
+        <!-- <p class="status" no-margin>Status</p> -->
+        <h4>Schedule Title: {{Title}}</h4>
+        <h6 *ngIf="Status == 'Open'" style="color: orange; text-transform: uppercase;">{{Status}}</h6>
+        <h6 *ngIf="Status == 'Closed'" style="color: green; text-transform: uppercase;">{{Status}}</h6>
+        <h6 *ngIf="Status == 'Cancel'" style="color: red; text-transform: uppercase;">{{Status}}</h6>
+        <h6>Time: {{Time}}</h6>
+        <ion-list>
+          <!-- <h6>Time: <ion-datetime disabled displayFormat="h:mm a" [(ngModel)]="Time" style="text-align: left; padding-left: 0%;padding-top: 0%;padding-bottom: 0%;" bold="true"></ion-datetime></h6> -->
+        </ion-list>
+        <h6><b>Deal:</b> {{Deal_Name}}</h6>
+
+        <h6><b>Project Name:</b> {{Project_Name}}</h6>
+
+        <h6><b>Company:</b> {{Company_Name}}</h6>
+        <h6><b>Contact Person:</b> {{PIC_name}} </h6>
+        <!-- <h6><b>Contact No:</b><a (click)="callSupport()"> {{PIC_no}} </a></h6> -->
+        <h6><b>Contact No:</b><a> {{PIC_no}} </a></h6>
+        <h6><b>Location:</b> {{Location}}</h6>
+        <h6><b>Remarks:</b> {{remarks}}</h6>
+        
+        <!-- <h6><b>Latitude:</b> {{Latitude_In}} </h6>
+          <h6><b>Longitude:</b> {{Longitude_In}} </h6> -->
+          <!-- <h6><b>Time_In:</b> {{Time_In}} </h6>
+          <h6><b>Time_Out:</b> {{Time_Out}} </h6> -->
+          <h6><b>Salesperson:</b> {{Name}} </h6>
+          <h6 *ngIf="Reason"><b>Reason:</b> {{Reason}}</h6>
+        <br>
+
+        <button ion-button block type="button" margin-bottom (click)="gotoEdit()">Update</button>
+
+      </div>
+      <form novalidate (ngSubmit)="timeIn()" [formGroup]="signupform">
+        <div class="box">
+          <div class="box-content">
+            <ion-item text-center color="primary" [hidden]="false">
+              <div>Latitude: {{ Latitude_In }}
+                <input type="text" readonly="true" hidden="false" [(ngModel)]="Latitude_In" formControlName="Latitude_In">
+              </div>
+              <div>Longitude: {{ Longitude_In }}
+                <input type="text" readonly="true" hidden="false" [(ngModel)]="Longitude_In" formControlName="Longitude_In">
+              </div>
+            </ion-item>
+          </div>
+        </div>
+
+        <div class="thumbnail-container">
+          <ul class="thumbnail-list">
+              <li *ngFor="let imageN of imagesN"><span><img class="thumbnail-image" [src]="imageN"></span></li>
+          </ul>
+      </div>
+
+      <!-- Take Picture Button -->
+      <div *ngIf='Time_Out == "" || Time_Out == null' >
+          <button ion-button full item-right type="button" class="doc-button" (click)="onTakePicture()"> Take Picture <ion-icon style="padding-left: 12px;" name="camera"></ion-icon></button>
+      </div>
+
+        <!-- Get Picture Button -->
+        <div *ngIf='Time_Out == "" || Time_Out == null' >
+          <button ion-button full item-right type="button" class="doc-button" (click)="getImage()"> Open Gallery <ion-icon style="padding-left: 12px;" name="aperture"></ion-icon></button>
+      </div>
+
+      <!-- Clear All Picture Button -->
+      <div *ngIf='Time_Out == "" || Time_Out == null' >
+          <button ion-button full item-right type="button" class="doc-button" (click)="clearImage()"> Clear Picture <ion-icon style="padding-left: 12px;" name="aperture"></ion-icon></button>
+      </div>
+
+        <ion-label class="center"  hidden>
+          <ion-datetime  displayFormat="DD MMM YYYY" formControlName="Date" [(ngModel)]="Date"></ion-datetime>
+          <!-- <ion-datetime disabled displayFormat="h:mm:ss" [(ngModel)]="Time"></ion-datetime> -->
+        </ion-label>
+        <br>
+
+        <!-- <ion-row>
+          <button *ngIf='(Time_Out == "") || Time_Out == null' ion-button block [disabled]="signupform.invalid" [hidden]="hideUI" class="green">Time In</button>
+        </ion-row> -->
+
+        <!-- <ion-row *ngFor="let it of items">
+            <button *ngIf='!it.Time_In && !it.Time_Out' ion-button block [disabled]="signupform.invalid" class="green">Time In</button>
+        </ion-row> -->
+
+        <br>
+      </form>
+
+      <!-- <ion-row>
+        <button *ngIf='Time_Out == "" || Time_Out == null' class="red" ion-button block type="button" [hidden]="!hideUI" (click)="timeOut()">Time Out</button>
+      </ion-row> -->
+
+      <!-- <ion-row *ngFor="let it of items">
+          <button *ngIf='!it.Time_Out && it.Time_In' class="red" ion-button block type="button" (click)="timeOut()">Time Out</button>
+      </ion-row> -->
+
+      <br>
+      <ion-row>
+        <button *ngIf='Time_Out == "" || Time_Out == null' ion-button block type="button" [navPush]="reschedule" [navParams]="sched">Reschedule</button>
+        <!-- <button ion-button block type="button" (click)="reschedule()">Reschedule</button> -->
+      </ion-row>
+      <ion-row>
+        <button *ngIf='Time_Out == "" || Time_Out == null' ion-button block type="button" [navPush]="assignTo" [navParams]="sched" >Reassign</button>
+      </ion-row>
+      <ion-row>
+        <button ion-button block type="button" [navPush]="gotoDeal" [navParams]="sched" >Deal</button>
+      </ion-row>
+      <ion-row>
+        <button ion-button block type="button" (click)="attachment()">Update PO / Quotation</button>
+      </ion-row>
+      <ion-row>
+        <button ion-button block type="button" (click)="cancel()" >Cancel Schedule</button>
+      </ion-row>
+    </div>
+  </ion-row>
+
+</ion-content>

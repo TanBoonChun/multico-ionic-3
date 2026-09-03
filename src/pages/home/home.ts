@@ -190,6 +190,10 @@ export class HomePage {
     this.navCtrl.push('GensetmainPage');
   }
 
+  onGoToCrm() {
+    this.navCtrl.push('CrmPage');
+  }
+
   logistic() {
     this.navCtrl.push("LogisticPage");
   }
