@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Toast } from '@ionic-native/toast';
@@ -51,7 +51,8 @@ export class CustomerupdatePage {
     public navCtrl: NavController, 
     private storage: Storage,
     public http: HttpClient,
-    private toast: ToastController,  
+    private toast: ToastController,
+    private alertCtrl: AlertController,
     public navParams: NavParams) {
 
         this.Id=this.navParams.get('Id');
@@ -107,9 +108,54 @@ export class CustomerupdatePage {
     return o1 === o2;
   };
 
+  // Uppercase a value and, for company names, strip the dots out of common
+  // abbreviations (e.g. "Sdn. Bhd." -> "SDN BHD").
+  normalizeName(val: string): string {
+    if (!val) {
+      return val;
+    }
+    return val.toUpperCase().replace(/\./g, '').replace(/\s+/g, ' ');
+  }
 
+  uppercaseText(val: string): string {
+    return val ? val.toUpperCase() : val;
+  }
+
+  onCompanyNameInput() {
+    this.CO_Name = this.normalizeName(this.CO_Name);
+  }
+
+  onAddressInput() {
+    this.Address = this.uppercaseText(this.Address);
+  }
+
+  onRemarksInput() {
+    this.Remarks = this.uppercaseText(this.Remarks);
+  }
+
+  isValidEmailFormat(val: string): boolean {
+    val = (val || '').toString().trim();
+    if (!val) {
+      return true;
+    }
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  }
+
+  displayErrorAlert(message: string) {
+    let alert = this.alertCtrl.create({
+      title: 'Error',
+      subTitle: message,
+      buttons: ['OK'],
+    });
+    alert.present();
+  }
 
   submit() {
+    if (!this.isValidEmailFormat(this.Email)) {
+      this.displayErrorAlert('Please enter a valid e-mail address');
+      return;
+    }
+
     // let loading = this.loadingCtrl.create({
     //   content: "Submitting schedule application",
     //   spinner: 'crescent'

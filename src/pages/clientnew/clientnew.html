@@ -60,9 +60,9 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Contact Person</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">Please insert contact name</p>
+            <p class="error" *ngIf="!PIC_name">Please insert contact name</p>
           </ion-label>
-          <ion-input type="text" placeholder="State Client Name" [(ngModel)]="PIC_name"></ion-input>
+          <ion-input type="text" placeholder="State Client Name" [(ngModel)]="PIC_name" (ionInput)="onPICNameInput()"></ion-input>
         </ion-item>
       </ion-row>
 
@@ -70,7 +70,8 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Contact No</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">Please insert contact no</p>
+            <p class="error" *ngIf="!PIC_no">Please insert contact no</p>
+            <p class="error" *ngIf="PIC_no && !isValidPhoneFormat(PIC_no)">Please enter a valid phone number (e.g. 012-3456789, 03-12345678 or +60123456789)</p>
           </ion-label>
           <ion-input type="text" placeholder="State Contact No" [(ngModel)]="PIC_no"></ion-input>
         </ion-item>
@@ -79,9 +80,9 @@
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Contact Email</ion-label>
-          <!-- <ion-label no-margin no-lines>
-            <p class="error">Please insert contact email</p>
-          </ion-label> -->
+          <ion-label no-margin no-lines>
+            <p class="error" *ngIf="PIC_email && !isValidEmailFormat(PIC_email)">Please enter a valid e-mail address</p>
+          </ion-label>
           <ion-input type="text" placeholder="State contacte email" [(ngModel)]="PIC_email"></ion-input>
         </ion-item>
       </ion-row>
@@ -92,7 +93,7 @@
           <!-- <ion-label no-margin no-lines>
             <p class="error">Please insert remarks</p>
           </ion-label> -->
-          <ion-input type="text" placeholder="State remarks" [(ngModel)]="Remarks"></ion-input>
+          <ion-input type="text" placeholder="State remarks" [(ngModel)]="Remarks" (ionInput)="onRemarksInput()"</ion-input>
         </ion-item>
       </ion-row>
 
@@ -151,7 +152,7 @@
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Remarks</ion-label>
-          <ion-textarea type="text" rows="3" placeholder="State Remarks Here" [(ngModel)]="Remarks"></ion-textarea>
+          <ion-textarea type="text" rows="3" placeholder="State Remarks Here" [(ngModel)]="Remarks" (ionInput)="onRemarksInput()"</ion-textarea>
         </ion-item>
       </ion-row> -->
 

@@ -58,7 +58,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Company Name</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error" [style.visibility]="(leadForm.get('CO_Name').invalid && (leadForm.get('CO_Name').dirty || leadForm.get('CO_Name').touched)) ? 'visible' : 'hidden'">This field is required</p>
           </ion-label>
           <ion-input type="text" placeholder="State Company Name" formControlName="CO_Name" [(ngModel)]="CO_Name" [readonly]="!!Customer"></ion-input>
         </ion-item>
@@ -68,7 +68,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Customer Name</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error" [style.visibility]="(leadForm.get('Customer_Name').invalid && (leadForm.get('Customer_Name').dirty || leadForm.get('Customer_Name').touched)) ? 'visible' : 'hidden'">This field is required</p>
           </ion-label>
           <ion-input type="text" placeholder="State Customer Name" formControlName="Customer_Name" [(ngModel)]="Customer_Name"></ion-input>
         </ion-item>
@@ -78,7 +78,8 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Contact Number</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">Please insert contact number</p>
+            <p class="error" [style.visibility]="(leadForm.get('Contact_No').hasError('required') && (leadForm.get('Contact_No').dirty || leadForm.get('Contact_No').touched)) ? 'visible' : 'hidden'">Please insert contact number</p>
+            <p class="error" [style.visibility]="(leadForm.get('Contact_No').hasError('invalidPhone')) ? 'visible' : 'hidden'">Please enter a valid phone number (e.g. 012-3456789, 03-12345678 or +60123456789)</p>
           </ion-label>
           <ion-input type="text" placeholder="Contact Number" formControlName="Contact_No" [(ngModel)]="Contact_No"></ion-input>
         </ion-item>
@@ -87,7 +88,9 @@
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Email</ion-label>
-         
+          <ion-label no-margin no-lines>
+            <p class="error" [style.visibility]="(leadForm.get('Email').hasError('email')) ? 'visible' : 'hidden'">Please enter a valid e-mail address</p>
+          </ion-label>
           <ion-input type="text" placeholder="State Email" formControlName="Email" [(ngModel)]="Email"></ion-input>
         </ion-item>
       </ion-row>
@@ -105,7 +108,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Country</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">Please select country</p>
+            <p class="error" [style.visibility]="(leadForm.get('Country').invalid && (leadForm.get('Country').dirty || leadForm.get('Country').touched)) ? 'visible' : 'hidden'">Please select country</p>
           </ion-label>
           <ionic-selectable item-content [(ngModel)]="Country" [items]="country" formControlName="Country" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
           </ionic-selectable>
@@ -117,7 +120,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>State</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">Please select state</p>
+            <p class="error" [style.visibility]="(leadForm.get('State').invalid && (leadForm.get('State').dirty || leadForm.get('State').touched)) ? 'visible' : 'hidden'">Please select state</p>
           </ion-label>
           <ionic-selectable
             item-content
@@ -137,7 +140,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Area</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">Please select area</p>
+            <p class="error" [style.visibility]="(leadForm.get('Area').invalid && (leadForm.get('Area').dirty || leadForm.get('Area').touched)) ? 'visible' : 'hidden'">Please select area</p>
           </ion-label>
           <ionic-selectable
             item-content
@@ -183,7 +186,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Lead From</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error" [style.visibility]="(leadForm.get('Source').invalid && (leadForm.get('Source').dirty || leadForm.get('Source').touched)) ? 'visible' : 'hidden'">This field is required</p>
           </ion-label>
          
           <!-- <ion-select placeholder="please select" [(ngModel)]="Company" formControlName="Company">
@@ -198,7 +201,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Business Type</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error" [style.visibility]="(leadForm.get('Type').invalid && (leadForm.get('Type').dirty || leadForm.get('Type').touched)) ? 'visible' : 'hidden'">This field is required</p>
           </ion-label>
           <ionic-selectable item-content [(ngModel)]="Type" [items]="type" formControlName="Type" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
           </ionic-selectable>
@@ -209,7 +212,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Other (Business Type)</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error" [style.visibility]="(leadForm.get('Custom_Type').invalid && (leadForm.get('Custom_Type').dirty || leadForm.get('Custom_Type').touched)) ? 'visible' : 'hidden'">This field is required</p>
           </ion-label>
           <ion-input
             type="text"

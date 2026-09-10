@@ -193,14 +193,61 @@ export class CustomernewPage {
     });
   }
 
+  // Recognise Malaysian mobile / landline numbers as well as international
+  // numbers (starting with +). Mirrors the backend's phone validation.
+  phoneFormatValidator(control: FormControl) {
+    const val = (control.value || '').toString().trim();
+    if (!val) {
+      return null;
+    }
+    if (/^\+[1-9][0-9\s-]{7,17}$/.test(val)) {
+      return null;
+    }
+    const digits = val.replace(/[^0-9]/g, '');
+    if (/^01[0-46-9][0-9]{7,8}$/.test(digits)) {
+      return null;
+    }
+    if (/^0[3-9][0-9]{7,8}$/.test(digits)) {
+      return null;
+    }
+    return { invalidPhone: true };
+  }
+
+  // Uppercase a value and, for company names, strip the dots out of common
+  // abbreviations (e.g. "Sdn. Bhd." -> "SDN BHD").
+  normalizeName(val: string): string {
+    if (!val) {
+      return val;
+    }
+    return val.toUpperCase().replace(/\./g, '').replace(/\s+/g, ' ');
+  }
+
+  uppercaseText(val: string): string {
+    return val ? val.toUpperCase() : val;
+  }
+
+  // Force a form control's value to uppercase as the user types, without
+  // re-triggering this same subscription (emitEvent: false).
+  private forceUppercase(controlName: string, transform: (val: string) => string) {
+    this.leadForm.get(controlName).valueChanges.subscribe((val) => {
+      if (typeof val !== 'string') {
+        return;
+      }
+      const transformed = transform(val);
+      if (transformed !== val) {
+        this.leadForm.get(controlName).setValue(transformed, { emitEvent: false });
+      }
+    });
+  }
+
   ngOnInit() {
     this.leadForm = new FormGroup({
       Status: new FormControl('', []),
       Customer: new FormControl('', []),
       CO_Name: new FormControl('', [Validators.required]),
       Customer_Name: new FormControl('', []),
-      Contact_No: new FormControl('', [Validators.required]),
-      Email: new FormControl('', []),
+      Contact_No: new FormControl('', [Validators.required, this.phoneFormatValidator]),
+      Email: new FormControl('', [Validators.email]),
       Address: new FormControl('', []),
       Country: new FormControl('', [Validators.required]),
       State: new FormControl('', [Validators.required]),
@@ -213,6 +260,11 @@ export class CustomernewPage {
       CO_No: new FormControl('', []),
       Remarks: new FormControl('', []),
     })
+
+    this.forceUppercase('CO_Name', (val) => this.normalizeName(val));
+    this.forceUppercase('Customer_Name', (val) => this.uppercaseText(val));
+    this.forceUppercase('Address', (val) => this.uppercaseText(val));
+    this.forceUppercase('Remarks', (val) => this.uppercaseText(val));
 
     // Area only offers localities inside the state that is picked, so the list
     // is refetched and whatever was chosen for the previous state is dropped.
