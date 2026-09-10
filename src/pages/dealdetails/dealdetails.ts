@@ -16,6 +16,7 @@ import { FilePath } from '@ionic-native/file-path';
 import { DomSanitizer } from '@angular/platform-browser';
 import { File, FileEntry } from '@ionic-native/file';
 import { Camera, CameraOptions } from '@ionic-native/camera';
+import { AppAvailability } from '@ionic-native/app-availability';
 const httpOptions = {
   headers: new HttpHeaders({
       'Content-Type': 'application/json'
@@ -159,6 +160,7 @@ export class DealdetailsPage {
     public domSanitizer: DomSanitizer,
     public modalCtrl: ModalController,
     public platform: Platform,
+    private appAvailability: AppAvailability,
     public navParams: NavParams) {
 
       this.Id=this.navParams.get('DealId');
@@ -678,19 +680,55 @@ export class DealdetailsPage {
   }
 
   /**
-   * Tapping the contact number still opens the dialler - the href does that on
-   * its own. All this adds is the intent to log the call once the user is back.
+   * Tapping the contact number tries WhatsApp first (checked with
+   * AppAvailability rather than just firing the deep link blind, since a
+   * whatsapp:// link that goes nowhere leaves the user on a blank screen
+   * with no error) and falls back to the dialler when WhatsApp is not on
+   * the device. Either way, the intent to log the call is set so it is
+   * recorded once the user comes back.
    */
   onCallContact(event: any) {
+    event.preventDefault();
     event.stopPropagation();
 
-    if (this.platform.is('cordova')) {
-      this.pendingColdCall = true;
-    } else {
-      // In the browser there is no dialler and no resume event, so there is
-      // nothing to wait for.
-      this.logColdCall();
+    if (!this.Contact_No) {
+      return;
     }
+
+    if (!this.platform.is('cordova')) {
+      // In the browser there is no dialler/WhatsApp and no resume event, so
+      // there is nothing to wait for - just log and dial like before.
+      this.logColdCall();
+      window.location.href = 'tel:' + this.Contact_No;
+      return;
+    }
+
+    const whatsappId = this.platform.is('ios') ? 'whatsapp://' : 'com.whatsapp';
+
+    this.appAvailability.check(whatsappId).then(
+      () => {
+        this.pendingColdCall = true;
+        window.open('https://wa.me/' + this.toWhatsAppNumber(this.Contact_No), '_system');
+      },
+      () => {
+        this.pendingColdCall = true;
+        window.location.href = 'tel:' + this.Contact_No;
+      }
+    );
+  }
+
+  // Converts a local Malaysian number ("012-3456789") or one already in
+  // international format ("+60123456789") into the digits-only format
+  // wa.me expects ("60123456789").
+  private toWhatsAppNumber(raw: string): string {
+    const cleaned = (raw || '').replace(/[^0-9+]/g, '');
+    if (cleaned.startsWith('+')) {
+      return cleaned.substring(1);
+    }
+    if (cleaned.startsWith('0')) {
+      return '60' + cleaned.substring(1);
+    }
+    return cleaned;
   }
 
   logColdCall() {

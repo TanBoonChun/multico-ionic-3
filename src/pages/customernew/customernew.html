@@ -56,11 +56,39 @@
 
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Company Type</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error" [style.visibility]="(leadForm.get('Company_Type').invalid && (leadForm.get('Company_Type').dirty || leadForm.get('Company_Type').touched)) ? 'visible' : 'hidden'">This field is required</p>
+          </ion-label>
+          <ionic-selectable item-content [(ngModel)]="Company_Type" [items]="companyType" formControlName="Company_Type" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
+          </ionic-selectable>
+        </ion-item>
+      </ion-row>
+
+      <ion-row *ngIf="Company_Type && Company_Type?.Option === 'Other'" no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Other (Company Type)</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error" [style.visibility]="(leadForm.get('Custom_Company_Type').invalid && (leadForm.get('Custom_Company_Type').dirty || leadForm.get('Custom_Company_Type').touched)) ? 'visible' : 'hidden'">This field is required</p>
+          </ion-label>
+          <ion-input type="text" placeholder="State Company Type" formControlName="Custom_Company_Type" [(ngModel)]="Custom_Company_Type"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Company Name</ion-label>
           <ion-label no-margin no-lines>
             <p class="error" [style.visibility]="(leadForm.get('CO_Name').invalid && (leadForm.get('CO_Name').dirty || leadForm.get('CO_Name').touched)) ? 'visible' : 'hidden'">This field is required</p>
           </ion-label>
           <ion-input type="text" placeholder="State Company Name" formControlName="CO_Name" [(ngModel)]="CO_Name" [readonly]="!!Customer"></ion-input>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>ROC</ion-label>
+          <ion-input type="text" placeholder="State ROC / Registration Number" formControlName="CO_No" [(ngModel)]="CO_No"></ion-input>
         </ion-item>
       </ion-row>
 
@@ -76,12 +104,23 @@
 
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Phone Code</ion-label>
+          <ion-label no-margin no-lines>
+            <p class="error" [style.visibility]="(leadForm.get('PhoneCode').invalid && (leadForm.get('PhoneCode').dirty || leadForm.get('PhoneCode').touched)) ? 'visible' : 'hidden'">Please select a phone code</p>
+          </ion-label>
+          <ionic-selectable item-content [(ngModel)]="PhoneCode" [items]="phoneCodes" formControlName="PhoneCode" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
+          </ionic-selectable>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Contact Number</ion-label>
           <ion-label no-margin no-lines>
             <p class="error" [style.visibility]="(leadForm.get('Contact_No').hasError('required') && (leadForm.get('Contact_No').dirty || leadForm.get('Contact_No').touched)) ? 'visible' : 'hidden'">Please insert contact number</p>
-            <p class="error" [style.visibility]="(leadForm.get('Contact_No').hasError('invalidPhone')) ? 'visible' : 'hidden'">Please enter a valid phone number (e.g. 012-3456789, 03-12345678 or +60123456789)</p>
+            <p class="error" [style.visibility]="(leadForm.get('Contact_No').hasError('invalidPhone')) ? 'visible' : 'hidden'">Please enter a valid phone number</p>
           </ion-label>
-          <ion-input type="text" placeholder="Contact Number" formControlName="Contact_No" [(ngModel)]="Contact_No"></ion-input>
+          <ion-input type="text" placeholder="Contact Number (without leading 0)" formControlName="Contact_No" [(ngModel)]="Contact_No"></ion-input>
         </ion-item>
       </ion-row>
 

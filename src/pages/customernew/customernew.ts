@@ -17,6 +17,7 @@ import { Base64 } from '@ionic-native/base64';
 import { ImagePicker, ImagePickerOptions } from '@ionic-native/image-picker';
 import { IonicSelectableComponent } from 'ionic-selectable';
 import { catchError } from 'rxjs/operators';
+import { COUNTRY_CODES } from '../../data/country-codes';
 
 
 const httpOptions = {
@@ -47,6 +48,8 @@ export class CustomernewPage {
   CO_Name: any='';
   Customer_Name: any='';
   Contact_No: any='';
+  PhoneCode: any='';
+  phoneCodes: any[] = COUNTRY_CODES;
   CO_No: any='';
   Office_No: any='';
   Fax_No: any='';
@@ -68,6 +71,9 @@ export class CustomernewPage {
   type: any=[];
   Approach_Since: any='';
   Custom_Type: any='';
+  Company_Type: any='';
+  companyType: any=[];
+  Custom_Company_Type: any='';
   Area: any='';
   area: any=[];
   // The next step planned for this lead, from Option Control (deal /
@@ -172,6 +178,13 @@ export class CustomernewPage {
       })
     });
 
+    this.storage.get('token').then((val) => {
+      data = this.http.get(SERVER_URL + '/getCompanyType?token=' + val.token );
+      data.subscribe(result => {
+        this.companyType = result.company_type;
+      })
+    });
+
     // Existing customers, each with the salesperson who owns its lead.
     this.storage.get('token').then((val) => {
       data = this.http.get(SERVER_URL + '/getCustomerList?token=' + val.token );
@@ -207,24 +220,27 @@ export class CustomernewPage {
     });
   }
 
-  // Recognise Malaysian mobile / landline numbers as well as international
-  // numbers (starting with +). Mirrors the backend's phone validation.
+  // The country code is picked separately (PhoneCode), so this only has to
+  // check the subscriber number itself - digits only, a plausible length.
   phoneFormatValidator(control: FormControl) {
     const val = (control.value || '').toString().trim();
     if (!val) {
       return null;
     }
-    if (/^\+[1-9][0-9\s-]{7,17}$/.test(val)) {
-      return null;
-    }
     const digits = val.replace(/[^0-9]/g, '');
-    if (/^01[0-46-9][0-9]{7,8}$/.test(digits)) {
-      return null;
-    }
-    if (/^0[3-9][0-9]{7,8}$/.test(digits)) {
+    if (/^[0-9]{5,12}$/.test(digits)) {
       return null;
     }
     return { invalidPhone: true };
+  }
+
+  // The final Contact_No sent to the server is the picked dial code plus the
+  // subscriber number, with any leading trunk 0 dropped so it is not doubled
+  // up with the code (e.g. +60 123456789, not +600123456789).
+  getFinalContactNo(): string {
+    const code = this.PhoneCode && this.PhoneCode.dial_code ? this.PhoneCode.dial_code : '';
+    const local = (this.Contact_No || '').toString().replace(/[^0-9]/g, '').replace(/^0+/, '');
+    return code + local;
   }
 
   // Uppercase a value and, for company names, strip the dots out of common
@@ -240,6 +256,14 @@ export class CustomernewPage {
     return val ? val.toUpperCase() : val;
   }
 
+  // Company_Type has no separate "custom" column - when the user picked
+  // Other, what they typed in the Custom_Company_Type box is what actually
+  // gets saved into it.
+  getFinalCompanyType(): string {
+    const selected = this.Company_Type && this.Company_Type.Option;
+    return selected === 'Other' ? this.Custom_Company_Type : selected;
+  }
+
   // Force a form control's value to uppercase as the user types, without
   // re-triggering this same subscription (emitEvent: false).
   private forceUppercase(controlName: string, transform: (val: string) => string) {
@@ -249,7 +273,13 @@ export class CustomernewPage {
       }
       const transformed = transform(val);
       if (transformed !== val) {
-        this.leadForm.get(controlName).setValue(transformed, { emitEvent: false });
+        // Deferred a tick so this never rewrites the value in the same
+        // change-detection cycle that just rendered it - doing that
+        // synchronously (e.g. right after fillFromCustomer sets Address)
+        // is what throws ExpressionChangedAfterItHasBeenCheckedError.
+        setTimeout(() => {
+          this.leadForm.get(controlName).setValue(transformed, { emitEvent: false });
+        }, 0);
       }
     });
   }
@@ -260,6 +290,7 @@ export class CustomernewPage {
       Customer: new FormControl('', []),
       CO_Name: new FormControl('', [Validators.required]),
       Customer_Name: new FormControl('', []),
+      PhoneCode: new FormControl('', [Validators.required]),
       Contact_No: new FormControl('', [Validators.required, this.phoneFormatValidator]),
       Email: new FormControl('', [Validators.email]),
       Address: new FormControl('', []),
@@ -269,6 +300,8 @@ export class CustomernewPage {
       Source: new FormControl('', [Validators.required]),
       Type: new FormControl('', [Validators.required]),
       Custom_Type: new FormControl('', [Validators.required]),
+      Company_Type: new FormControl('', [Validators.required]),
+      Custom_Company_Type: new FormControl('', []),
       Priority: new FormControl('', []),
       Action_Plan: new FormControl('', []),
       Approach_Since: new FormControl('', []),
@@ -300,6 +333,17 @@ export class CustomernewPage {
       }
 
       this.leadForm.get('Custom_Type').updateValueAndValidity();
+
+    });
+
+    this.leadForm.get('Company_Type').valueChanges.subscribe(companyType => {
+      if (companyType && companyType.Option === 'Other') {
+        this.leadForm.get('Custom_Company_Type').setValidators([Validators.required]);
+      } else {
+        this.leadForm.get('Custom_Company_Type').clearValidators();
+      }
+
+      this.leadForm.get('Custom_Company_Type').updateValueAndValidity();
 
     });
 
@@ -1198,7 +1242,7 @@ getMimeTypeFromExtension(fileName: string): string {
         this.formData.append("status", this.Status);
         this.formData.append("company_name", this.CO_Name);
         this.formData.append("customer_name", this.Customer_Name);
-        this.formData.append("contact_no", this.Contact_No);
+        this.formData.append("contact_no", this.getFinalContactNo());
         this.formData.append("email", this.Email);
         this.formData.append("address", this.Address);
         this.formData.append("country", this.Country.Option);
@@ -1209,6 +1253,7 @@ getMimeTypeFromExtension(fileName: string): string {
         this.formData.append("type", this.Type.Option);
         this.formData.append("custom_type", this.Custom_Type);
         this.formData.append("action_plan", this.Action_Plan ? this.Action_Plan.Option : "");
+        this.formData.append("company_type", this.getFinalCompanyType());
         this.formData.append("approach_since", this.Approach_Since);
         this.formData.append("co_no", this.CO_No);
         this.formData.append("remarks", this.Remarks);

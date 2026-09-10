@@ -55,6 +55,11 @@
             <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <queries>
+                <package android:name="com.whatsapp" />
+            </queries>
+        </config-file>
         <config-file mode="merge" parent="application" target="AndroidManifest.xml">
             <provider android:authorities="${applicationId}.provider" android:exported="false" android:grantUriPermissions="true" android:name="org.apache.cordova.camera.FileProvider">
                 <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/camera_provider_paths" />
@@ -151,6 +156,11 @@
         <config-file mode="replace" parent="NSLocationAlwaysAndWhenInUseUsageDescription" platform="ios" target="*-Info.plist">
             <string>Multico uses your location to verify your position when you clock in and out for attendance.</string>
         </config-file>
+        <config-file parent="LSApplicationQueriesSchemes" platform="ios" target="*-Info.plist">
+            <array>
+                <string>whatsapp</string>
+            </array>
+        </config-file>
         <icon height="20" src="resources/ios/icon/icon-20.png" width="20" />
         <icon height="40" src="resources/ios/icon/icon-20@2x.png" width="40" />
         <icon height="60" src="resources/ios/icon/icon-20@3x.png" width="60" />
@@ -237,4 +247,5 @@
     </plugin>
     <plugin name="onesignal-cordova-plugin" spec="^2.11.4" />
     <plugin name="mx.ferreyra.callnumber" spec="0.0.2" />
+    <plugin name="cordova-plugin-appavailability" spec="^0.4.2" />
 </widget>

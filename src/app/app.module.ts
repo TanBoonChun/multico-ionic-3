@@ -34,6 +34,7 @@ import { FilePath } from "@ionic-native/file-path";
 import { FileChooser } from "@ionic-native/file-chooser";
 import { IOSFilePicker } from "@ionic-native/file-picker";
 import { DatePipe } from "@angular/common";
+import { AppAvailability } from "@ionic-native/app-availability";
 
 import { LocalNotifications } from "@ionic-native/local-notifications";
 import { BackgroundGeolocation } from "@ionic-native/background-geolocation";
@@ -168,6 +169,7 @@ import { HAMMER_GESTURE_CONFIG } from "@angular/platform-browser";
     FileChooser,
     IOSFilePicker,
     DatePipe,
+    AppAvailability,
     InAppBrowser,
     GlobalProvider,
     CallNumber,

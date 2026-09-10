@@ -13,6 +13,7 @@ import { FileOpener } from '@ionic-native/file-opener';
 import { FilePath } from '@ionic-native/file-path';
 import { DomSanitizer } from '@angular/platform-browser';
 import { catchError } from 'rxjs/operators';
+import { COUNTRY_CODES } from '../../data/country-codes';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -37,6 +38,8 @@ export class DealupdatePage {
   Company_Name:any='';
   Customer_Name:any='';
   Contact_No:any='';
+  PhoneCode: any='';
+  phoneCodes: any[] = COUNTRY_CODES;
   Email:any='';
   Address:any='';
   Country: any='';
@@ -55,6 +58,9 @@ export class DealupdatePage {
   type: any=[];
   Approach_Since: any='';
   Custom_Type: any='';
+  Company_Type: any='';
+  companyType: any=[];
+  Custom_Company_Type: any='';
   Remarks:any ='';
   Priority:any ='';
   priority:any=[];
@@ -209,7 +215,14 @@ export class DealupdatePage {
         this.action_plans = [];
       })
     });
-    
+
+    this.storage.get('token').then((val) => {
+      data = this.http.get(SERVER_URL + '/getCompanyType?token=' + val.token );
+      data.subscribe(result => {
+        this.companyType = result.company_type;
+      })
+    });
+
     this.loadExistingFiles();
 
   }
@@ -242,24 +255,52 @@ export class DealupdatePage {
     });
   }
 
-  // Recognise Malaysian mobile / landline numbers as well as international
-  // numbers (starting with +). Mirrors the backend's phone validation.
+  // The country code is picked separately (PhoneCode), so this only has to
+  // check the subscriber number itself - digits only, a plausible length.
   phoneFormatValidator(control: FormControl) {
     const val = (control.value || '').toString().trim();
     if (!val) {
       return null;
     }
-    if (/^\+[1-9][0-9\s-]{7,17}$/.test(val)) {
-      return null;
-    }
     const digits = val.replace(/[^0-9]/g, '');
-    if (/^01[0-46-9][0-9]{7,8}$/.test(digits)) {
-      return null;
-    }
-    if (/^0[3-9][0-9]{7,8}$/.test(digits)) {
+    if (/^[0-9]{5,12}$/.test(digits)) {
       return null;
     }
     return { invalidPhone: true };
+  }
+
+  // The final Contact_No sent to the server is the picked dial code plus the
+  // subscriber number, with any leading trunk 0 dropped so it is not doubled
+  // up with the code (e.g. +60 123456789, not +600123456789).
+  getFinalContactNo(): string {
+    const code = this.PhoneCode && this.PhoneCode.dial_code ? this.PhoneCode.dial_code : '';
+    const local = (this.Contact_No || '').toString().replace(/[^0-9]/g, '').replace(/^0+/, '');
+    return code + local;
+  }
+
+  // Splits a previously saved Contact_No (e.g. "+60123456789" or a bare
+  // "0123456789" from before this split existed) back into a dial code and
+  // subscriber number for prefill. Falls back to leaving the code blank -
+  // the user is required to (re)pick it either way.
+  splitContactNo(saved: string) {
+    const val = (saved || '').toString().trim();
+    if (!val) {
+      return;
+    }
+
+    if (val.charAt(0) === '+') {
+      const match = COUNTRY_CODES
+        .filter(c => val.indexOf(c.dial_code) === 0)
+        .sort((a, b) => b.dial_code.length - a.dial_code.length)[0];
+
+      if (match) {
+        this.PhoneCode = match;
+        this.Contact_No = val.substring(match.dial_code.length);
+        return;
+      }
+    }
+
+    this.Contact_No = val;
   }
 
   // Uppercase a value and, for company names, strip the dots out of common
@@ -275,6 +316,14 @@ export class DealupdatePage {
     return val ? val.toUpperCase() : val;
   }
 
+  // Company_Type has no separate "custom" column - when the user picked
+  // Other, what they typed in the Custom_Company_Type box is what actually
+  // gets saved into it.
+  getFinalCompanyType(): string {
+    const selected = this.Company_Type && this.Company_Type.Option;
+    return selected === 'Other' ? this.Custom_Company_Type : selected;
+  }
+
   private forceUppercase(controlName: string, transform: (val: string) => string) {
     this.signupform.get(controlName).valueChanges.subscribe((val) => {
       if (typeof val !== 'string') {
@@ -282,7 +331,13 @@ export class DealupdatePage {
       }
       const transformed = transform(val);
       if (transformed !== val) {
-        this.signupform.get(controlName).setValue(transformed, { emitEvent: false });
+        // Deferred a tick so this never rewrites the value in the same
+        // change-detection cycle that just rendered it - doing that
+        // synchronously is what throws
+        // ExpressionChangedAfterItHasBeenCheckedError.
+        setTimeout(() => {
+          this.signupform.get(controlName).setValue(transformed, { emitEvent: false });
+        }, 0);
       }
     });
   }
@@ -291,6 +346,7 @@ export class DealupdatePage {
     this.signupform = new FormGroup({
       Company_Name: new FormControl('', [Validators.required]),
       Customer_Name: new FormControl('', []),
+      PhoneCode: new FormControl('', [Validators.required]),
       Contact_No: new FormControl('', [Validators.required, this.phoneFormatValidator]),
       Email: new FormControl('', [Validators.email]),
       Address: new FormControl('', []),
@@ -300,6 +356,8 @@ export class DealupdatePage {
       Source: new FormControl('', [Validators.required]),
       Type: new FormControl('', [Validators.required]),
       Custom_Type: new FormControl('', [Validators.required]),
+      Company_Type: new FormControl('', [Validators.required]),
+      Custom_Company_Type: new FormControl('', []),
       Priority: new FormControl('', [Validators.required]),
       Action_Plan: new FormControl('', []),
       Approach_Since: new FormControl('', []),
@@ -336,6 +394,17 @@ export class DealupdatePage {
 
     });
 
+    this.signupform.get('Company_Type').valueChanges.subscribe(companyType => {
+      if (companyType && companyType.Option === 'Other') {
+        this.signupform.get('Custom_Company_Type').setValidators([Validators.required]);
+      } else {
+        this.signupform.get('Custom_Company_Type').clearValidators();
+      }
+
+      this.signupform.get('Custom_Company_Type').updateValueAndValidity();
+
+    });
+
 
  }
 
@@ -349,7 +418,7 @@ export class DealupdatePage {
         
         this.Company_Name=this.details[0].Company_Name
         this.Customer_Name=this.details[0].Customer_Name
-        this.Contact_No=this.details[0].Contact_No
+        this.splitContactNo(this.details[0].Contact_No)
         this.Email=this.details[0].Email
         this.Address=this.details[0].Address
         this.Country={"Option": this.details[0].Country}
@@ -359,6 +428,18 @@ export class DealupdatePage {
         this.Source={"Option": this.details[0].Source}
         this.Type={"Option": this.details[0].Type}
         this.Custom_Type=this.details[0].custom_type
+
+        // Company_Type has no separate "custom" column, so a saved value
+        // outside the fixed dropdown set is what someone typed under Other.
+        const savedCompanyType = this.details[0].Company_Type;
+        const knownCompanyTypes = ['Individual', 'Company', 'Majlis'];
+        if (savedCompanyType && knownCompanyTypes.indexOf(savedCompanyType) === -1) {
+          this.Company_Type = { "Option": 'Other' };
+          this.Custom_Company_Type = savedCompanyType;
+        } else if (savedCompanyType) {
+          this.Company_Type = { "Option": savedCompanyType };
+        }
+
         this.Approach_Since=this.details[0].Aproach_Since
         this.Remarks=this.details[0].Remarks
 
@@ -1011,7 +1092,7 @@ export class DealupdatePage {
           this.formData.append("status", this.Status);
           this.formData.append("company_name", this.Company_Name);
           this.formData.append("customer_name", this.Customer_Name);
-          this.formData.append("contact_no", this.Contact_No);
+          this.formData.append("contact_no", this.getFinalContactNo());
           this.formData.append("email", this.Email);
           this.formData.append("address", this.Address);
           this.formData.append("country", this.Country.Option);
@@ -1022,6 +1103,7 @@ export class DealupdatePage {
           this.formData.append("type", this.Type.Option);
           this.formData.append("custom_type", this.Custom_Type);
           this.formData.append("action_plan", this.Action_Plan ? this.Action_Plan.Option : "");
+          this.formData.append("company_type", this.getFinalCompanyType());
           this.formData.append("approach_since", this.Approach_Since);
           this.formData.append("remarks", this.Remarks);
           this.formData.append("companyId", this.CompanyId);
