@@ -36,9 +36,9 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Company Name</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error" *ngIf="!CO_Name">This field is required</p>
           </ion-label>
-          <ion-input type="text" placeholder="State Company Name" [(ngModel)]="CO_Name">{{CO_Name}}</ion-input>
+          <ion-input type="text" placeholder="State Company Name" [(ngModel)]="CO_Name" (ionInput)="onCompanyNameInput()">{{CO_Name}}</ion-input>
         </ion-item>
       </ion-row>
 
@@ -76,7 +76,7 @@
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Email</ion-label>
           <ion-label no-margin no-lines>
-            <!-- <p class="error">Please insert email</p> -->
+            <p class="error" *ngIf="Email && !isValidEmailFormat(Email)">Please enter a valid e-mail address</p>
           </ion-label>
           <ion-input type="text" placeholder="State Email" [(ngModel)]="Email"></ion-input>
         </ion-item>
@@ -88,14 +88,14 @@
           <ion-label no-margin no-lines>
             <!-- <p class="error">Please insert address</p> -->
           </ion-label>
-          <ion-input type="text" placeholder="State Address No" [(ngModel)]="Address"></ion-input>
+          <ion-input type="text" placeholder="State Address No" [(ngModel)]="Address" (ionInput)="onAddressInput()"></ion-input>
         </ion-item>
       </ion-row>
 
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Remarks</ion-label>
-          <ion-textarea type="text" rows="3" placeholder="State Remarks Here" [(ngModel)]="Remarks"></ion-textarea>
+          <ion-textarea type="text" rows="3" placeholder="State Remarks Here" [(ngModel)]="Remarks" (ionInput)="onRemarksInput()"></ion-textarea>
         </ion-item>
       </ion-row>
 

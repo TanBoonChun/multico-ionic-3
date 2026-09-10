@@ -87,17 +87,66 @@ export class ClientnewPage {
     console.log('ionViewDidLoad ClientnewPage');
   }
 
+  uppercaseText(val: string): string {
+    return val ? val.toUpperCase() : val;
+  }
+
+  onPICNameInput() {
+    this.PIC_name = this.uppercaseText(this.PIC_name);
+  }
+
+  onRemarksInput() {
+    this.Remarks = this.uppercaseText(this.Remarks);
+  }
+
+  // Recognise Malaysian mobile / landline numbers as well as international
+  // numbers (starting with +). Mirrors the backend's phone validation.
+  isValidPhoneFormat(val: string): boolean {
+    val = (val || '').toString().trim();
+    if (!val) {
+      return true;
+    }
+    if (/^\+[1-9][0-9\s-]{7,17}$/.test(val)) {
+      return true;
+    }
+    const digits = val.replace(/[^0-9]/g, '');
+    if (/^01[0-46-9][0-9]{7,8}$/.test(digits)) {
+      return true;
+    }
+    if (/^0[3-9][0-9]{7,8}$/.test(digits)) {
+      return true;
+    }
+    return false;
+  }
+
+  isValidEmailFormat(val: string): boolean {
+    val = (val || '').toString().trim();
+    if (!val) {
+      return true;
+    }
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  }
+
   submit() {
     // let loading = this.loadingCtrl.create({
     //   content: "Submitting schedule application",
     //   spinner: 'crescent'
     // });
 
+    if (!this.isValidPhoneFormat(this.PIC_no)) {
+      this.displayErrorAlert('Please enter a valid phone number (e.g. 012-3456789, 03-12345678 or +60123456789)');
+      return;
+    }
+    if (!this.isValidEmailFormat(this.PIC_email)) {
+      this.displayErrorAlert('Please enter a valid e-mail address');
+      return;
+    }
+
     if(this.Status==""){
       this.Status="Active";
     }
     console.log(this.Salesman,'salesman')
-  
+
     this.storage.get('token').then((val) => {
       return this.http.post(SERVER_URL + '/newclient?token=' + val.token, {
         Status: this.Status,

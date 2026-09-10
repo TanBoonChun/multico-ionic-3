@@ -242,12 +242,57 @@ export class DealupdatePage {
     });
   }
 
+  // Recognise Malaysian mobile / landline numbers as well as international
+  // numbers (starting with +). Mirrors the backend's phone validation.
+  phoneFormatValidator(control: FormControl) {
+    const val = (control.value || '').toString().trim();
+    if (!val) {
+      return null;
+    }
+    if (/^\+[1-9][0-9\s-]{7,17}$/.test(val)) {
+      return null;
+    }
+    const digits = val.replace(/[^0-9]/g, '');
+    if (/^01[0-46-9][0-9]{7,8}$/.test(digits)) {
+      return null;
+    }
+    if (/^0[3-9][0-9]{7,8}$/.test(digits)) {
+      return null;
+    }
+    return { invalidPhone: true };
+  }
+
+  // Uppercase a value and, for company names, strip the dots out of common
+  // abbreviations (e.g. "Sdn. Bhd." -> "SDN BHD").
+  normalizeName(val: string): string {
+    if (!val) {
+      return val;
+    }
+    return val.toUpperCase().replace(/\./g, '').replace(/\s+/g, ' ');
+  }
+
+  uppercaseText(val: string): string {
+    return val ? val.toUpperCase() : val;
+  }
+
+  private forceUppercase(controlName: string, transform: (val: string) => string) {
+    this.signupform.get(controlName).valueChanges.subscribe((val) => {
+      if (typeof val !== 'string') {
+        return;
+      }
+      const transformed = transform(val);
+      if (transformed !== val) {
+        this.signupform.get(controlName).setValue(transformed, { emitEvent: false });
+      }
+    });
+  }
+
   ngOnInit() {
     this.signupform = new FormGroup({
       Company_Name: new FormControl('', [Validators.required]),
       Customer_Name: new FormControl('', []),
-      Contact_No: new FormControl('', [Validators.required]),
-      Email: new FormControl('', []),
+      Contact_No: new FormControl('', [Validators.required, this.phoneFormatValidator]),
+      Email: new FormControl('', [Validators.email]),
       Address: new FormControl('', []),
       Country: new FormControl('', [Validators.required]),
       State: new FormControl('', [Validators.required]),
@@ -259,8 +304,13 @@ export class DealupdatePage {
       Action_Plan: new FormControl('', []),
       Approach_Since: new FormControl('', []),
       Remarks: new FormControl('', []),
-     
+
     })
+
+    this.forceUppercase('Company_Name', (val) => this.normalizeName(val));
+    this.forceUppercase('Customer_Name', (val) => this.uppercaseText(val));
+    this.forceUppercase('Address', (val) => this.uppercaseText(val));
+    this.forceUppercase('Remarks', (val) => this.uppercaseText(val));
 
     // Area only offers localities inside the state that is picked. On a
     // record being opened for edit the area it was saved with is handed over
