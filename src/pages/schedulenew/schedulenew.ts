@@ -30,8 +30,11 @@ export class SchedulenewPage {
 
   Date: any='';
   Time: any='';
+  AppointmentType: any='';
   Place: any='';
   Remarks: any='';
+
+  appointmentTypes: any=[];
   
   DealId:string='';
   con:any;
@@ -72,6 +75,7 @@ export class SchedulenewPage {
     this.submitted = false;
     this.Date = '';
     this.Time = '';
+    this.AppointmentType = '';
     this.Place = '';
     this.Remarks = '';
   }
@@ -79,6 +83,22 @@ export class SchedulenewPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad SchedulenewPage');
     let data:Observable<any>;
+
+    this.loadAppointmentTypes();
+  }
+
+  loadAppointmentTypes() {
+    this.storage.get('token').then((val) => {
+      this.http.get(SERVER_URL + '/getAppointmentType?token=' + val.token)
+        .subscribe(
+          (result: any) => {
+            this.appointmentTypes = result;
+          },
+          (error) => {
+            console.log('Error loading appointment types', error);
+          }
+        );
+    });
   }
 
   calculateTime(offset: any) {
@@ -149,6 +169,7 @@ export class SchedulenewPage {
         dealid: this.DealId,
         appointment_date: this.myFunction(this.Date),
         time: this.Time ? this.transform(this.Time) : null,
+        appointment_type: this.AppointmentType,
         location: this.Place, 
         remarks: this.Remarks,
       },

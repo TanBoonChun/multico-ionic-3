@@ -95,6 +95,11 @@ export class DealupdatePage {
   delivery_periods:any;
   stages:any;
 
+  // The next step planned for this lead, from Option Control (deal /
+  // Action_Plan).
+  Action_Plan:any='';
+  action_plans:any=[];
+
   contact:any='';
   sales:any='';
   Id:any;
@@ -194,6 +199,16 @@ export class DealupdatePage {
         this.type = result.type
       })
     });
+
+    this.storage.get('token').then((val) => {
+      data = this.http.get(SERVER_URL + '/getActionPlan?token=' + val.token );
+      data.subscribe(result => {
+        this.action_plans = result.action_plans ? result.action_plans : [];
+      }, (err) => {
+        console.log(err);
+        this.action_plans = [];
+      })
+    });
     
     this.loadExistingFiles();
 
@@ -241,6 +256,7 @@ export class DealupdatePage {
       Type: new FormControl('', [Validators.required]),
       Custom_Type: new FormControl('', [Validators.required]),
       Priority: new FormControl('', [Validators.required]),
+      Action_Plan: new FormControl('', []),
       Approach_Since: new FormControl('', []),
       Remarks: new FormControl('', []),
      
@@ -302,6 +318,7 @@ export class DealupdatePage {
         this.Forecast_Amount=this.details[0].Forecast_Amount
         this.Currency=this.details[0].Currency
         this.Stage=this.details[0].Stage
+        this.Action_Plan=this.details[0].action_plan ? {"Option": this.details[0].action_plan} : ''
         this.Progress_Log=this.details[0].Progress_Log
         this.Support_Required=this.details[0].Support_Required
                 
@@ -954,6 +971,7 @@ export class DealupdatePage {
           this.formData.append("source", this.Source.Option);
           this.formData.append("type", this.Type.Option);
           this.formData.append("custom_type", this.Custom_Type);
+          this.formData.append("action_plan", this.Action_Plan ? this.Action_Plan.Option : "");
           this.formData.append("approach_since", this.Approach_Since);
           this.formData.append("remarks", this.Remarks);
           this.formData.append("companyId", this.CompanyId);

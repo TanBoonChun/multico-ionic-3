@@ -222,6 +222,14 @@
 
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Action Plan</ion-label>
+          <ionic-selectable item-content [(ngModel)]="Action_Plan" [items]="action_plans" formControlName="Action_Plan" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
+          </ionic-selectable>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Enquiry Date</ion-label>
           
           <ion-datetime pickerFormat="DD MMM YYYY" displayFormat="DD MM YYYY" formControlName="Approach_Since" placeholder="Choose Enquiry Date" max="2200" [(ngModel)]="Approach_Since"></ion-datetime>

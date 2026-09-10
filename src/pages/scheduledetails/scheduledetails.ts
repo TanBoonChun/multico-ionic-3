@@ -69,6 +69,7 @@ export class ScheduledetailsPage {
   PIC_Email:any='';
   companyid:any='';
   Title:any='';
+  appointment_type:any='';
   Location:any='';
   assign_to:any='';
   created_by:any='';
@@ -142,6 +143,7 @@ export class ScheduledetailsPage {
       this.PIC_Email=this.navParams.get('PIC_Email')
       this.companyid=this.navParams.get('companyid')
       this.Title=this.navParams.get('Title')
+      this.appointment_type=this.navParams.get('appointment_type')
       this.Location=this.navParams.get('Location')
       this.assign_to=this.navParams.get('assign_to')
       this.created_by=this.navParams.get('created_by')
@@ -915,6 +917,7 @@ console.log(this.scheduleId)
               Title: this.Title,
               Date: this.appointment_date,
               Time: this.Time,
+              AppointmentType: this.appointment_type,
               Place: this.Location, 
               Assign: this.assign_to,
               clientid: this.ClientId,

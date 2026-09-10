@@ -30,6 +30,7 @@ export class ScheduleupdatePage {
   Title: any='';
   Date: any='';
   Time: any='';
+  AppointmentType: any='';
   Place: any='';
   Assign2: any='';
   Remarks: any='';
@@ -51,6 +52,7 @@ export class ScheduleupdatePage {
   Reasons:any='';
   Assign:any;
   Contact:any;
+  appointmentTypes:any=[];
 
   Deal_Name:any;
   DealId:string='';
@@ -74,6 +76,7 @@ export class ScheduleupdatePage {
       this.Assign=this.navParams.get('Assign')
       this.Date=this.navParams.get('Date')
       this.Time=this.navParams.get('Time')
+      this.AppointmentType=this.navParams.get('AppointmentType')
       this.Place=this.navParams.get('Place')
       this.Reasons=this.navParams.get('Reasons')
       this.Remarks=this.navParams.get('Remarks')
@@ -152,6 +155,14 @@ export class ScheduleupdatePage {
       })
     });
 
+    // appointment type
+    this.storage.get('token').then((val) => {
+      data = this.http.get(SERVER_URL + '/getAppointmentType?token=' + val.token );
+      data.subscribe(result => {
+        this.appointmentTypes = result;
+      })
+    });
+
     // Contact Person
     this.storage.get('token').then((val) => {
       data = this.http.get(SERVER_URL + '/getClient?token=' + val.token );
@@ -171,6 +182,7 @@ export class ScheduleupdatePage {
       Place: new FormControl('', []),
       Date: new FormControl('', []),
       Time: new FormControl('', [Validators.required]),
+      AppointmentType: new FormControl('', []),
       Title: new FormControl('', []),
 
       Deal_Name: new FormControl('', [Validators.required]),
@@ -261,6 +273,7 @@ export class ScheduleupdatePage {
         appointment_date: this.myFunction(this.Date),
         // Time: this.transform(this.Time),
         Time: this.transform(this.Time),
+        appointment_type: this.AppointmentType,
         location: this.Place, 
         assign_to: this.Assign,
         clientid: this.Client.Id,

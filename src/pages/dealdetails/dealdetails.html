@@ -60,6 +60,7 @@
       </p>
       <p><b>Priority:</b> {{Priority.Option}}</p>
       <p><b>Lead From:</b> {{lead_from}}</p>
+      <p *ngIf="action_plan"><b>Action Plan:</b> {{action_plan}}</p>
       <p><b>Created_at:</b> {{Created_at}} </p>
       <p><b>Status:</b> Cold Call {{ cold_call == 1 ? '✅' : '❌' }} Appointment {{ has_schedule == 1 ? '✅' : '❌' }} </p>
 
@@ -140,6 +141,10 @@
           <p *ngIf="a.user_name">By: {{ a.user_name }}</p>
           <p class="activity-remarks" *ngIf="a.remarks">{{ a.remarks }}</p>
           <p class="activity-remarks empty" *ngIf="!a.remarks">Tap to add what was discussed</p>
+          <p class="activity-files" *ngIf="a.files && a.files.length > 0">
+            <ion-icon name="attach"></ion-icon>
+            {{ a.files.length }} attachment{{ a.files.length > 1 ? 's' : '' }}
+          </p>
           <button type="button" ion-button clear item-end (click)="deleteActivity(a, $event)">
             <ion-icon name="trash" color="danger"></ion-icon>
           </button>
@@ -414,6 +419,63 @@
             </ion-textarea>
           </ion-item>
         </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Attachments
+            <span class="optional">(Optional)</span>
+          </label>
+
+          <div class="attach-buttons">
+            <button ion-button small outline type="button" (click)="takeActivityPhoto()">
+              <ion-icon name="camera" class="btn-icon"></ion-icon>
+              Camera
+            </button>
+            <button ion-button small outline type="button" (click)="chooseActivityPhoto()">
+              <ion-icon name="images" class="btn-icon"></ion-icon>
+              Photo
+            </button>
+            <button ion-button small outline type="button" (click)="chooseActivityFile()">
+              <ion-icon name="document" class="btn-icon"></ion-icon>
+              File
+            </button>
+          </div>
+
+          <!-- Picked in this sitting, not uploaded yet -->
+          <ion-list *ngIf="pendingFiles.length > 0" class="activity-file-list">
+            <ion-item *ngFor="let f of pendingFiles; let i = index" text-wrap>
+              <ion-thumbnail item-start *ngIf="f.preview">
+                <img [src]="f.preview">
+              </ion-thumbnail>
+              <ion-icon name="document" item-start color="primary" *ngIf="!f.preview"></ion-icon>
+              <h3>{{ f.name }}</h3>
+              <p>{{ (f.size / 1024).toFixed(1) }} KB - not uploaded yet</p>
+              <button type="button" ion-button clear item-end (click)="removePendingFile(i)">
+                <ion-icon name="close-circle" color="danger"></ion-icon>
+              </button>
+            </ion-item>
+          </ion-list>
+
+          <!-- Already on this call -->
+          <ion-list *ngIf="activityFiles.length > 0" class="activity-file-list">
+            <ion-item *ngFor="let f of activityFiles" text-wrap (click)="previewActivityFile(f)">
+              <ion-icon
+                [name]="isImageByName(f.File_Name) ? 'image' : 'document'"
+                item-start
+                [color]="isImageByName(f.File_Name) ? 'secondary' : 'primary'">
+              </ion-icon>
+              <h3>{{ f.File_Name }}</h3>
+              <p *ngIf="f.File_Size">{{ (f.File_Size / 1024).toFixed(1) }} KB</p>
+              <button type="button" ion-button clear item-end (click)="deleteActivityFile(f, $event)">
+                <ion-icon name="trash" color="danger"></ion-icon>
+              </button>
+            </ion-item>
+          </ion-list>
+
+          <p class="no-activity" *ngIf="activityFiles.length === 0 && pendingFiles.length === 0">
+            No attachment for this call yet.
+          </p>
+        </div>
       </div>
 
       <!-- Footer -->
@@ -430,7 +492,7 @@
           ion-button
           type="submit"
           class="btn-submit"
-          [disabled]="!activityRemarks">
+          [disabled]="!activityRemarks && pendingFiles.length === 0">
           <ion-icon name="checkmark-circle" class="btn-icon"></ion-icon>
           Save
         </button>

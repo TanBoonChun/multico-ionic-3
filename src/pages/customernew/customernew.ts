@@ -70,6 +70,10 @@ export class CustomernewPage {
   Custom_Type: any='';
   Area: any='';
   area: any=[];
+  // The next step planned for this lead, from Option Control (deal /
+  // Action_Plan), so the salesperson leaves the form with one in mind.
+  Action_Plan: any='';
+  action_plans: any=[];
   department: any='';
 
   // An existing customer (vendors row of type Customer) picked from the
@@ -158,6 +162,16 @@ export class CustomernewPage {
       })
     });
 
+    this.storage.get('token').then((val) => {
+      data = this.http.get(SERVER_URL + '/getActionPlan?token=' + val.token );
+      data.subscribe(result => {
+        this.action_plans = result.action_plans ? result.action_plans : [];
+      }, (err) => {
+        console.log(err);
+        this.action_plans = [];
+      })
+    });
+
     // Existing customers, each with the salesperson who owns its lead.
     this.storage.get('token').then((val) => {
       data = this.http.get(SERVER_URL + '/getCustomerList?token=' + val.token );
@@ -209,6 +223,7 @@ export class CustomernewPage {
       Type: new FormControl('', [Validators.required]),
       Custom_Type: new FormControl('', [Validators.required]),
       Priority: new FormControl('', []),
+      Action_Plan: new FormControl('', []),
       Approach_Since: new FormControl('', []),
       CO_No: new FormControl('', []),
       Remarks: new FormControl('', []),
@@ -1141,6 +1156,7 @@ getMimeTypeFromExtension(fileName: string): string {
         this.formData.append("source", this.Source.Option);
         this.formData.append("type", this.Type.Option);
         this.formData.append("custom_type", this.Custom_Type);
+        this.formData.append("action_plan", this.Action_Plan ? this.Action_Plan.Option : "");
         this.formData.append("approach_since", this.Approach_Since);
         this.formData.append("co_no", this.CO_No);
         this.formData.append("remarks", this.Remarks);

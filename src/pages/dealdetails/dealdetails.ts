@@ -14,7 +14,8 @@ import { FileChooser } from '@ionic-native/file-chooser';
 import { FileOpener } from '@ionic-native/file-opener';
 import { FilePath } from '@ionic-native/file-path';
 import { DomSanitizer } from '@angular/platform-browser';
-import { File } from '@ionic-native/file';
+import { File, FileEntry } from '@ionic-native/file';
+import { Camera, CameraOptions } from '@ionic-native/camera';
 const httpOptions = {
   headers: new HttpHeaders({
       'Content-Type': 'application/json'
@@ -94,6 +95,7 @@ export class DealdetailsPage {
   has_schedule:any;
   has_agent:any;
   lead_from:any;
+  action_plan:any;
   Country:any;
   State:any;
   Area:any;
@@ -128,6 +130,12 @@ export class DealdetailsPage {
   selectedActivity: any = null;
   activityRemarks: string = '';
 
+  // Attachments already on the open entry, and the ones picked in this sitting
+  // but not yet sent. Pending files carry their blob so the upload does not
+  // have to go back to the filesystem for them.
+  activityFiles: any[] = [];
+  pendingFiles: any[] = [];
+
   // Set when the user taps the contact number, cleared once the call has been
   // logged. The log is written on resume rather than on the tap so that what
   // is recorded is a call the user came back from, not a link they touched.
@@ -147,6 +155,7 @@ export class DealdetailsPage {
     private fileOpener: FileOpener,
     private file: File,
     private filePath: FilePath,
+    private camera: Camera,
     public domSanitizer: DomSanitizer,
     public modalCtrl: ModalController,
     public platform: Platform,
@@ -283,6 +292,7 @@ export class DealdetailsPage {
         this.Business_Type=this.details[0].Type
         this.custom_type=this.details[0].custom_type
         this.Stage=this.details[0].Stage
+        this.action_plan=this.details[0].action_plan
         this.Progress_Log=this.details[0].Progress_Log
         this.Support_Required=this.details[0].Support_Required
         this.cold_call=this.details[0].cold_call
@@ -706,6 +716,8 @@ export class DealdetailsPage {
   openActivityModal(activity: any) {
     this.selectedActivity = activity;
     this.activityRemarks = activity.remarks || '';
+    this.activityFiles = activity.files || [];
+    this.pendingFiles = [];
     this.showActivityModal = true;
   }
 
@@ -713,10 +725,238 @@ export class DealdetailsPage {
     this.showActivityModal = false;
     this.selectedActivity = null;
     this.activityRemarks = '';
+    this.activityFiles = [];
+    this.pendingFiles = [];
+  }
+
+  takeActivityPhoto() {
+    this.pickActivityPhoto(this.camera.PictureSourceType.CAMERA);
+  }
+
+  chooseActivityPhoto() {
+    this.pickActivityPhoto(this.camera.PictureSourceType.PHOTOLIBRARY);
+  }
+
+  private pickActivityPhoto(sourceType: number) {
+    const options: CameraOptions = {
+      quality: 70,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      sourceType: sourceType,
+      saveToPhotoAlbum: false,
+      correctOrientation: true,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE,
+    };
+
+    this.camera.getPicture(options).then((imageData) => {
+      // The camera hands back a URI; the blob is read now so that submitting
+      // is a plain upload and the list can show a thumbnail straight away.
+      this.uriToBlob(imageData).then((blob: Blob) => {
+        const fileName = 'photo_' + Date.now() + '.jpg';
+        this.addPendingFile(fileName, blob);
+      }).catch((err) => {
+        console.error('Error reading photo:', err);
+        this.displayErrorAlert('Unable to read the selected photo');
+      });
+    }, (err) => {
+      // Cancelling the camera comes back as an error too, and is not one.
+      console.log('Camera cancelled or failed:', err);
+    });
+  }
+
+  async chooseActivityFile() {
+    try {
+      let fileUri;
+
+      if (this.platform.is('ios')) {
+        fileUri = 'file://' + (await this.filePicker.pickFile());
+      } else {
+        fileUri = await this.fileChooser.open();
+      }
+
+      const blob = await this.uriToBlob(fileUri);
+      let fileName = await this.resolveFileName(fileUri, blob);
+
+      const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'jpg', 'jpeg', 'png', 'gif'];
+      const fileExtension = fileName.toLowerCase().split('.').pop();
+
+      if (allowedExtensions.indexOf(fileExtension) === -1) {
+        this.displayErrorAlert(
+          'File type not supported. Supported types: PDF, DOC, DOCX, XLS, XLSX, TXT, JPG, PNG, GIF'
+        );
+        return;
+      }
+
+      this.addPendingFile(fileName, blob);
+    } catch (err) {
+      console.error('Error choosing file:', err);
+      if (err !== 'cancelled') {
+        this.displayErrorAlert('Error selecting file');
+      }
+    }
+  }
+
+  /**
+   * Read any of the URI shapes the pickers produce - file://, content://, an
+   * iOS temp path - into a Blob.
+   */
+  private uriToBlob(fileUri: string): Promise<Blob> {
+    return this.file.resolveLocalFilesystemUrl(fileUri)
+      .then((entry: FileEntry) => {
+        return new Promise<Blob>((resolve, reject) => {
+          entry.file((f: any) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(new Blob([reader.result], { type: f.type || this.getMimeTypeFromExtension(f.name || '') }));
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(f);
+          }, reject);
+        });
+      })
+      .catch(() => {
+        // Some Android providers refuse resolveLocalFilesystemUrl but will
+        // still serve the URI over XHR.
+        return new Promise<Blob>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', fileUri, true);
+          xhr.responseType = 'blob';
+          xhr.onload = () => {
+            if (xhr.status === 200 || xhr.status === 0) {
+              resolve(xhr.response);
+            } else {
+              reject(new Error('Failed to read file'));
+            }
+          };
+          xhr.onerror = () => reject(new Error('Failed to read file'));
+          xhr.send();
+        });
+      });
+  }
+
+  /**
+   * Work out a filename with an extension - a content:// URI often has neither.
+   */
+  private resolveFileName(fileUri: string, blob: Blob): Promise<string> {
+    return this.file.resolveLocalFilesystemUrl(fileUri)
+      .then((entry: any) => entry.name as string)
+      .catch(() => {
+        if (this.platform.is('ios')) {
+          return Promise.resolve(fileUri);
+        }
+        return this.filePath.resolveNativePath(fileUri).catch(() => fileUri);
+      })
+      .then((path: string) => {
+        let name = (path || '').split('/').pop() || ('file_' + Date.now());
+        name = name.split('?')[0];
+
+        if (name.indexOf('.') === -1) {
+          name = name + '.' + this.getExtensionFromMimeType(blob.type);
+        }
+
+        return name;
+      });
+  }
+
+  private getExtensionFromMimeType(mimeType: string): string {
+    const mimeToExt = {
+      'application/pdf': 'pdf',
+      'application/msword': 'doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+      'application/vnd.ms-excel': 'xls',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+      'text/plain': 'txt',
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/gif': 'gif',
+    };
+    return mimeToExt[mimeType] || 'dat';
+  }
+
+  private addPendingFile(fileName: string, blob: Blob) {
+    const fileObj: any = {
+      name: fileName,
+      size: blob.size,
+      type: blob.type || this.getMimeTypeFromExtension(fileName),
+      blob: blob,
+      preview: null,
+    };
+
+    this.pendingFiles.push(fileObj);
+
+    if (this.isImageByName(fileName)) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // bypassSecurityTrustUrl, not ...ResourceUrl - an img src is a URL
+        // context, and a SafeResourceUrl there is rejected by the sanitizer.
+        fileObj.preview = this.domSanitizer.bypassSecurityTrustUrl(reader.result as string);
+      };
+      reader.readAsDataURL(blob);
+    }
+  }
+
+  removePendingFile(index: number) {
+    this.pendingFiles.splice(index, 1);
+  }
+
+  previewActivityFile(file: any) {
+    if (this.isImageByName(file.File_Name)) {
+      this.previewExistingImage(file, 'coldcall');
+    } else {
+      this.openExistingFileExternally(file, 'coldcall');
+    }
+  }
+
+  deleteActivityFile(file: any, event: any) {
+    event.stopPropagation();
+
+    let confirm = this.alertCtrl.create({
+      title: 'Delete Attachment',
+      message: 'Delete "' + file.File_Name + '"?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.storage.get('token').then((val) => {
+              this.http.post(SERVER_URL + '/deleteColdCallActivityFile/' + file.Id + '?token=' + val.token, {},
+                httpOptions)
+                .subscribe((res: any) => {
+                  if (res && res.result == 1) {
+                    const index = this.activityFiles.indexOf(file);
+                    if (index !== -1) {
+                      this.activityFiles.splice(index, 1);
+                    }
+                    this.loadColdCallActivity();
+                    this.showToast("Attachment deleted");
+                  } else {
+                    console.log(res);
+                    this.showToast("Failed to delete attachment");
+                  }
+                }, error => {
+                  console.error('Error deleting attachment:', error);
+                  this.showToast("Failed to delete attachment");
+                });
+            });
+          }
+        }
+      ]
+    });
+    confirm.present();
   }
 
   submitActivityRemarks() {
-    if (!this.selectedActivity || !this.activityRemarks) {
+    if (!this.selectedActivity) {
+      return;
+    }
+
+    const hasRemarks = !!this.activityRemarks;
+    const hasFiles = this.pendingFiles.length > 0;
+
+    if (!hasRemarks && !hasFiles) {
       return;
     }
 
@@ -725,27 +965,70 @@ export class DealdetailsPage {
     });
     loading.present();
 
+    const activityId = this.selectedActivity.Id;
+
     this.storage.get('token').then((val) => {
-      this.http.post(SERVER_URL + '/updateColdCallActivity?token=' + val.token, {
-        id: this.selectedActivity.Id,
+      const steps = [];
+
+      if (hasRemarks) {
+        steps.push(this.saveActivityRemarks(activityId, val.token));
+      }
+
+      if (hasFiles) {
+        steps.push(this.uploadPendingFiles(activityId, val.token));
+      }
+
+      Promise.all(steps).then(() => {
+        loading.dismiss();
+        this.closeActivityModal();
+        this.loadColdCallActivity();
+        this.showToast("Cold call activity saved");
+      }).catch((err) => {
+        loading.dismiss();
+        console.error('Error saving cold call activity:', err);
+        // Whatever did land is on the server, so refresh rather than leave the
+        // list showing the pre-submit state.
+        this.loadColdCallActivity();
+        this.showToast("Failed to save cold call activity");
+      });
+    });
+  }
+
+  private saveActivityRemarks(activityId: any, token: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.http.post(SERVER_URL + '/updateColdCallActivity?token=' + token, {
+        id: activityId,
         remarks: this.activityRemarks,
       }, httpOptions)
         .subscribe((res: any) => {
-          loading.dismiss();
-
           if (res && res.result == 1) {
-            this.closeActivityModal();
-            this.loadColdCallActivity();
-            this.showToast("Cold call activity saved");
+            resolve(res);
           } else {
-            console.log(res);
-            this.showToast("Failed to save cold call activity");
+            reject(res);
           }
-        }, error => {
-          loading.dismiss();
-          console.error('Error saving cold call activity:', error);
-          this.showToast("Failed to save cold call activity");
-        });
+        }, error => reject(error));
+    });
+  }
+
+  private uploadPendingFiles(activityId: any, token: string): Promise<any> {
+    const formData = new FormData();
+    formData.append('id', activityId);
+
+    for (let i = 0; i < this.pendingFiles.length; i++) {
+      formData.append('ColdCall[]', this.pendingFiles[i].blob, this.pendingFiles[i].name);
+    }
+
+    return new Promise((resolve, reject) => {
+      // No httpOptions here on purpose - the browser has to set the multipart
+      // boundary itself.
+      this.http.post(SERVER_URL + '/uploadColdCallActivityFile?token=' + token, formData, {})
+        .subscribe((res: any) => {
+          if (res && res.result == 1) {
+            resolve(res);
+          } else {
+            reject(res);
+          }
+        }, error => reject(error));
     });
   }
 
@@ -896,7 +1179,7 @@ gotoEdit(){
     }
   }
 
-  previewExistingImage(file: any, type: 'lead') {
+  previewExistingImage(file: any, type: string) {
     let loading = this.loadingCtrl.create({
       content: 'Opening image...',
       spinner: 'crescent'
@@ -945,7 +1228,7 @@ gotoEdit(){
     });
   }
 
-  openExistingFileExternally(file: any, type: 'lead') {
+  openExistingFileExternally(file: any, type: string) {
     let loading = this.loadingCtrl.create({
       content: 'Loading file...',
       spinner: 'crescent'

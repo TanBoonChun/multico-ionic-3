@@ -16,6 +16,15 @@
     <ion-grid>
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Appointment Type</ion-label>
+          <ion-select placeholder="Choose Appointment Type" [(ngModel)]="AppointmentType" interface="popover">
+            <ion-option *ngFor="let t of appointmentTypes" [value]="t.Option">{{t.Option}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-row>
+
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Appointment Date<span style="color:red">*</span></ion-label>
           <ion-label no-margin no-lines *ngIf="!isFieldValid('Date') && submitted">
             <p class="error">Please select appointment date</p>
