@@ -560,4 +560,33 @@ page-dealdetails {
   font-size: 12px;
 }
 
+
+.no-activity {
+  color: #9ca3af;
+  font-size: 13px;
+  font-style: italic;
+  margin: 6px 0 2px 0;
+}
+
+.cold-call-list {
+  margin: 0;
+
+  ion-item {
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+
+  .activity-remarks {
+    white-space: normal;
+    color: #4b5563;
+
+    &.empty {
+      color: #9ca3af;
+      font-style: italic;
+    }
+  }
+}
+
 }

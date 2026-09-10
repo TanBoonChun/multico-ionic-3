@@ -15,6 +15,7 @@ import { Camera, CameraOptions } from '@ionic-native/camera';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Base64 } from '@ionic-native/base64';
 import { ImagePicker, ImagePickerOptions } from '@ionic-native/image-picker';
+import { IonicSelectableComponent } from 'ionic-selectable';
 import { catchError } from 'rxjs/operators';
 
 
@@ -66,11 +67,16 @@ export class CustomernewPage {
   Type: any='';
   type: any=[];
   Approach_Since: any='';
-  Custom_Country: any='';
   Custom_Type: any='';
-  Region: any='';
-  region: any=[];
+  Area: any='';
+  area: any=[];
   department: any='';
+
+  // An existing customer (vendors row of type Customer) picked from the
+  // dropdown, so the same customer is not created as a lead twice.
+  Customer: any='';
+  customers: any=[];
+  customer_id: any='';
 
   selectedFiles: any[] = []; // Store file objects with metadata
   fileBlobs: Blob[] = []; // Store actual file data
@@ -130,12 +136,6 @@ export class CustomernewPage {
       })
     });
 
-    this.storage.get('token').then((val) => {
-      data = this.http.get(SERVER_URL + '/getRegion/?token=' + val.token );
-      data.subscribe(result => {
-        this.region = result;
-      })
-    });
 
     this.storage.get('token').then((val) => {
       data = this.http.get(SERVER_URL + '/getPriority/?token=' + val.token );
@@ -158,20 +158,53 @@ export class CustomernewPage {
       })
     });
 
+    // Existing customers, each with the salesperson who owns its lead.
+    this.storage.get('token').then((val) => {
+      data = this.http.get(SERVER_URL + '/getCustomerList?token=' + val.token );
+      data.subscribe(result => {
+        this.customers = result.customer ? result.customer : [];
+      }, (err) => {
+        console.log(err);
+        this.customers = [];
+      })
+    });
+
+  }
+
+  /**
+   * The areas inside one state. Called again whenever State changes, so the
+   * Area selectable never offers a locality from a different state.
+   */
+  loadAreas(state) {
+    if (!state) {
+      this.area = [];
+      return;
+    }
+
+    this.storage.get('token').then((val) => {
+      this.http.get(SERVER_URL + '/getArea?state=' + encodeURIComponent(state) +
+        '&token=' + val.token)
+        .subscribe(result => {
+          this.area = result;
+        }, (err) => {
+          console.log(err);
+          this.area = [];
+        })
+    });
   }
 
   ngOnInit() {
     this.leadForm = new FormGroup({
       Status: new FormControl('', []),
+      Customer: new FormControl('', []),
       CO_Name: new FormControl('', [Validators.required]),
       Customer_Name: new FormControl('', []),
       Contact_No: new FormControl('', [Validators.required]),
       Email: new FormControl('', []),
       Address: new FormControl('', []),
       Country: new FormControl('', [Validators.required]),
-      Custom_Country: new FormControl('', []),
-      State: new FormControl('', []),
-      Region: new FormControl('', []),
+      State: new FormControl('', [Validators.required]),
+      Area: new FormControl('', [Validators.required]),
       Source: new FormControl('', [Validators.required]),
       Type: new FormControl('', [Validators.required]),
       Custom_Type: new FormControl('', [Validators.required]),
@@ -181,34 +214,14 @@ export class CustomernewPage {
       Remarks: new FormControl('', []),
     })
 
-    this.leadForm.get('Country').valueChanges.subscribe(country => {
-      const value = (country || '').toString().toUpperCase();
-      if (country === 'KLANG VALLEY') {
-        this.leadForm.get('Region').setValidators([Validators.required]);
-        this.leadForm.get('State').clearValidators();
-        this.leadForm.get('Custom_Country').clearValidators();
-      } 
-      else if (country === 'OTHER STATES (MALAYSIA)') {
-        this.leadForm.get('State').setValidators([Validators.required]);
-        this.leadForm.get('Region').clearValidators();
-        this.leadForm.get('Custom_Country').clearValidators();
-      } 
-      else if (country === 'INTERNATIONAL') {
-        this.leadForm.get('Custom_Country').setValidators([Validators.required]);
-        this.leadForm.get('State').clearValidators();
-        this.leadForm.get('Region').clearValidators();
-      } 
-      else {
-        // default: clear all conditional validators
-        this.leadForm.get('State').clearValidators();
-        this.leadForm.get('Region').clearValidators();
-        this.leadForm.get('Custom_Country').clearValidators();
-      }
+    // Area only offers localities inside the state that is picked, so the list
+    // is refetched and whatever was chosen for the previous state is dropped.
+    this.leadForm.get('State').valueChanges.subscribe(state => {
+      const option = state && state.Option ? state.Option : '';
 
-      // update validity
-      this.leadForm.get('State').updateValueAndValidity();
-      this.leadForm.get('Region').updateValueAndValidity();
-      this.leadForm.get('Custom_Country').updateValueAndValidity();
+      this.Area = '';
+      this.leadForm.get('Area').setValue('', { emitEvent: false });
+      this.loadAreas(option);
     });
 
     this.leadForm.get('Type').valueChanges.subscribe(type => {
@@ -837,6 +850,89 @@ getMimeTypeFromExtension(fileName: string): string {
     return typeMap[mimeType] || 'Unknown File Type';
   }
   
+  searchCustomers(event: { component: IonicSelectableComponent; text: string }) {
+    let text = event.text.trim().toLowerCase();
+
+    event.component.items = this.customers.filter((c) =>
+      (c.Vendor_Name || '').toLowerCase().indexOf(text) !== -1 ||
+      (c.Account_Code || '').toLowerCase().indexOf(text) !== -1 ||
+      (c.Salesperson || '').toLowerCase().indexOf(text) !== -1
+    );
+  }
+
+  onCustomerChange() {
+    if (!this.Customer) {
+      // Cleared - back to typing a customer that does not exist yet.
+      this.customer_id = '';
+      return;
+    }
+
+    this.customer_id = this.Customer.Id;
+
+    // An existing customer already has a lead, so there is nothing to create -
+    // send the user to the appointment page instead of making a duplicate.
+    if (this.Customer.Has_Lead) {
+      this.promptExistingCustomer(this.Customer);
+      return;
+    }
+
+    this.fillFromCustomer(this.Customer);
+  }
+
+  fillFromCustomer(customer) {
+    this.CO_Name = customer.Vendor_Name ? customer.Vendor_Name : '';
+    this.Customer_Name = customer.Contact_Person ? customer.Contact_Person : '';
+    this.Contact_No = customer.Contact_No ? customer.Contact_No : (customer.Office_No ? customer.Office_No : '');
+    this.Email = customer.Email ? customer.Email : '';
+    this.Address = [customer.Address, customer.Address2].filter((a) => !!a).join(' ');
+    this.CO_No = customer.Registration_Number ? customer.Registration_Number : '';
+    this.State = customer.State ? { Option: customer.State } : this.State;
+  }
+
+  clearCustomer() {
+    this.Customer = '';
+    this.customer_id = '';
+  }
+
+  promptExistingCustomer(customer) {
+    let salesperson = customer.Salesperson ? customer.Salesperson : 'not assigned';
+    let buttons: any[] = [
+      {
+        text: 'Pick Another',
+        role: 'cancel',
+        handler: () => {
+          this.clearCustomer();
+        }
+      }
+    ];
+
+    if (customer.DealId) {
+      buttons.push({
+        text: 'Create Schedule',
+        handler: () => {
+          this.goToSchedule(customer.DealId);
+        }
+      });
+    }
+
+    let alert = this.alertCtrl.create({
+      title: 'Customer Already Exists',
+      subTitle: customer.Vendor_Name + ' already has a lead (Salesperson: ' + salesperson +
+        '). No need to create it again - schedule the next meeting instead.',
+      buttons: buttons
+    });
+    alert.present();
+  }
+
+  // Replaces this form in the nav stack so Back does not land on it again.
+  goToSchedule(dealId) {
+    let index = this.navCtrl.getActive().index;
+
+    this.navCtrl.push('SchedulenewPage', { DealId: dealId }).then(() => {
+      this.navCtrl.remove(index);
+    });
+  }
+
   displayErrorAlert(err) {
     console.log(err);
     let alert = this.alertCtrl.create({
@@ -1040,8 +1136,7 @@ getMimeTypeFromExtension(fileName: string): string {
         this.formData.append("address", this.Address);
         this.formData.append("country", this.Country.Option);
         this.formData.append("state", this.State.Option);
-        this.formData.append("custom_country", this.Custom_Country);
-        this.formData.append("region", this.Region.Option);
+        this.formData.append("area", this.Area.Option);
         this.formData.append("priority", this.Priority.Option);
         this.formData.append("source", this.Source.Option);
         this.formData.append("type", this.Type.Option);
@@ -1049,6 +1144,7 @@ getMimeTypeFromExtension(fileName: string): string {
         this.formData.append("approach_since", this.Approach_Since);
         this.formData.append("co_no", this.CO_No);
         this.formData.append("remarks", this.Remarks);
+        this.formData.append("customer_id", this.customer_id);
         resolveReady();
       })
       
@@ -1074,7 +1170,26 @@ getMimeTypeFromExtension(fileName: string): string {
         (res: any) => {
           console.log(res);
 
-          if (res == 1) {
+          if (res && res.status == 1) {
+            let toast = this.toast.create({
+              message: "New Lead created. Schedule the next meeting.",
+              position: "middle",
+              closeButtonText: "Ok",
+              showCloseButton: true,
+              cssClass: "red",
+            });
+            toast.present();
+
+            // Straight on to the appointment for this lead's deal.
+            this.goToSchedule(res.dealId);
+          } else if (res && res.status == 2) {
+            // The lead is already there - offer its appointment page instead.
+            this.promptExistingCustomer({
+              Vendor_Name: res.company_name,
+              Salesperson: res.salesperson,
+              DealId: res.dealId,
+            });
+          } else if (res == 1) {
             this.navCtrl.pop();
             let toast = this.toast.create({
               message: "New Lead created",

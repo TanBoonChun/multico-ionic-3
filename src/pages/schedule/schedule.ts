@@ -82,6 +82,13 @@ export class SchedulePage {
               end: new Date(res.appointment_date),
               title: a,
               allDay: true,
+              // extra props kept on the event so eventRender can lay them out
+              schTime: res.Time,
+              schCompany: res.Company_Name,
+              schSalesperson: res.Name,
+              schStatus: res.status,
+              schPic: res.PIC_Name,
+              schProject: res.Project_Name,
             }
           )
         };
@@ -96,7 +103,7 @@ export class SchedulePage {
   ngOnInit() {
     this.calendarOptions = {
       height: 'auto',
-      contentHeight: 600,
+      contentHeight: 'auto',
       aspectRatio: 1.35,
       header: {
         left: 'title',
@@ -115,6 +122,7 @@ export class SchedulePage {
           buttonText: 'Today'
         }
       },
+      eventRender: (event, element) => this.eventRender(event, element),
       fixedWeekCount : false,
       defaultDate: (new Date()).toISOString(),
       defaultView: 'agendaFourDay',
@@ -122,6 +130,65 @@ export class SchedulePage {
       events: [],
       
     };
+  }
+
+  escapeHtml(value): string {
+    if (value === null || value === undefined) {
+      return '';
+    }
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  statusClass(status): string {
+    switch (String(status || '').toLowerCase()) {
+      case 'open': return 'sch-status--open';
+      case 'closed': return 'sch-status--closed';
+      case 'cancel': return 'sch-status--cancel';
+      default: return 'sch-status--other';
+    }
+  }
+
+  // Renders each list row as a small card so the salesperson is clearly labelled
+  eventRender(event, element) {
+    var cell = element.find('.fc-list-item-title');
+    if (!cell.length) {
+      return;
+    }
+
+    var time = this.escapeHtml(event.schTime);
+    var company = this.escapeHtml(event.schCompany) || 'No company';
+    var salesperson = this.escapeHtml(event.schSalesperson);
+    var status = this.escapeHtml(event.schStatus);
+    var pic = this.escapeHtml(event.schPic);
+    var project = this.escapeHtml(event.schProject);
+
+    var html = '<div class="sch-card">';
+    html += '<div class="sch-card__head">';
+    if (time) {
+      html += '<span class="sch-time">' + time + '</span>';
+    }
+    if (status) {
+      html += '<span class="sch-status ' + this.statusClass(event.schStatus) + '">' + status + '</span>';
+    }
+    html += '</div>';
+    html += '<div class="sch-company">' + company + '</div>';
+    if (project) {
+      html += '<div class="sch-meta"><span class="sch-label">Project</span>' + project + '</div>';
+    }
+    if (pic) {
+      html += '<div class="sch-meta"><span class="sch-label">Client</span>' + pic + '</div>';
+    }
+    if (salesperson) {
+      html += '<div class="sch-meta sch-meta--sales"><span class="sch-label">Salesperson</span>' +
+              '<span class="sch-salesperson">' + salesperson + '</span></div>';
+    }
+    html += '</div>';
+
+    cell.html(html);
   }
 
   eventClick(e) {

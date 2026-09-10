@@ -41,7 +41,8 @@ export class UnassigneddetailsPage {
   Email:any;
   Remarks:any;
   Country:any;
-  StateRegion:any;
+  State:any;
+  Area:any;
   Type:any;
   custom_type:any;
   Source:any;
@@ -82,7 +83,8 @@ export class UnassigneddetailsPage {
     this.Customer_Name=this.navParams.get('Customer_Name');
     this.Contact_No=this.navParams.get('Contact_No');
     this.Country=this.navParams.get('Country');
-    this.StateRegion=this.navParams.get('StateRegion');
+    this.State=this.navParams.get('State');
+    this.Area=this.navParams.get('Area');
     this.Type=this.navParams.get('Type');
     this.custom_type=this.navParams.get('custom_type');
     this.Source=this.navParams.get('Source');

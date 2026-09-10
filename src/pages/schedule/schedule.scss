@@ -74,7 +74,7 @@ page-schedule {
     .ion-item{
         // top: 10px;
         // height: 500px;
-        overflow-x: scroll;
+        overflow-x: auto;
         direction: ltr;
 
     }
@@ -84,7 +84,7 @@ page-schedule {
         height: 500px;
     }
     .fc-view-container{
-        overflow-x: scroll; 
+        overflow-x: auto;
         direction: ltr;
 
     }
@@ -103,5 +103,128 @@ page-schedule {
 
     .fc-list-table .fc-widget-content:first-child {
     display: none !important;
+    }
+
+    // ---- schedule list view ----
+    .fc-list-view {
+        border: none;
+    }
+
+    // day separator row
+    .fc-list-heading .fc-widget-header {
+        background: #f4f6ff;
+        border: none;
+        border-left: 3px solid #3880ff;
+        padding: 8px 12px;
+        font-size: 1.3rem;
+        color: #3d4c66;
+    }
+
+    .fc-list-heading-main {
+        font-weight: 700;
+        color: #1f2d4d;
+    }
+
+    .fc-list-heading-alt {
+        font-weight: 500;
+        color: #7a869a;
+    }
+
+    .fc-list-item {
+        cursor: pointer;
+
+        &:hover td {
+            background-color: #f7f9ff;
+        }
+    }
+
+    .fc-list-item-title {
+        padding: 0 !important;
+        border-top: 1px solid #eceff5 !important;
+        white-space: normal;
+
+        a {
+            display: block;
+        }
+    }
+
+    .sch-card {
+        padding: 10px 12px 12px;
+    }
+
+    .sch-card__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
+    .sch-time {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #3880ff;
+        letter-spacing: 0.2px;
+    }
+
+    .sch-status {
+        font-size: 1.05rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        white-space: nowrap;
+    }
+
+    .sch-status--open {
+        color: #b26a00;
+        background: #fff2d9;
+    }
+
+    .sch-status--closed {
+        color: #1a7f45;
+        background: #e0f5e9;
+    }
+
+    .sch-status--cancel {
+        color: #c02626;
+        background: #fde5e5;
+    }
+
+    .sch-status--other {
+        color: #5a6478;
+        background: #eceff5;
+    }
+
+    .sch-company {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2d4d;
+        line-height: 1.3;
+        margin-bottom: 4px;
+        white-space: normal;
+    }
+
+    .sch-meta {
+        font-size: 1.25rem;
+        color: #4a5568;
+        line-height: 1.5;
+        white-space: normal;
+    }
+
+    .sch-label {
+        display: inline-block;
+        min-width: 78px;
+        color: #8894a8;
+        font-weight: 600;
+    }
+
+    .sch-meta--sales {
+        margin-top: 2px;
+    }
+
+    .sch-salesperson {
+        font-weight: 700;
+        color: #1f2d4d;
     }
 }

@@ -43,14 +43,17 @@ export class DealupdatePage {
   country: any=[];
   State: any='';
   state: any=[];
-  Region:any='';
-  region:any=[];
+  Area:any='';
+  area:any=[];
+
+  // Set by the prefill so the area saved on the record survives the reload
+  // that filling in the state triggers; cleared once it has been applied.
+  pendingArea: any='';
   Source: any='';
   source: any=[];
   Type: any='';
   type: any=[];
   Approach_Since: any='';
-  Custom_Country: any='';
   Custom_Type: any='';
   Remarks:any ='';
   Priority:any ='';
@@ -170,12 +173,6 @@ export class DealupdatePage {
       })
     });
 
-    this.storage.get('token').then((val) => {
-      data = this.http.get(SERVER_URL + '/getRegion/?token=' + val.token );
-      data.subscribe(result => {
-        this.region = result;
-      })
-    });
 
     this.storage.get('token').then((val) => {
       data = this.http.get(SERVER_URL + '/getPriority/?token=' + val.token );
@@ -199,7 +196,35 @@ export class DealupdatePage {
     });
     
     this.loadExistingFiles();
-  
+
+  }
+
+  /**
+   * The areas inside one state. Called again whenever State changes, so the
+   * Area selectable never offers a locality from a different state. `selected`
+   * is re-applied once the list is in, which is what keeps the saved area on a
+   * record being edited.
+   */
+  loadAreas(state, selected?) {
+    if (!state) {
+      this.area = [];
+      return;
+    }
+
+    this.storage.get('token').then((val) => {
+      this.http.get(SERVER_URL + '/getArea?state=' + encodeURIComponent(state) +
+        '&token=' + val.token)
+        .subscribe(result => {
+          this.area = result;
+
+          if (selected) {
+            this.Area = { "Option": selected };
+          }
+        }, (err) => {
+          console.log(err);
+          this.area = [];
+        })
+    });
   }
 
   ngOnInit() {
@@ -210,9 +235,8 @@ export class DealupdatePage {
       Email: new FormControl('', []),
       Address: new FormControl('', []),
       Country: new FormControl('', [Validators.required]),
-      Custom_Country: new FormControl('', []),
-      State: new FormControl('', []),
-      Region: new FormControl('', []),
+      State: new FormControl('', [Validators.required]),
+      Area: new FormControl('', [Validators.required]),
       Source: new FormControl('', [Validators.required]),
       Type: new FormControl('', [Validators.required]),
       Custom_Type: new FormControl('', [Validators.required]),
@@ -222,34 +246,16 @@ export class DealupdatePage {
      
     })
 
-    this.signupform.get('Country').valueChanges.subscribe(country => {
-      const value = (country || '').toString().toUpperCase();
-      if (country === 'KLANG VALLEY') {
-        this.signupform.get('Region').setValidators([Validators.required]);
-        this.signupform.get('State').clearValidators();
-        this.signupform.get('Custom_Country').clearValidators();
-      } 
-      else if (country === 'OTHER STATES (MALAYSIA)') {
-        this.signupform.get('State').setValidators([Validators.required]);
-        this.signupform.get('Region').clearValidators();
-        this.signupform.get('Custom_Country').clearValidators();
-      } 
-      else if (country === 'INTERNATIONAL') {
-        this.signupform.get('Custom_Country').setValidators([Validators.required]);
-        this.signupform.get('State').clearValidators();
-        this.signupform.get('Region').clearValidators();
-      } 
-      else {
-        // default: clear all conditional validators
-        this.signupform.get('State').clearValidators();
-        this.signupform.get('Region').clearValidators();
-        this.signupform.get('Custom_Country').clearValidators();
-      }
+    // Area only offers localities inside the state that is picked. On a
+    // record being opened for edit the area it was saved with is handed over
+    // in pendingArea, so it is kept instead of cleared.
+    this.signupform.get('State').valueChanges.subscribe(state => {
+      const option = state && state.Option ? state.Option : '';
+      const keep = this.pendingArea;
 
-      // update validity
-      this.signupform.get('State').updateValueAndValidity();
-      this.signupform.get('Region').updateValueAndValidity();
-      this.signupform.get('Custom_Country').updateValueAndValidity();
+      this.pendingArea = '';
+      this.Area = keep ? { "Option": keep } : '';
+      this.loadAreas(option, keep);
     });
 
     this.signupform.get('Type').valueChanges.subscribe(type => {
@@ -281,9 +287,8 @@ export class DealupdatePage {
         this.Email=this.details[0].Email
         this.Address=this.details[0].Address
         this.Country={"Option": this.details[0].Country}
+        this.pendingArea=this.details[0].Area
         this.State={"Option": this.details[0].State}
-        this.Region={"Option": this.details[0].region}
-        this.Custom_Country=this.details[0].custom_country
         this.Priority={"Option": this.details[0].Priority}
         this.Source={"Option": this.details[0].Source}
         this.Type={"Option": this.details[0].Type}
@@ -944,8 +949,7 @@ export class DealupdatePage {
           this.formData.append("address", this.Address);
           this.formData.append("country", this.Country.Option);
           this.formData.append("state", this.State.Option);
-          this.formData.append("custom_country", this.Custom_Country);
-          this.formData.append("region", this.Region.Option);
+          this.formData.append("area", this.Area.Option);
           this.formData.append("priority", this.Priority.Option);
           this.formData.append("source", this.Source.Option);
           this.formData.append("type", this.Type.Option);

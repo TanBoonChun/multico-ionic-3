@@ -69,21 +69,20 @@
 
         <ion-row no-margin no-padding>
           <ion-item class="ion-item" no-margin no-padding padding-left>
-            <ion-label stacked>Delivery Area</ion-label>
+            <ion-label stacked>Country</ion-label>
             <ion-label no-margin no-lines>
-              <p class="error">Please select delivery area</p>
+              <p class="error">Please select country</p>
             </ion-label>
             <ionic-selectable item-content [(ngModel)]="Country" [items]="country" formControlName="Country" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
             </ionic-selectable>
           </ion-item>
         </ion-row>
 
-        <!-- Show ONLY when Country == MALAYSIA -->
-      <ion-row *ngIf="Country && Country?.Option === 'OTHER STATES (MALAYSIA)'" no-margin no-padding>
+      <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>State</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error">Please select state</p>
           </ion-label>
           <ionic-selectable
             item-content
@@ -98,32 +97,18 @@
         </ion-item>
       </ion-row>
 
-      <ion-row *ngIf="Country && Country?.Option === 'INTERNATIONAL'" no-margin no-padding>
+      <!-- Only offers areas inside the state picked above -->
+      <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
-          <ion-label stacked>Other (Country)</ion-label>
+          <ion-label stacked>Area</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
-          </ion-label>
-          <ion-input
-            type="text"
-            placeholder="State Country Name"
-            formControlName="Custom_Country"
-            [(ngModel)]="Custom_Country">
-          </ion-input>
-        </ion-item>
-      </ion-row>
-
-      <ion-row *ngIf="Country && Country?.Option === 'KLANG VALLEY'" no-margin no-padding>
-        <ion-item class="ion-item" no-margin no-padding padding-left>
-          <ion-label stacked>Region</ion-label>
-          <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error">Please select area</p>
           </ion-label>
           <ionic-selectable
             item-content
-            [(ngModel)]="Region"
-            [items]="region"
-            formControlName="Region"
+            [(ngModel)]="Area"
+            [items]="area"
+            formControlName="Area"
             itemValueField="Option"
             itemTextField="Option"
             [canSearch]="true"

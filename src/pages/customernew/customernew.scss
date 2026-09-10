@@ -116,4 +116,11 @@ page-customernew {
         color: rgb(223, 62, 62);
         font-size: 12px;
     }
+
+    // Who owns the customer picked from the Existing Customer dropdown.
+    .existing-customer-note {
+        margin: 0 10px 6px;
+        color: #3a3996;
+        font-size: 12px;
+    }
 }

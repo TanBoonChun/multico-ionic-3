@@ -95,7 +95,8 @@ export class DealdetailsPage {
   has_agent:any;
   lead_from:any;
   Country:any;
-  StateRegion:any;
+  State:any;
+  Area:any;
   custom_type:any;
 
   showAgentModal: boolean = false;
@@ -121,6 +122,17 @@ export class DealdetailsPage {
   lostRemarks: string = '';
   showVoidModal: boolean = false;
   voidRemarks: string = '';
+
+  coldCallActivities: any[] = [];
+  showActivityModal: boolean = false;
+  selectedActivity: any = null;
+  activityRemarks: string = '';
+
+  // Set when the user taps the contact number, cleared once the call has been
+  // logged. The log is written on resume rather than on the tap so that what
+  // is recorded is a call the user came back from, not a link they touched.
+  pendingColdCall: boolean = false;
+  resumeSubscription: any = null;
 
   constructor(
     public navCtrl: NavController,
@@ -167,7 +179,8 @@ export class DealdetailsPage {
       this.has_agent=this.navParams.get('has_agent')
       this.lead_from=this.navParams.get('Source')
       this.Country=this.navParams.get('Country')
-      this.StateRegion=this.navParams.get('StateRegion')
+      this.State=this.navParams.get('State')
+      this.Area=this.navParams.get('Area')
       this.custom_type=this.navParams.get('custom_type')
       //added by Hau 20240328
 
@@ -277,7 +290,8 @@ export class DealdetailsPage {
         this.has_agent=this.details[0].has_agent
         this.lead_from=this.details[0].Source
         this.Country=this.details[0].Country
-        this.StateRegion=this.details[0].StateRegion
+        this.State=this.details[0].State
+        this.Area=this.details[0].Area
         this.Customer_Name=this.details[0].Customer_Name
         this.Contact_No=this.details[0].Contact_No
         this.Email=this.details[0].Email
@@ -301,6 +315,25 @@ export class DealdetailsPage {
     });
 
     this.loadExistingFiles();
+    this.loadColdCallActivity();
+  }
+
+  ionViewDidLoad() {
+    // The dialler puts the app in the background; coming back is the signal
+    // that a call was actually placed.
+    this.resumeSubscription = this.platform.resume.subscribe(() => {
+      if (this.pendingColdCall) {
+        this.pendingColdCall = false;
+        this.logColdCall();
+      }
+    });
+  }
+
+  ionViewWillUnload() {
+    if (this.resumeSubscription) {
+      this.resumeSubscription.unsubscribe();
+      this.resumeSubscription = null;
+    }
   }
 
   // ionViewDidLoad() {
@@ -623,91 +656,143 @@ export class DealdetailsPage {
     toast.present();
   }
 
-  coldCall() {
+  loadColdCallActivity() {
+    this.storage.get('token').then((val) => {
+      this.http.get<any>(SERVER_URL + '/getColdCallActivity/' + this.Id2 + '?token=' + val.token)
+        .subscribe(result => {
+          this.coldCallActivities = result || [];
+        }, error => {
+          console.error('Error loading cold call activity:', error);
+        });
+    });
+  }
+
+  /**
+   * Tapping the contact number still opens the dialler - the href does that on
+   * its own. All this adds is the intent to log the call once the user is back.
+   */
+  onCallContact(event: any) {
+    event.stopPropagation();
+
+    if (this.platform.is('cordova')) {
+      this.pendingColdCall = true;
+    } else {
+      // In the browser there is no dialler and no resume event, so there is
+      // nothing to wait for.
+      this.logColdCall();
+    }
+  }
+
+  logColdCall() {
+    this.storage.get('token').then((val) => {
+      this.http.post(SERVER_URL + '/log_cold_call?token=' + val.token, {
+        dealid: this.Id2,
+      }, httpOptions)
+        .subscribe((res: any) => {
+          if (res && res.result == 1) {
+            this.cold_call = 1;
+            this.loadColdCallActivity();
+            this.showToast("Cold call recorded");
+          } else {
+            console.log(res);
+          }
+        }, error => {
+          console.error('Error logging cold call:', error);
+          this.showToast("Failed to record cold call");
+        });
+    });
+  }
+
+  openActivityModal(activity: any) {
+    this.selectedActivity = activity;
+    this.activityRemarks = activity.remarks || '';
+    this.showActivityModal = true;
+  }
+
+  closeActivityModal() {
+    this.showActivityModal = false;
+    this.selectedActivity = null;
+    this.activityRemarks = '';
+  }
+
+  submitActivityRemarks() {
+    if (!this.selectedActivity || !this.activityRemarks) {
+      return;
+    }
+
     let loading = this.loadingCtrl.create({
       content: "Submitting ...",
     });
     loading.present();
-      this.storage.get('token').then((val) => {
-        return this.http.post(SERVER_URL + '/cold_call?token=' + val.token, {
-          dealid: this.Id,
-        },
-          httpOptions)
-        .subscribe(
-          (res: any) =>{
-            loading.dismiss();
-  
-            if(res==1){
-  
-              this.navCtrl.pop();
-                let toast = this.toast.create({
-                  message: "Done Cold Call",
-                  position: "middle",
-                  closeButtonText: "Ok",
-                  showCloseButton: true,
-                  cssClass: "red",
-                });
-  
-                toast.present();
-            }else{
-              var obj = res;
-              console.log(obj);
-              var errormessage = "";
-              for (var item in obj) {
-                errormessage = obj[item][0];
-              }
-              // this.displayErrorAlert(errormessage);
-                      
-            }
-        })
 
-      });
+    this.storage.get('token').then((val) => {
+      this.http.post(SERVER_URL + '/updateColdCallActivity?token=' + val.token, {
+        id: this.selectedActivity.Id,
+        remarks: this.activityRemarks,
+      }, httpOptions)
+        .subscribe((res: any) => {
+          loading.dismiss();
 
-  }
-
-  removeColdCall() {
-    let loading = this.loadingCtrl.create({
-      content: "Submitting ...",
+          if (res && res.result == 1) {
+            this.closeActivityModal();
+            this.loadColdCallActivity();
+            this.showToast("Cold call activity saved");
+          } else {
+            console.log(res);
+            this.showToast("Failed to save cold call activity");
+          }
+        }, error => {
+          loading.dismiss();
+          console.error('Error saving cold call activity:', error);
+          this.showToast("Failed to save cold call activity");
+        });
     });
-    loading.present();
-      this.storage.get('token').then((val) => {
-        return this.http.post(SERVER_URL + '/remove_cold_call?token=' + val.token, {
-          dealid: this.Id,
-        },
-          httpOptions)
-        .subscribe(
-          (res: any) =>{
-            loading.dismiss();
-  
-            if(res==1){
-  
-              this.navCtrl.pop();
-                let toast = this.toast.create({
-                  message: "Done Remove Cold Call",
-                  position: "middle",
-                  closeButtonText: "Ok",
-                  showCloseButton: true,
-                  cssClass: "red",
-                });
-  
-                toast.present();
-            }else{
-              var obj = res;
-              console.log(obj);
-              var errormessage = "";
-              for (var item in obj) {
-                errormessage = obj[item][0];
-              }
-              // this.displayErrorAlert(errormessage);
-                      
-            }
-        })
-
-      });
-
   }
 
-  gotoEdit(){
+  deleteActivity(activity: any, event: any) {
+    // The row itself opens the modal - a tap on the bin must not do both.
+    event.stopPropagation();
+
+    let confirm = this.alertCtrl.create({
+      title: 'Delete Cold Call Activity',
+      message: 'Delete this cold call record?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.storage.get('token').then((val) => {
+              this.http.post(SERVER_URL + '/deleteColdCallActivity?token=' + val.token, {
+                id: activity.Id,
+              }, httpOptions)
+                .subscribe((res: any) => {
+                  if (res && res.result == 1) {
+                    this.loadColdCallActivity();
+                    if (this.coldCallActivities.length <= 1) {
+                      // Server clears the flag once the last one is gone.
+                      this.cold_call = 0;
+                    }
+                    this.showToast("Cold call activity deleted");
+                  } else {
+                    console.log(res);
+                    this.showToast("Failed to delete cold call activity");
+                  }
+                }, error => {
+                  console.error('Error deleting cold call activity:', error);
+                  this.showToast("Failed to delete cold call activity");
+                });
+            });
+          }
+        }
+      ]
+    });
+    confirm.present();
+  }
+
+gotoEdit(){
 
     let nav = this.app.getRootNav();
     nav.push('DealupdatePage',{

@@ -38,7 +38,8 @@ export class UnassignedPage {
   Address: any;
   Email: any;
   Country: any;
-  StateRegion: any;
+  State: any;
+  Area: any;
   Remarks: any;
   Type: any;
   custom_type: any;
@@ -76,7 +77,8 @@ export class UnassignedPage {
       Email: this.Email,
       Remarks: this.Remarks,
       Country: this.Country,
-      StateRegion: this.StateRegion,
+      State: this.State,
+      Area: this.Area,
       Type: this.Type,
       custom_type: this.custom_type,
       Source: this.Source,

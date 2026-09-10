@@ -18,13 +18,49 @@
 
       <form novalidate (ngSubmit)="submit()" [formGroup]="leadForm">
 
+      <!-- Pick an existing customer first so the same one is not created twice. -->
+      <ion-row no-margin no-padding>
+        <ion-item class="ion-item" no-margin no-padding padding-left>
+          <ion-label stacked>Existing Customer</ion-label>
+          <ionic-selectable
+            item-content
+            [(ngModel)]="Customer"
+            [items]="customers"
+            formControlName="Customer"
+            itemValueField="Id"
+            itemTextField="Display_Name"
+            placeholder="Search existing customer (leave empty for a new one)"
+            [canSearch]="true"
+            [canClear]="true"
+            (onSearch)="searchCustomers($event)"
+            (onChange)="onCustomerChange()">
+            <ng-template ionicSelectableItemTemplate let-customer="item">
+              <h2 no-margin>{{ customer.Vendor_Name }}</h2>
+              <p no-margin>
+                <span *ngIf="customer.Account_Code">{{ customer.Account_Code }} &middot; </span>
+                Sales Person: {{ customer.Salesperson || 'Not assigned' }}
+                <span *ngIf="customer.Has_Lead"> &middot; Lead exists</span>
+              </p>
+            </ng-template>
+          </ionic-selectable>
+        </ion-item>
+      </ion-row>
+
+      <ion-row *ngIf="Customer" no-margin no-padding>
+        <ion-col col-12 no-padding padding-left>
+          <p class="existing-customer-note">
+            Sales Person: <strong>{{ Customer.Salesperson || 'Not assigned' }}</strong>
+          </p>
+        </ion-col>
+      </ion-row>
+
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>Company Name</ion-label>
           <ion-label no-margin no-lines>
             <p class="error">This field is required</p>
           </ion-label>
-          <ion-input type="text" placeholder="State Company Name" formControlName="CO_Name" [(ngModel)]="CO_Name"></ion-input>
+          <ion-input type="text" placeholder="State Company Name" formControlName="CO_Name" [(ngModel)]="CO_Name" [readonly]="!!Customer"></ion-input>
         </ion-item>
       </ion-row>
 
@@ -67,9 +103,9 @@
 
       <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
-          <ion-label stacked>Delivery Area</ion-label>
+          <ion-label stacked>Country</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">Please select delivery area</p>
+            <p class="error">Please select country</p>
           </ion-label>
           <ionic-selectable item-content [(ngModel)]="Country" [items]="country" formControlName="Country" itemValueField="Option" itemTextField="Option" [canSearch]="true" [canClear]="true" >
           </ionic-selectable>
@@ -77,12 +113,11 @@
       </ion-row>
 
 
-      <!-- Show ONLY when Country == MALAYSIA -->
-      <ion-row *ngIf="Country && Country?.Option === 'OTHER STATES (MALAYSIA)'" no-margin no-padding>
+      <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
           <ion-label stacked>State</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error">Please select state</p>
           </ion-label>
           <ionic-selectable
             item-content
@@ -97,32 +132,18 @@
         </ion-item>
       </ion-row>
 
-      <ion-row *ngIf="Country && Country?.Option === 'INTERNATIONAL'" no-margin no-padding>
+      <!-- Only offers areas inside the state picked above -->
+      <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>
-          <ion-label stacked>Other (Country)</ion-label>
+          <ion-label stacked>Area</ion-label>
           <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
-          </ion-label>
-          <ion-input
-            type="text"
-            placeholder="State Country Name"
-            formControlName="Custom_Country"
-            [(ngModel)]="Custom_Country">
-          </ion-input>
-        </ion-item>
-      </ion-row>
-
-      <ion-row *ngIf="Country && Country?.Option === 'KLANG VALLEY'" no-margin no-padding>
-        <ion-item class="ion-item" no-margin no-padding padding-left>
-          <ion-label stacked>Region</ion-label>
-          <ion-label no-margin no-lines>
-            <p class="error">This field is required</p>
+            <p class="error">Please select area</p>
           </ion-label>
           <ionic-selectable
             item-content
-            [(ngModel)]="Region"
-            [items]="region"
-            formControlName="Region"
+            [(ngModel)]="Area"
+            [items]="area"
+            formControlName="Area"
             itemValueField="Option"
             itemTextField="Option"
             [canSearch]="true"
@@ -131,7 +152,7 @@
         </ion-item>
       </ion-row>
 
-      
+
 
        <ion-row no-margin no-padding>
         <ion-item class="ion-item" no-margin no-padding padding-left>

@@ -43,7 +43,8 @@ export class CustomerdetailsPage {
   PIC_name:any;
   PIC_no:any;
   Country:any;
-  StateRegion:any;
+  State:any;
+  Area:any;
   Type:any;
   custom_type:any;
   lead_from:any;
@@ -77,7 +78,8 @@ export class CustomerdetailsPage {
     this.CO_No=this.navParams.get('CO_No');
     this.Contact_No=this.navParams.get('Contact_No');
     this.Country=this.navParams.get('Country');
-    this.StateRegion=this.navParams.get('StateRegion');
+    this.State=this.navParams.get('State');
+    this.Area=this.navParams.get('Area');
     this.Type=this.navParams.get('Type');
     this.custom_type=this.navParams.get('custom_type');
     this.lead_from=this.navParams.get('Source');
@@ -291,7 +293,8 @@ export class CustomerdetailsPage {
               Company_Code:this.Company_Code,
               Contact_No:this.Contact_No,
               Country:this.Country,
-              StateRegion:this.StateRegion,
+              State:this.State,
+              Area:this.Area,
               Type:this.Type,
               custom_type:this.custom_type,
               lead_from:this.lead_from,

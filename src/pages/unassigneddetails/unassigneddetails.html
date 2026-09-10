@@ -21,7 +21,8 @@
           <p><b>Contact No:</b><a [href]="'tel:' + Contact_No" (click)="$event.stopPropagation()">{{Contact_No}}</a> </p>
           <p><b>Email:</b> <a [href]="'mailto:' + Email" (click)="$event.stopPropagation()">{{Email}}</a></p>
           <p><b>Address:</b> {{Address}}</p>
-          <p><b>Country:</b> {{Country}} - {{StateRegion}}</p>
+          <p><b>State:</b> {{State}}</p>
+          <p><b>Area:</b> {{Area}}</p>
           <p>
             <b>Business Type:</b>
             {{ Type === 'OTHERS' ? Type + ' - ' + custom_type : Type }}
