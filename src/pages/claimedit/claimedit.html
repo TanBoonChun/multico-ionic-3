@@ -94,7 +94,7 @@
         </ion-item>
 
         <ion-item>
-          <ion-label stacked color="primary" class="required">Site Code</ion-label>
+          <ion-label stacked color="primary" class="required">So Number</ion-label>
 
           <ionic-selectable item-content [(ngModel)]="Site_Code" [items]="apps"
             formControlName="Site_Code" itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true"
@@ -105,7 +105,7 @@
         </ion-item>
         <ion-item no-lines *ngIf="( signupform.get('Site_Code').hasError('required') ) && signupform.get('Site_Code').touched">
           <div class="error" *ngIf="signupform.get('Site_Code').hasError('required') && signupform.get('Site_Code').touched">
-            Please select your site code
+            Please select your So Number
           </div>
         </ion-item>
 

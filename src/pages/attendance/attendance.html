@@ -132,7 +132,7 @@
     </ion-item>
 
     <ion-item  class="ion-item" [hidden]="hideUI">
-      <ion-label stacked color="primary" class="required">Site Code</ion-label>
+      <ion-label stacked color="primary" class="required">So Number</ion-label>
       <ionic-selectable item-content [(ngModel)]="Project_Code" [items]="apps" formControlName="Project_Code" 
       itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true" [canClear]="true" (onChange)="onSiteChange()"  [class.error1]="!signupform.controls.Project_Code.valid && signupform.controls.Project_Code.dirty">
       </ionic-selectable>
@@ -143,7 +143,7 @@
     </div>
     <ion-item no-lines *ngIf="( signupform.get('Project_Code').hasError('required') ) && signupform.get('Project_Code').touched">
       <div class="error" *ngIf="signupform.get('Project_Code').hasError('required') && signupform.get('Project_Code').touched">
-        Please select your site code
+        Please select your So Number
       </div>
     </ion-item>
 
