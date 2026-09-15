@@ -4,8 +4,10 @@
 // export const SERVER_URL_WITHOUT_API = "http://192.168.68.57:8000";
 // export const SERVER_URL = "http://192.168.0.8:8000/api";
 // export const SERVER_URL_WITHOUT_API = "http://192.168.0.8:8000";
-export const SERVER_URL = "http://192.168.0.2:8000/api";
-export const SERVER_URL_WITHOUT_API = "http://192.168.0.2:8000";
+// export const SERVER_URL = "http://192.168.0.17:8000/api";
+// export const SERVER_URL_WITHOUT_API = "http://192.168.0.17:8000";
+export const SERVER_URL = "https://multico.softoya.com//api";
+export const SERVER_URL_WITHOUT_API = "https://multico.softoya.com";
 
 
 // OneSignal (dashboard -> Settings -> Keys & IDs -> OneSignal App ID)

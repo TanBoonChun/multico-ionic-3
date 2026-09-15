@@ -3,121 +3,340 @@
     <ion-title>Attendance</ion-title>
   </ion-navbar>
 </ion-header>
-<ion-content padding class="ion-content-body">
-  <div class="ion-item-body">
-    <ion-item class="ion-item-item">
-      <ion-grid>
-        <ion-row>
-          <ion-col col-4>
-            <button class="round-button button1" (click)="ProjectAttendance()">
-              <img
-                src="assets/img/project (1).png"
-                width="35px"
-                height="35px"
-              />
-            </button>
-            <div>Project</div>
-          </ion-col>
-          <ion-col col-4 >
-            <button class="round-button button5" (click)="OfficeAttendance()">
-              <img src="assets/img/office.png" width="35px" height="35px" />
-            </button>
-            <div>Office</div>
-          </ion-col>
-          <ion-col col-4>
-            <button class="round-button button4" (click)="WorkOrderAttendance()">
-              <img src="assets/img/project (1).png" width="35px" height="35px" />
-            </button>
-            <div>Work Order</div>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col col-4>
-            <button class="round-button button2" (click)="SalesAttendance()">
-              <img src="assets/img/share.png" width="35px" height="35px" />
-            </button>
-            <div>Sales</div>
-          </ion-col>
-          <ion-col col-4></ion-col>
-          <ion-col col-4></ion-col>
 
-          <!-- <ion-col col-4>
-            <button class="round-button button4" (click)="OTWAttendance()">
-              <img
-                class="image"
-                src="assets/icon/tracking.png"
-                width="35px"
-                height="35px"
-              />
-            </button>
-            <h4>OTW</h4>
-          </ion-col>
-          <ion-col col-4>
-            <button class="round-button button2" (click)="BreakAttendance()">
-              <img src="assets/img/food1.png" width="35px" height="35px" />
-            </button>
-            <div>Break</div>
-          </ion-col> -->
-        </ion-row>
-      </ion-grid>
-      <!-- <div class="row">
-        <div
-          class="col a"
-          *ngIf="(ShareCost == '0' && Workbase == 'Project') || Name == 'Portal Admin'"
-        >
-          <button class="round-button button1" (click)="ProjectAttendance()">
-            <img src="assets/img/project (1).png" width="35px" height="35px" />
-          </button>
-          <div>Project</div>
-        </div>
-        <div
-          class="col a"
-          *ngIf="(ShareCost == '0' && Workbase == 'Office')  || Name == 'Portal Admin'"
-        >
-          <button class="round-button button5" (click)="OfficeAttendance()">
-            <img src="assets/img/office.png" width="35px" height="35px" />
-          </button>
-          <div>Office</div>
-        </div>
-        <div
-          class="col a"
-          (click)="shareCost()"
-          *ngIf="ShareCost == '1' || Name == 'Portal Admin'"
-        >
-          <button class="round-button button3">
-            <img
-              class="image"
-              src="assets/img/share.png"
-              width="35px"
-              height="35px"
-            />
-          </button>
-          <h4>Share Cost</h4>
-        </div> -->
+<ion-content class="ion-content-body">
+  <ion-refresher (ionRefresh)="onPullToRefresh($event)">
+    <ion-refresher-content pullingText="Pull to refresh" refreshingText="Checking..."></ion-refresher-content>
+  </ion-refresher>
 
-      <!-- <div class="col a" (click)="OTWAttendance()">
-          <button class="round-button button4">
-            <img
-              class="image"
-              src="assets/icon/tracking.png"
-              width="35px"
-              height="35px"
-            />
-          </button>
-          <h4>OTW</h4>
-        </div>
-      </div> -->
-
-      <!-- <div class="row">
-        <div class="col a">
-          <button class="round-button button2" (click)="BreakAttendance()">
-            <img src="assets/img/food1.png" width="35px" height="35px" />
-          </button>
-          <div>Break</div>
-        </div>
-        <div class="col a"></div>
-        <div class="col a"></div>
-      </div> -->
-    </ion-item>
+  <!-- Who, what day, what time. The clock ticks so the time on screen is the
+       time that will be stamped. -->
+  <div class="card identity-card">
+    <div class="identity-name">{{ Name }}</div>
+    <div class="identity-date">{{ Date | date: 'EEEE, dd MMM yyyy' }}</div>
+    <div class="identity-clock">{{ clock }}</div>
   </div>
+
+  <!-- Where the phone thinks it is. Shown before anything is filled in because
+       a time in without it is refused. -->
+  <div class="card location-card">
+    <div class="card-heading">
+      <span>Location</span>
+      <span class="badge" [class.badge-ok]="hasLocation()" [class.badge-warn]="!hasLocation()">
+        {{ hasLocation() ? 'Ready' : 'Not available' }}
+      </span>
+    </div>
+
+    <div class="coords" *ngIf="hasLocation()">
+      <div class="coord">
+        <div class="coord-label">Latitude</div>
+        <div class="coord-value">{{ Latitude_In }}</div>
+      </div>
+      <div class="coord">
+        <div class="coord-label">Longitude</div>
+        <div class="coord-value">{{ Longitude_In }}</div>
+      </div>
+    </div>
+
+    <div class="hint warn" *ngIf="!hasLocation()">
+      Your location has not been picked up yet. Tap Refresh Location before timing in.
+    </div>
+
+    <button ion-button full outline color="primary" type="button" icon-start (click)="doRefresh()">
+      <ion-icon name="locate"></ion-icon>
+      Refresh Location
+    </button>
+  </div>
+
+  <!-- Photos. Attached to whichever of time in or time out is pressed next. -->
+  <div class="card photo-card">
+    <div class="card-heading">
+      <span>Photos</span>
+      <span class="muted">{{ imagesN.length }} attached</span>
+    </div>
+
+    <div class="thumbnail-container" *ngIf="imagesN.length">
+      <ul class="thumbnail-list">
+        <li *ngFor="let imageN of imagesN">
+          <img class="thumbnail-image" [src]="imageN">
+        </li>
+      </ul>
+    </div>
+
+    <div class="button-row">
+      <button ion-button outline color="primary" type="button" icon-start (click)="onTakePicture()">
+        <ion-icon name="camera"></ion-icon>
+        Take Picture
+      </button>
+      <button ion-button outline color="dark" type="button" [disabled]="!imagesN.length" (click)="clearImage()">
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- Timed in: nothing left to fill in, only to close.                     -->
+  <!-- ==================================================================== -->
+  <div *ngIf="loadedOpenTimesheet && openTimesheet">
+    <div class="card open-card">
+      <div class="card-heading">
+        <span>You are timed in</span>
+        <span class="badge badge-live">Open</span>
+      </div>
+
+      <div class="summary">
+        <p><strong>Type:</strong> {{ openTimesheet.attendance_type || 'Attendance' }}</p>
+        <p><strong>Time in:</strong> {{ openTimesheet.Time_In }} on {{ openTimesheet.Date }}</p>
+        <p *ngIf="openTimesheet.service_id"><strong>Service Order:</strong> {{ openTimesheet.service_id }}</p>
+        <p *ngIf="openTimesheet.customer_name"><strong>Customer:</strong> {{ openTimesheet.customer_name }}</p>
+        <p *ngIf="openTimesheet.Site_Name"><strong>Site:</strong> {{ openTimesheet.Site_Name }}</p>
+        <p *ngIf="openTimesheet.brand"><strong>Brand:</strong> {{ openTimesheet.brand }}</p>
+        <p *ngIf="openTimesheet.model"><strong>Model:</strong> {{ openTimesheet.model }}</p>
+      </div>
+
+      <ion-item class="field">
+        <ion-label stacked color="primary">Remarks</ion-label>
+        <ion-textarea [(ngModel)]="Remarks_Out" placeholder="Anything to note on the way out"></ion-textarea>
+      </ion-item>
+    </div>
+
+    <div class="submit-area">
+      <button ion-button full color="danger" type="button" (click)="submitTimeOut()">Time out</button>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- Timed out: pick a type and fill in what it asks for.                  -->
+  <!-- ==================================================================== -->
+  <!-- Until the server has said whether a time in is open, neither state is
+       drawn - guessing "timed out" here is how a second, overlapping time in
+       gets made. -->
+  <div class="card checking-card" *ngIf="!loadedOpenTimesheet">
+    <ion-spinner name="crescent"></ion-spinner>
+    <div class="hint">Checking your attendance status...</div>
+  </div>
+
+  <form novalidate (ngSubmit)="submitTimeIn()" [formGroup]="signupform" *ngIf="loadedOpenTimesheet && !openTimesheet">
+    <div class="card form-card">
+      <!-- A plain string list, so no itemValueField is needed and the bound
+           value is the type name itself. -->
+      <ion-item class="field">
+        <ion-label stacked color="primary" class="required">Type</ion-label>
+        <ionic-selectable item-content [(ngModel)]="Attendance_Type" [items]="types"
+          formControlName="Attendance_Type" [canSearch]="true" (onChange)="onTypeChange()"
+          placeholder="Select a type">
+        </ionic-selectable>
+      </ion-item>
+
+      <!-- ---------------------------------------------------------------- -->
+      <!-- Service Order                                                     -->
+      <!-- ---------------------------------------------------------------- -->
+      <div *ngIf="isServiceOrder()">
+        <!-- Labelled by ticket number, which is what staff read off the job. -->
+        <ion-item class="field">
+          <ion-label stacked color="primary" class="required">Service Order</ion-label>
+          <ionic-selectable item-content [(ngModel)]="Work_Order" [items]="workOrders" formControlName="Work_Order"
+            itemValueField="Id" itemTextField="Label" [canSearch]="true" [canClear]="true"
+            (onSearch)="searchWorkOrders($event)" placeholder="Select a service order">
+          </ionic-selectable>
+        </ion-item>
+        <div class="error" *ngIf="signupform.get('Work_Order').hasError('required') && signupform.get('Work_Order').touched">
+          Please select your service order
+        </div>
+
+        <!-- What the ticket turns out to be. Read, not filled in. -->
+        <div class="summary" *ngIf="Work_Order">
+          <p><strong>Customer:</strong> {{ Work_Order.Customer_Name || 'Not set on this service order' }}</p>
+          <p><strong>Site:</strong> {{ Work_Order.Site_Label || 'Not set on this service order' }}</p>
+          <p *ngIf="Work_Order.service_type"><strong>Service:</strong> {{ Work_Order.service_type }}</p>
+          <p *ngIf="Work_Order.genset_no"><strong>Asset:</strong> {{ Work_Order.genset_no }}</p>
+          <p class="distance"><strong>Distance:</strong> {{ Work_Order.Distance_Text }}</p>
+        </div>
+      </div>
+
+      <!-- ---------------------------------------------------------------- -->
+      <!-- Office                                                            -->
+      <!-- ---------------------------------------------------------------- -->
+      <div *ngIf="isOffice()">
+        <ion-item class="field">
+          <ion-label color="primary">Work Anywhere</ion-label>
+          <ion-checkbox [(ngModel)]="isWorkFromHome" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+        </ion-item>
+        <div class="hint">
+          Tick this when you are working away from the office - it lifts the check that you are at one.
+        </div>
+      </div>
+
+      <!-- ---------------------------------------------------------------- -->
+      <!-- Project                                                           -->
+      <!-- ---------------------------------------------------------------- -->
+      <div *ngIf="isProject()">
+        <ion-item class="field" *ngIf="canDrive()">
+          <ion-label color="primary">Driving</ion-label>
+          <ion-checkbox [(ngModel)]="isDriving" [ngModelOptions]="{standalone: true}"
+            (ionChange)="onDrivingChange()"></ion-checkbox>
+        </ion-item>
+
+        <ion-item class="field" *ngIf="!isDriving">
+          <ion-label color="primary">Work Anywhere</ion-label>
+          <ion-checkbox [(ngModel)]="isWorkFromHome" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+        </ion-item>
+
+        <!-- The project code the time is booked to. Picking one loads the
+             sites under it - see onProjectCodeChange. -->
+        <ion-item class="field">
+          <ion-label stacked color="primary" class="required">Project Code</ion-label>
+          <ionic-selectable item-content [(ngModel)]="Department" [items]="departs" formControlName="Department"
+            itemValueField="Project_Code" itemTextField="Project_Code" [canSearch]="true" [canClear]="true"
+            (onSearch)="searchProjectCodes($event)" (onChange)="onProjectCodeChange()"
+            placeholder="Select a project code">
+          </ionic-selectable>
+        </ion-item>
+        <div class="error"
+          *ngIf="signupform.get('Department').hasError('required') && signupform.get('Department').touched">
+          Please select your project code
+        </div>
+
+        <ion-item class="field">
+          <ion-label stacked color="primary" [class.required]="apps.length > 0">SO Number</ion-label>
+          <ionic-selectable item-content [(ngModel)]="Project_Code" [items]="apps" formControlName="Project_Code"
+            itemValueField="siteCode" itemTextField="siteCode" [canSearch]="true" [canClear]="true"
+            (onSearch)="searchSiteCodes($event)" (onChange)="onSiteChange()" placeholder="Select a so number">
+          </ionic-selectable>
+        </ion-item>
+        <div class="error"
+          *ngIf="signupform.get('Project_Code').hasError('required') && signupform.get('Project_Code').touched">
+          Please select your so number
+        </div>
+        <div class="hint" *ngIf="Department && apps.length == 0">
+          This project code has no so number under it - you can time in against the project code alone.
+        </div>
+
+        <!-- How far the phone is from the site just picked, measured against
+             the same points the time in is geofenced against. -->
+        <div class="summary" *ngIf="siteDistance">
+          <p class="distance"><strong>Distance:</strong> {{ siteDistance.Distance_Text }}</p>
+        </div>
+      </div>
+
+      <!-- Where the time is booked. Not the brand - see below. -->
+      <div *ngIf="needsBranch()">
+        <ion-item class="field">
+          <ion-label stacked color="primary" class="required">Branch</ion-label>
+          <ionic-selectable item-content [(ngModel)]="Branch" [items]="branches" formControlName="Branch"
+            itemValueField="Branch" itemTextField="Branch" [canSearch]="true" placeholder="Select a branch">
+          </ionic-selectable>
+        </ion-item>
+        <div class="error" *ngIf="signupform.get('Branch').hasError('required') && signupform.get('Branch').touched">
+          Please select your branch
+        </div>
+      </div>
+
+      <!-- Brand and model. What was sold or serviced, on both a sales visit
+           and a service order. -->
+      <div *ngIf="isSales() || isServiceOrder()">
+        <!-- shouldStoreItemValue keeps the brand name itself in the form
+             rather than the option row it came from, so what is posted is the
+             same string the plain dropdown used to post. -->
+        <ion-item class="field">
+          <ion-label stacked color="primary" [class.required]="isBrandRequired()">Brand</ion-label>
+          <ionic-selectable item-content [(ngModel)]="Brand" [items]="brands" formControlName="Brand"
+            itemValueField="Brand" itemTextField="Brand" [shouldStoreItemValue]="true" [canSearch]="true"
+            [canClear]="true" (onChange)="onBrandChange()" placeholder="Select a brand">
+          </ionic-selectable>
+        </ion-item>
+        <div class="error" *ngIf="signupform.get('Brand').hasError('required') && signupform.get('Brand').touched">
+          Please select the brand
+        </div>
+        <div class="hint" *ngIf="isSales() && brandsMultiple">
+          Visiting for more than one brand? Choose <strong>Common</strong>.
+        </div>
+        <!-- No brands set up yet. Said plainly rather than left as an empty
+             dropdown, and not required, so the time in can still be made. -->
+        <div class="hint" *ngIf="brands.length == 0">
+          No brands have been set up yet - ask the office to add them under Option Control &gt; Timesheet &gt; Brand.
+        </div>
+
+        <!-- Which machine, within that brand. "Common" spans several brands
+             and so names no one machine - the field goes while it is chosen. -->
+        <div *ngIf="!isCommonBrand()">
+          <ion-item class="field">
+            <ion-label stacked color="primary">Model</ion-label>
+            <ionic-selectable item-content [(ngModel)]="Model" [items]="models" formControlName="Model"
+              itemValueField="Model" itemTextField="Model" [shouldStoreItemValue]="true" [canSearch]="true"
+              [canClear]="true" placeholder="Select a model">
+            </ionic-selectable>
+          </ion-item>
+          <div class="hint" *ngIf="Brand && models.length == 0">
+            No model has been set up for this brand yet.
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales: who is being visited. -->
+      <div *ngIf="isSales()">
+        <ion-item class="field">
+          <ion-label stacked color="primary" class="required">Customer</ion-label>
+          <ionic-selectable item-content [(ngModel)]="Customer" [items]="customers" formControlName="Customer"
+            itemValueField="Id" itemTextField="Label" [canSearch]="true" [canClear]="true"
+            (onSearch)="searchCustomers($event)" (onChange)="onCustomerChange()" placeholder="Select a customer">
+          </ionic-selectable>
+        </ion-item>
+        <div class="error" *ngIf="signupform.get('Customer').hasError('required') && signupform.get('Customer').touched">
+          Please select your customer
+        </div>
+
+        <!-- The visit may be to a customer that was never created. -->
+        <ion-item class="field" *ngIf="isOtherCustomer()">
+          <ion-label stacked color="primary" class="required">Customer Name</ion-label>
+          <ion-textarea [(ngModel)]="Customer_Name" formControlName="Customer_Name"
+            placeholder="Type the customer name"></ion-textarea>
+        </ion-item>
+        <div class="error"
+          *ngIf="isOtherCustomer() && signupform.get('Customer_Name').hasError('required') && signupform.get('Customer_Name').touched">
+          Please type the customer name
+        </div>
+
+        <div class="summary" *ngIf="Customer && !isOtherCustomer()">
+          <p *ngIf="Customer.Account_Code"><strong>Account:</strong> {{ Customer.Account_Code }}</p>
+          <p *ngIf="Customer.Address"><strong>Address:</strong> {{ Customer.Address }}</p>
+          <p *ngIf="Customer.Contact_No"><strong>Contact:</strong> {{ Customer.Contact_No }}</p>
+        </div>
+      </div>
+
+      <!-- Remarks. Every type takes them; Travel is only remarks. -->
+      <ion-item class="field">
+        <ion-label stacked color="primary">Remarks</ion-label>
+        <ion-textarea [(ngModel)]="Remarks" formControlName="Remarks" placeholder="State your remarks here">
+        </ion-textarea>
+      </ion-item>
+    </div>
+
+    <!-- Office times in per office, so its buttons are the submit. -->
+    <div class="card office-card" *ngIf="isOffice()">
+      <div class="card-heading">
+        <span>Where are you?</span>
+      </div>
+
+      <div *ngIf="officeLocations.length">
+        <button ion-button block outline color="primary" type="button" text-wrap class="office-button"
+          *ngFor="let office of officeLocations" (click)="officeTimeIn(office)">
+          {{ office.Location_Name }}
+        </button>
+      </div>
+
+      <div class="hint" *ngIf="officeLocations.length == 0">
+        No office has been set up for your department yet - ask the office to add one.
+      </div>
+    </div>
+
+    <div class="submit-area" *ngIf="hasTimeInButton()">
+      <div class="hint warn" *ngIf="!hasLocation()">
+        Refresh your location to enable Time in.
+      </div>
+      <button ion-button full color="primary" type="submit" [disabled]="signupform.invalid || !hasLocation()">
+        Time in
+      </button>
+    </div>
+  </form>
 </ion-content>

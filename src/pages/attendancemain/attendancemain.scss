@@ -1,76 +1,219 @@
 page-attendancemain {
-  .ion-content{
-    background-color: #f1f2f6;
+  // One form on a plain grey ground, broken into cards so the parts that never
+  // change (who, where, photos) read apart from the part that does.
+  .ion-content-body {
+    background-color: #eef1f5;
   }
-  .a{
+
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    margin: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 4px rgba(22, 40, 70, 0.1);
+  }
+
+  .card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #66748c;
+    margin-bottom: 10px;
+  }
+
+  // Who and when. The clock is the biggest thing on the page because it is the
+  // number that ends up on the record.
+  .identity-card {
     text-align: center;
-  } 
-  .ion-item{
-    background: white;
+    padding: 18px 16px 16px;
   }
-  .text-input::-webkit-input-placeholder {
-    text-indent: 0;
-    color: rgba(0,0,0,0.55);
+
+  .identity-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1b2a41;
   }
-  .center {
-    margin: auto;
-    width: 100%;
-    text-align: center;
+
+  .identity-date {
+    font-size: 13px;
+    color: #66748c;
+    margin-top: 2px;
   }
-  .error {
-    color: rgb(223, 62, 62);
+
+  .identity-clock {
+    font-size: 34px;
+    font-weight: 300;
+    color: #1d6fb8;
+    letter-spacing: 0.02em;
+    margin-top: 6px;
+  }
+
+  .badge {
     font-size: 11px;
-  }
-  .error1 {
-    color: rgb(75, 75, 75);
-    border-bottom: 1px solid #ff0000;
-  }
-  
-  .required:after { 
-    content:" *"; 
-    color:red; 
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
+    border-radius: 10px;
+    text-transform: none;
   }
 
-  .round-button{
-    border: none;
-    background-color: transparent;
-    color: white;
-    padding: 10px;
+  .badge-ok {
+    background: #e3f6ec;
+    color: #1d8a4e;
+  }
+
+  .badge-warn {
+    background: #fdeeea;
+    color: #c0392b;
+  }
+
+  .badge-live {
+    background: #e7f0fb;
+    color: #1d6fb8;
+  }
+
+  .coords {
+    display: flex;
+    margin-bottom: 12px;
+  }
+
+  .coord {
+    flex: 1;
+  }
+
+  .coord-label {
+    font-size: 11px;
+    color: #8a95a8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .coord-value {
+    font-size: 15px;
+    color: #1b2a41;
+    font-family: "Courier New", monospace;
+  }
+
+  .muted {
+    color: #8a95a8;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .hint {
+    color: #66748c;
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 4px 2px 8px;
+  }
+
+  .hint.warn {
+    color: #c0392b;
+  }
+
+  .error {
+    color: #c0392b;
+    font-size: 12px;
+    padding: 4px 2px 8px;
+  }
+
+  // Fields sit flush inside their card, so the item's own outer padding goes.
+  .field {
+    padding-left: 0;
+
+    .item-inner {
+      padding-right: 0;
+      border-bottom: 1px solid #e4e8ee;
+    }
+
+    ion-label {
+      color: #1d6fb8;
+    }
+  }
+
+  .required:after {
+    content: " *";
+    color: #c0392b;
+  }
+
+  // What the chosen ticket or customer turns out to be - read before pressing
+  // Time in, so it stays plain text rather than another row of inputs.
+  .summary {
+    background: #f6f8fb;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: #3c4a60;
+
+    p {
+      margin: 3px 0;
+    }
+
+    strong {
+      color: #1b2a41;
+    }
+
+    .distance {
+      color: #1d6fb8;
+    }
+  }
+
+  .button-row {
+    display: flex;
+
+    button {
+      flex: 1;
+      margin: 0 4px;
+    }
+  }
+
+  .office-button {
+    margin-bottom: 8px;
+    text-align: left;
+  }
+
+  .checking-card {
     text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    box-shadow: 0 0 0px #3f51b5;
-
   }
 
-  .button1 {border-radius: 70px; background-color:#f1c40f;box-shadow: 0 0 5px #f1c40f}
-  .button2 {border-radius: 50px; background-color: #e67e22;box-shadow:0 0 5px #e67e22}
-  .button3 {border-radius: 50px; background-color: #e74c3c;box-shadow:0 0 5px #e74c3c}
-  .button4 {border-radius: 100px;background-color: #1abc9c;box-shadow:0 0 5px #1abc9c}
-  .button5 {border-radius: 60px; background-color: #3498db;box-shadow:0 0 5px #3498db}
-  .button6 {border-radius: 52px; background-color: #2ecc71;box-shadow:0 0 5px #2ecc71}
-  .button7 {border-radius: 50%; background-color: #9b59b6;box-shadow:0 0 5px #9b59b6}
-  .button8 {border-radius: 50px; background-color: #8fe73c;box-shadow:0 0 5px #8fe73c}
-  .button-profile {border-radius: 50%;background-color: white;}
-
-  .buttona{
-    text-align: center;
-    width: 150px;
-    align-content: center;
-    // width: 50%;
-    // margin: auto;
-  }
-  .row{
-    text-align: center;
-    align-content: center;
+  .submit-area {
+    padding: 0 12px 24px;
   }
 
+  .thumbnail-container {
+    overflow-x: auto;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .thumbnail-list {
+    white-space: nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      display: inline-block;
+    }
+  }
+
+  .thumbnail-image {
+    display: block;
+    margin-right: 6px;
+    max-width: 88px;
+    height: auto;
+    border-radius: 6px;
+  }
 }
-.green{
-    
-  button{
-      color: rgb(9, 247, 9);
+
+.green {
+  button {
+    color: rgb(9, 247, 9);
   }
 }

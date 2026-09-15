@@ -26,6 +26,18 @@ const httpOptions = {
   templateUrl: "advancepaymentdonedet.html",
 })
 export class AdvancepaymentdonedetPage {
+
+  /**
+   * What the money is split into, in the order the line shows it. The keys are
+   * the columns the server stores the amounts in.
+   */
+  breakdownFields: any[] = [
+    { key: "Allowance", label: "Meal Allowance" },
+    { key: "Accomodation", label: "Accomodation / Hotel" },
+    { key: "Transportation", label: "Transportation" },
+    { key: "Toll", label: "Toll / Parking" },
+    { key: "Other", label: "Others" },
+  ];
   items: any;
   Leave_Type: any = "";
   Leave_Term: any = "";

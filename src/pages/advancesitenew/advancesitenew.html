@@ -23,20 +23,38 @@
       </div>
 
       <ion-list class="form-list">
+        <!-- Whether this line is for a job. A job line names the tickets the
+             trip covers and splits the money by kind; a line that is not for a
+             job - buying parts off the shelf, say - says what it is for in the
+             purpose and asks for one figure. -->
         <ion-item>
-          <ion-label stacked color="primary" class="required">Job / Service Ticket No</ion-label>
-          <ionic-selectable item-content [(ngModel)]="Service_Ticket" [items]="serviceTickets"
-            formControlName="Service_Ticket" itemValueField="Id" itemTextField="Label" [canSearch]="true"
-            [canClear]="true" (onSearch)="searchServiceTickets($event)" [class.error1]="!signupform.controls.Service_Ticket.valid && signupform.controls.Service_Ticket.dirty">
-          </ionic-selectable>
+          <ion-label color="primary">Job Related</ion-label>
+          <ion-checkbox
+            [(ngModel)]="Job_Related"
+            [ngModelOptions]="{ standalone: true }"
+            (ngModelChange)="onJobRelatedChange()"
+          ></ion-checkbox>
         </ion-item>
-        <div class="field-error" *ngIf="signupform.get('Service_Ticket').hasError('required') && signupform.get('Service_Ticket').touched">
-          Please select the job
-        </div>
+
+        <!-- One trip is often made for several jobs at once, and some advances
+             are not for a job at all - so the picker takes many and asks for none -->
+        <ng-container *ngIf="Job_Related">
+          <ion-item>
+            <ion-label stacked color="primary">Job / Service Ticket No</ion-label>
+            <ionic-selectable item-content [(ngModel)]="Service_Tickets" [items]="serviceTickets"
+              formControlName="Service_Tickets" itemValueField="Id" itemTextField="Label" [isMultiple]="true"
+              [canSearch]="true" [canClear]="true" (onSearch)="searchServiceTickets($event)">
+            </ionic-selectable>
+          </ion-item>
+          <div class="hint-note">
+            <ion-icon name="information-circle"></ion-icon>
+            <span>Optional. Pick every job this trip is made for.</span>
+          </div>
+        </ng-container>
 
         <ion-item>
           <ion-label stacked color="primary" class="required">Purpose</ion-label>
-          <ion-textarea autocomplete="true" spellcheck="true" rows="3" autoGrow="true" type="text" placeholder="What is the advance for?" [(ngModel)]="Purpose" formControlName="Purpose" [class.error1]="!signupform.controls.Purpose.valid && signupform.controls.Purpose.dirty"></ion-textarea>
+          <ion-textarea autocomplete="true" spellcheck="true" rows="3" autoGrow="true" type="text" placeholder="What is the advance for? e.g. buy parts" [(ngModel)]="Purpose" formControlName="Purpose" [class.error1]="!signupform.controls.Purpose.valid && signupform.controls.Purpose.dirty"></ion-textarea>
         </ion-item>
         <div class="field-error" *ngIf="signupform.get('Purpose').hasError('required') && signupform.get('Purpose').touched">
           Please insert the purpose
@@ -45,21 +63,38 @@
     </div>
 
     <!-- ..........................AMOUNT.......................... -->
+    <!-- The money is asked for split by kind so the approver can see what he
+         is paying for, and the line is paid on what the parts add up to -->
     <div class="card" *ngIf="Need_Advance">
       <div class="card-title">
         <ion-icon name="cash"></ion-icon>
         <span>Advance Amount (RM)</span>
       </div>
 
-      <div class="expense-block">
+      <!-- A job line splits the money by kind, so the approver can see what he
+           is paying for. -->
+      <ng-container *ngIf="Job_Related">
+        <div class="expense-block" *ngFor="let field of breakdownFields">
+          <div class="expense-head">
+            <span class="expense-label">{{ field.label }}</span>
+          </div>
+          <ion-input class="amount-input" type="number" placeholder="0.00" [(ngModel)]="amounts[field.key]" [ngModelOptions]="{standalone: true}" (ngModelChange)="recalculateTotal()">
+          </ion-input>
+        </div>
+      </ng-container>
+
+      <!-- Not for a job: one figure, keyed in. -->
+      <div class="expense-block" *ngIf="!Job_Related">
         <div class="expense-head">
-          <span class="expense-label required">Amount</span>
+          <span class="expense-label">Amount</span>
         </div>
-        <ion-input class="amount-input" type="number" placeholder="0.00" [(ngModel)]="Amount" formControlName="Amount" [class.error1]="!signupform.controls.Amount.valid && signupform.controls.Amount.dirty">
+        <ion-input class="amount-input" type="number" placeholder="0.00" [(ngModel)]="Unsplit_Amount" [ngModelOptions]="{standalone: true}" (ngModelChange)="recalculateTotal()">
         </ion-input>
-        <div class="field-error" *ngIf="signupform.get('Amount').hasError('required') && signupform.get('Amount').touched">
-          Please insert the amount
-        </div>
+      </div>
+
+      <div class="grand-total">
+        <span>Total</span>
+        <span class="grand-total-amount">RM {{ newcalculateTotal() }}</span>
       </div>
     </div>
 

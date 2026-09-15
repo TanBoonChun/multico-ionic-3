@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar color="primary">
-    <ion-title>Travel &amp; Advance Finance Ready Details</ion-title>
+    <ion-title>Travel Requisition / Advance Finance Ready Details</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -59,7 +59,7 @@
     <div class="detail-item" *ngFor="let item of advancedetails">
       <div class="detail-item-amount" *ngIf="advance.Need_Advance"><span>RM {{ item.Total }}</span></div>
       <div class="detail-item-amount" *ngIf="!advance.Need_Advance"><span>No Advance</span></div>
-      <div class="detail-row" *ngIf="item.serviceticket_id"><span class="k">Job / Service Ticket No</span><span class="v">{{ item.Job_No }}{{ item.Job_Summary ? ' - ' + item.Job_Summary : '' }}</span></div>
+      <div class="detail-row" *ngIf="item.Jobs_Label"><span class="k">Job / Service Ticket No</span><span class="v">{{ item.Jobs_Label }}</span></div>
       <div class="detail-row" *ngIf="item.Purpose"><span class="k">Purpose</span><span class="v">{{ item.Purpose }}</span></div>
       <div class="detail-row" *ngIf="!item.serviceticket_id"><span class="k">Start Date</span><span class="v">{{ item.Start_Date }}</span></div>
       <div class="detail-row" *ngIf="!item.serviceticket_id"><span class="k">End Date</span><span class="v">{{ item.End_Date }}</span></div>
@@ -67,6 +67,11 @@
       <div class="detail-row" *ngIf="item.Remarks"><span class="k">Remarks</span><span class="v">{{ item.Remarks }}</span></div>
       <div *ngIf="advance.Need_Advance">
           <div class="detail-divider"></div>
+          <!-- What the money is split into, so the approver can see what he is
+               paying for - a kind not asked for is left out -->
+          <ng-container *ngFor="let field of breakdownFields">
+              <div class="detail-row" *ngIf="item[field.key] > 0"><span class="k">{{ field.label }}</span><span class="v">RM {{ item[field.key] }}</span></div>
+          </ng-container>
           <div class="detail-row"><span class="k">Amount (RM)</span><span class="v">RM {{ item.Total }}</span></div>
       </div>
     </div>

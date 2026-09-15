@@ -134,6 +134,27 @@ page-claimsubmission {
     border-bottom: 1px solid #ff0000;
   }
 
+  // Something the claimant should read but which is not a problem - the limit
+  // behind a claim, or the attendance it is being checked against.
+  .note {
+    color: rgb(75, 75, 75);
+    font-size: 11px;
+    padding-left: 4px;
+  }
+
+  // One day of attendance behind a laundry claim.
+  .timesheet-row {
+    h2 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    p {
+      font-size: 11px;
+      color: rgb(120, 120, 120);
+    }
+  }
+
   .myInput {
     width: calc(100% - 10px);
     border: 0;

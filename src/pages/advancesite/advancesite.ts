@@ -108,6 +108,19 @@ export class AdvancesitePage {
 
   allname:any=[];
   itemarray:any=[];
+
+  /**
+   * What the money is split into, in the order the line shows it. The keys are
+   * the columns the server stores the amounts in, the same ones the line modal
+   * asks for them under.
+   */
+  breakdownFields: any[] = [
+    { key: "Allowance", label: "Meal Allowance" },
+    { key: "Accomodation", label: "Accomodation / Hotel" },
+    { key: "Transportation", label: "Transportation" },
+    { key: "Toll", label: "Toll / Parking" },
+    { key: "Other", label: "Others" },
+  ];
   disableButton;
 
   @ViewChild("myInput") myInput: ElementRef;
@@ -387,8 +400,8 @@ export class AdvancesitePage {
 
   addrow(){
 
-    // A row is one job, and the job carries the project code - so there is
-    // nothing to pick before adding one.
+    // A row is one trip, and the jobs it covers carry the project code - so
+    // there is nothing to pick before adding one.
     let modal = this.modalController.create('AdvancesitenewPage',{
       'Need_Advance': this.Need_Advance,
     })
@@ -406,7 +419,12 @@ export class AdvancesitePage {
   }
 
   edit(index){
-    let params = Object.assign({}, this.itemarray[index], { Need_Advance: this.Need_Advance });
+    // The split is stored on the row under the column names the server uses,
+    // so the row itself is what the modal reads the amounts back off.
+    let params = Object.assign({}, this.itemarray[index], {
+      Need_Advance: this.Need_Advance,
+      Amounts: this.itemarray[index],
+    });
     let modal = this.modal.create('AdvancesitenewPage', params);
       modal.present();
       modal.onDidDismiss(data => {
@@ -420,6 +438,22 @@ export class AdvancesitePage {
   remove(ele){
     this.itemarray.splice(ele,1);
     this.recalculateTotal();
+  }
+
+  /**
+   * How a line names its jobs. A line covers as many jobs as the trip is made
+   * for, and none at all when the money is not for a job.
+   */
+  jobsLabel(item) {
+    let tickets = item && item.Service_Tickets ? item.Service_Tickets : [];
+
+    // A line added before the picker took more than one job still carries the
+    // single job it was raised for.
+    if (!tickets.length && item && item.Service_Ticket) {
+      tickets = [item.Service_Ticket];
+    }
+
+    return tickets.map((ticket) => ticket.Label).join(", ");
   }
 
 

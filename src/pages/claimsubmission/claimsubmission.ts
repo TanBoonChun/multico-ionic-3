@@ -57,6 +57,13 @@ export class ClaimsubmissionPage {
 
   public Destination: any = "";
   public Expenses_Type: any = "";
+  // The machine the claim is raised against. Both lists come from Option
+  // Control; the models shown are only the ones filed under the chosen brand.
+  public Brand: any = "";
+  public Model: any = "";
+  public brands: any = [];
+  public models: any = [];
+  public allModels: any = [];
   public Total_Expenses: any = "";
   public Advance: any = "0";
   public Total_Amount: any = "";
@@ -94,6 +101,59 @@ export class ClaimsubmissionPage {
   ];
   public mealComponents: any = {};
   public hideMealComponents: boolean = true;
+
+  // The revised claim policy's date-range expense types. Laundry and the two
+  // overseas daily allowances all run over a trip rather than a single day, so
+  // they take a start and an end date and are priced from them by the server.
+  //
+  // These names are the same strings App\Services\ClaimService holds as
+  // constants. The app uses them only to decide which fields to SHOW: every
+  // amount, limit and refusal comes back from /claimpolicypreview, which runs
+  // the same ClaimService::policyClaim() the save runs, so the app and the web
+  // form cannot show a claimant different figures.
+  public readonly LAUNDRY_TYPE = "LAUNDRY ALLOWANCE";
+  public readonly LODGING_TYPE = "LODGING";
+  public readonly TRANSPORT_TYPE = "TRANSPORT CLAIM (TAXI/GRAB)";
+  public readonly OVERSEAS_TYPES = [
+    "OVERSEAS TRAINING/MEETING ALLOWANCE",
+    "OVERSEAS BUSINESS TRIP ALLOWANCE",
+  ];
+
+  // Lodging. The policy's two halves are different claims: with a hotel receipt
+  // the claimant is reimbursed what the room cost, up to a per-night cap for
+  // their staff level; without one they draw a flat rate per person per night,
+  // so the amount is calculated rather than keyed in.
+  public Has_Receipt: any = "1";
+  public Pax: any = "1";
+  public Lodging_Nights: any = "";
+
+  // A taxi or Grab receipt has to name both ends of the trip. Free text - no
+  // map lookup.
+  public Pickup_Location: any = "";
+  public Dropoff_Location: any = "";
+
+  public Start_Date: any = "";
+  public End_Date: any = "";
+
+  // Where an overseas trip went. The only thing the daily subsistence rate
+  // depends on - the policy pays every staff level alike - so the claim cannot
+  // be priced until it is answered. The values are the same two strings
+  // ClaimService::TRIP_REGIONS holds.
+  public Trip_Region: any = "";
+  public tripRegionOptions = [
+    { value: "Asia", label: "Asia (excluding Middle East, Papua New Guinea)" },
+    { value: "Europe / USA / Others", label: "Europe / USA / Others" },
+  ];
+
+  // What the server said about this claim: the limit behind it, the reason it
+  // cannot be raised yet, and - for laundry - the attendance the decision was
+  // made on. Laundry is the one claim whose eligibility a claimant cannot work
+  // out for themselves, so the days behind it are shown back to them.
+  public policyLimit: string = "";
+  public policyError: string = "";
+  public policyLevelNotice: string = "";
+  public policyTimesheet: any[] = [];
+  public isPricingPolicyClaim: boolean = false;
 
   // A mileage claim is priced from a distance nobody types: the road between the
   // site timed in to on the claim date and where the day was timed out,
@@ -188,6 +248,8 @@ export class ClaimsubmissionPage {
       No_Of_Night: new FormControl("", []),
       Destination: new FormControl("", []),
       Expenses_Type: new FormControl("", [Validators.required]),
+      Brand: new FormControl("", [Validators.required]),
+      Model: new FormControl("", [Validators.required]),
       Total_Expenses: new FormControl("", []),
       Advance: new FormControl("", []),
       Remarks: new FormControl("", [Validators.required]),
@@ -203,7 +265,21 @@ export class ClaimsubmissionPage {
       Docket: new FormControl("", []),
       Trip: new FormControl("", []),
       polisting_id: new FormControl("", []),
-      vendor_id: new FormControl("", [])
+      vendor_id: new FormControl("", []),
+      // Required only while a date-range expense type is chosen; see
+      // applyPolicyControls().
+      Start_Date: new FormControl("", []),
+      End_Date: new FormControl("", []),
+      // Required only while an overseas allowance is chosen; see
+      // applyPolicyControls().
+      Trip_Region: new FormControl("", []),
+      // Required only while lodging is chosen.
+      Has_Receipt: new FormControl("", []),
+      Pax: new FormControl("", []),
+      Lodging_Nights: new FormControl("", []),
+      // Required only while the taxi/e-hailing claim is chosen.
+      Pickup_Location: new FormControl("", []),
+      Dropoff_Location: new FormControl("", [])
     });
 
   }
@@ -589,7 +665,17 @@ export class ClaimsubmissionPage {
       data.subscribe((result) => {
         console.log(result);
         let expenses = new Array();
+        let brands = new Array();
+        this.allModels = new Array();
         for (let res of result) {
+          if (res.Field == "Brand") {
+            brands.push(res);
+          }
+          // A model carries the brand it belongs to in Parent_Option; one with
+          // no brand on its option row is offered under every brand.
+          if (res.Field == "Model") {
+            this.allModels.push(res);
+          }
           if (res.Field == "Expenses_Type") {
             expenses.push(res);
             this.expenses_code[res.Option] = [
@@ -601,6 +687,10 @@ export class ClaimsubmissionPage {
           }
         }
         this.expenses = expenses;
+        this.brands = brands;
+        this.filterModels();
+        // A claim already booked to "Common" opens with no Model asked for.
+        this.applyModelValidator();
       });
     });
 
@@ -745,6 +835,33 @@ export class ClaimsubmissionPage {
         Promise.all(defs).then((res) => {
           this.formData.append("Date", this.myFunction(this.Date));
           this.formData.append("No_Of_Night", this.No_Of_Night);
+
+          // The trip a laundry or overseas allowance covers. Sent only when the
+          // expense type actually has one, so an ordinary claim does not carry
+          // stale dates from a type that was chosen and then changed.
+          if (this.isTripDateType(this.Expenses_Type)) {
+            this.formData.append("Start_Date", this.myFunction(this.Start_Date));
+            this.formData.append("End_Date", this.myFunction(this.End_Date));
+          }
+
+          // Only the overseas allowances have a destination, and the server
+          // prices them from it.
+          if (this.isOverseasAllowance(this.Expenses_Type)) {
+            this.formData.append("Trip_Region", this.Trip_Region);
+          }
+
+          // Lodging is priced from the receipt, the nights and the pax.
+          if (this.isLodgingClaim(this.Expenses_Type)) {
+            this.formData.append("Has_Receipt", this.Has_Receipt);
+            this.formData.append("Pax", this.Pax);
+            this.formData.append("Lodging_Nights", this.Lodging_Nights);
+          }
+
+          // A taxi receipt has to name both ends of the trip.
+          if (this.isTransportClaim(this.Expenses_Type)) {
+            this.formData.append("Pickup_Location", this.Pickup_Location);
+            this.formData.append("Dropoff_Location", this.Dropoff_Location);
+          }
           this.formData.append("Project_Code", this.Project_Code.Id);
           this.formData.append("Site_Code", this.Site_Code.Id);
           this.formData.append("Site_Name", this.Site_Name);
@@ -753,6 +870,8 @@ export class ClaimsubmissionPage {
           this.formData.append("Destination", this.Destination);
           this.formData.append("Mileage", this.Mileage);
           this.formData.append("Expenses_Type", this.Expenses_Type);
+          this.formData.append("Brand", this.Brand);
+          this.formData.append("Model", this.Model);
           this.formData.append("Code", this.getExpenseCode(this.Expenses_Type));
           this.formData.append("Total_Expenses", this.Total_Expenses);
           this.formData.append("Advance", this.Advance);
@@ -848,7 +967,62 @@ export class ClaimsubmissionPage {
       });
     });
   }
-  e
+
+  /**
+   * Narrows the model dropdown to the chosen brand. Called when the brand
+   * changes and once the options have loaded, so what is on screen always
+   * matches the brand selected.
+   */
+  filterModels() {
+    let brand = this.Brand;
+
+    this.models = this.isCommonBrand()
+      ? []
+      : (this.allModels || []).filter((model) => {
+          return !brand || !model.Parent_Option || model.Parent_Option == brand;
+        });
+
+    // A model left over from the previous brand is no longer a valid choice.
+    let stillListed = this.models.some((model) => model.Option == this.Model);
+
+    if (!stillListed) {
+      this.Model = "";
+      if (this.signupform && this.signupform.get("Model")) {
+        this.signupform.get("Model").setValue("");
+      }
+    }
+  }
+
+  brandChanged() {
+    this.filterModels();
+    this.applyModelValidator();
+  }
+
+  /**
+   * "Common" is not a brand of its own but the answer for a claim covering
+   * several of them, so there is no one machine to name: the Model field is
+   * taken off the form while it is chosen.
+   */
+  isCommonBrand() {
+    return String(this.Brand || "").toLowerCase() == "common";
+  }
+
+  /**
+   * Model is required with every brand but "Common", which does not ask for
+   * one - left required, the form would never validate with the field off
+   * screen.
+   */
+  applyModelValidator() {
+    let model = this.signupform ? this.signupform.get("Model") : null;
+
+    if (!model) {
+      return;
+    }
+
+    model.setValidators(this.isCommonBrand() ? [] : [Validators.required]);
+    model.updateValueAndValidity();
+  }
+
   getExpenseCode(Expenses_Type) {
     if (
       this.expenses_code[Expenses_Type] &&
@@ -902,6 +1076,266 @@ export class ClaimsubmissionPage {
       String(Expenses_Type || "").trim().toUpperCase() ==
       "OUTSTATION MEAL ALLOWANCE"
     );
+  }
+
+  /**
+   * Whether this expense type runs over a trip rather than a single day, and so
+   * takes a start and an end date.
+   */
+  isTripDateType(Expenses_Type) {
+    let type = String(Expenses_Type || "").trim().toUpperCase();
+
+    return type == this.LAUNDRY_TYPE || this.OVERSEAS_TYPES.indexOf(type) !== -1;
+  }
+
+  /**
+   * Whether this expense type is one of the two overseas daily allowances, and
+   * so needs a destination before it can be priced.
+   */
+  isOverseasAllowance(Expenses_Type) {
+    return (
+      this.OVERSEAS_TYPES.indexOf(
+        String(Expenses_Type || "").trim().toUpperCase()
+      ) !== -1
+    );
+  }
+
+  /** Whether this expense type is the laundry allowance. */
+  isLaundryClaim(Expenses_Type) {
+    return (
+      String(Expenses_Type || "").trim().toUpperCase() == this.LAUNDRY_TYPE
+    );
+  }
+
+  /**
+   * Turn the trip dates on or off with the expense type, and clear whatever was
+   * answered for the last one so a trip cannot be carried over onto a claim
+   * that is no longer a trip.
+   */
+  /** Whether this expense type is the lodging claim. */
+  isLodgingClaim(Expenses_Type) {
+    return (
+      String(Expenses_Type || "").trim().toUpperCase() == this.LODGING_TYPE
+    );
+  }
+
+  /** Whether this expense type is the taxi / e-hailing transport claim. */
+  isTransportClaim(Expenses_Type) {
+    return (
+      String(Expenses_Type || "").trim().toUpperCase() == this.TRANSPORT_TYPE
+    );
+  }
+
+  /** Whether the revised claim policy prices this expense type at all. */
+  isPolicyType(Expenses_Type) {
+    return (
+      this.isTripDateType(Expenses_Type) ||
+      this.isLodgingClaim(Expenses_Type) ||
+      this.isTransportClaim(Expenses_Type)
+    );
+  }
+
+  /** Whether a lodging claim is being made against a hotel receipt. */
+  lodgingHasReceipt() {
+    return String(this.Has_Receipt) == "1";
+  }
+
+  /**
+   * Turn each of the policy's own fields on or off with the expense type, and
+   * clear whatever was answered for the last one so nothing is carried over
+   * onto a claim that no longer has that field.
+   *
+   * Only which fields are ASKED for is decided here. What the answers are worth
+   * is decided by the server - see updatePolicyClaim().
+   */
+  applyPolicyControls(Expenses_Type) {
+    let isTrip = this.isTripDateType(Expenses_Type);
+    let isOverseas = this.isOverseasAllowance(Expenses_Type);
+    let isLodging = this.isLodgingClaim(Expenses_Type);
+    let isTransport = this.isTransportClaim(Expenses_Type);
+
+    this.policyLimit = "";
+    this.policyError = "";
+    this.policyLevelNotice = "";
+    this.policyTimesheet = [];
+
+    // Anything not being asked for is emptied, so a trip cannot survive a
+    // switch to a taxi fare.
+    if (!isTrip) {
+      this.Start_Date = "";
+      this.End_Date = "";
+    }
+
+    if (!isOverseas) {
+      this.Trip_Region = "";
+    }
+
+    if (!isLodging) {
+      this.Has_Receipt = "1";
+      this.Pax = "1";
+      this.Lodging_Nights = "";
+    }
+
+    if (!isTransport) {
+      this.Pickup_Location = "";
+      this.Dropoff_Location = "";
+    }
+
+    this.requireWhen("Start_Date", isTrip);
+    this.requireWhen("End_Date", isTrip);
+    this.requireWhen("Trip_Region", isOverseas);
+    this.requireWhen("Has_Receipt", isLodging);
+    this.requireWhen("Pax", isLodging);
+    this.requireWhen("Lodging_Nights", isLodging);
+    this.requireWhen("Pickup_Location", isTransport);
+    this.requireWhen("Dropoff_Location", isTransport);
+
+    if (!this.isPolicyType(Expenses_Type)) {
+      return;
+    }
+
+    // Whether the amount is the claimant's to type. The overseas allowances and
+    // laundry are always worked out; lodging is worked out only when there is
+    // no receipt, because with one the claimant is reimbursed what the room
+    // actually cost. A taxi fare is always keyed in.
+    this.isFixedRate = isTrip || (isLodging && !this.lodgingHasReceipt());
+
+    if (this.isFixedRate) {
+      this.Total_Expenses = "";
+    }
+
+    this.updatePolicyClaim();
+  }
+
+  /** Add or drop the required validator on one control. */
+  private requireWhen(name, required) {
+    let control = this.signupform.get(name);
+
+    control.setValidators(required ? [Validators.required] : []);
+    control.updateValueAndValidity();
+  }
+
+  /**
+   * With a receipt the claimant types what the room cost and it is checked
+   * against the cap; without one the rate is the policy's, so the field is
+   * locked and filled from the server.
+   */
+  onLodgingChange() {
+    this.isFixedRate = !this.lodgingHasReceipt();
+
+    if (this.isFixedRate) {
+      this.Total_Expenses = "";
+    }
+
+    this.updatePolicyClaim();
+  }
+
+  /** Re-price the claim when either end of the trip moves. */
+  onTripDateChange() {
+    this.updatePolicyClaim();
+  }
+
+  /** The destination sets the daily rate, so it re-prices the claim too. */
+  onTripRegionChange() {
+    this.updatePolicyClaim();
+  }
+
+  /**
+   * Whether enough has been filled in for the server to have an answer worth
+   * showing.
+   *
+   * Asking too early would put a "choose where the trip went" under a field the
+   * claimant has not reached yet, so each type names what it needs before the
+   * question is worth asking at all.
+   */
+  private policyClaimIsAnswerable() {
+    if (this.isLodgingClaim(this.Expenses_Type)) {
+      return Number(this.Lodging_Nights) > 0;
+    }
+
+    if (!this.Start_Date || !this.End_Date) {
+      return false;
+    }
+
+    return !this.isOverseasAllowance(this.Expenses_Type) || !!this.Trip_Region;
+  }
+
+  /**
+   * Ask the server what this claim comes to, and keep the answer.
+   *
+   * Nothing is worked out here: the amount, the limit and the refusal all come
+   * from ClaimService::policyClaim(), the same code the save runs, so what the
+   * claimant is shown and what the claim is stored with cannot disagree.
+   *
+   * For laundry the answer carries the attendance it was judged on, which is
+   * what makes a refusal explain itself instead of just being a "no".
+   */
+  updatePolicyClaim() {
+    // A taxi fare has no limit and no calculated amount - the only rule is that
+    // both ends of the trip are named, which the form already insists on - so
+    // there is nothing to ask the server for.
+    if (
+      !this.isPolicyType(this.Expenses_Type) ||
+      this.isTransportClaim(this.Expenses_Type)
+    ) {
+      return;
+    }
+
+    if (!this.policyClaimIsAnswerable()) {
+      this.Total_Expenses = this.isFixedRate ? "" : this.Total_Expenses;
+      this.policyTimesheet = [];
+      this.policyError = "";
+      this.policyLimit = "";
+      return;
+    }
+
+    this.isPricingPolicyClaim = true;
+
+    this.storage.get("token").then((val) => {
+      this.http
+        .post(
+          SERVER_URL + "/claimpolicypreview?token=" + val.token,
+          {
+            Expenses_Type: this.Expenses_Type,
+            Date: this.Date ? this.myFunction(this.Date) : "",
+            Start_Date: this.Start_Date ? this.myFunction(this.Start_Date) : "",
+            End_Date: this.End_Date ? this.myFunction(this.End_Date) : "",
+            Trip_Region: this.Trip_Region,
+            Has_Receipt: this.Has_Receipt,
+            Pax: this.Pax,
+            No_Of_Night: this.Lodging_Nights,
+            Total_Expenses: this.Total_Expenses,
+          },
+          httpOptions
+        )
+        .subscribe(
+          (result: any) => {
+            this.isPricingPolicyClaim = false;
+
+            if (!result) {
+              return;
+            }
+
+            this.policyLimit = result.limit || "";
+            this.policyError = result.error || "";
+            this.policyLevelNotice = result.levelNotice || "";
+            this.policyTimesheet = result.timesheet || [];
+
+            // An amount only when the claim actually stands; a refused one is
+            // left empty rather than showing a figure that will not be paid.
+            this.Total_Expenses =
+              result.error || result.amount === null || result.amount === undefined
+                ? ""
+                : Number(result.amount).toFixed(2);
+          },
+          (error) => {
+            this.isPricingPolicyClaim = false;
+            console.error("Could not price the claim", error);
+            this.policyError =
+              "The claim limit could not be checked just now. Try again before submitting.";
+          }
+        );
+    });
   }
 
   /** The meals ticked, in the order the policy lists them. */
@@ -1059,6 +1493,10 @@ export class ClaimsubmissionPage {
       this.isFixedRate = true;
       this.Total_Expenses = "";
     }
+
+    // The revised claim policy's own fields - trip dates, destination, lodging
+    // and the taxi locations - and the amount it works out.
+    this.applyPolicyControls(Expenses_Type);
 
     let companyNameControl = this.signupform.get("Company_Name");
     let companyNoControl = this.signupform.get("Company_No");

@@ -1,7 +1,7 @@
 <ion-header>
 
     <ion-navbar color="primary">
-        <ion-title>EMPLOYEE TRAVEL &amp; ADVANCE FORM</ion-title>
+        <ion-title>TRAVEL REQUISITION / ADVANCE</ion-title>
     </ion-navbar>
 
 </ion-header>
@@ -144,11 +144,26 @@
                     </div>
                 </div>
 
-                <div class="advance-row"><span class="k">Job / Service Ticket No</span><span class="v">{{item.Service_Ticket?.Label}}</span></div>
+                <div class="advance-row" *ngIf="jobsLabel(item)"><span class="k">Job / Service Ticket No</span><span class="v">{{jobsLabel(item)}}</span></div>
                 <div class="advance-row"><span class="k">Purpose</span><span class="v">{{item.Purpose}}</span></div>
 
                 <div *ngIf="Need_Advance">
                     <div class="advance-divider"></div>
+                    <!-- What the money is split into, so the approver can see
+                         what he is paying for - a kind not asked for is left out.
+                         A line that is not for a job has no split: it asked for
+                         one figure, which the Amount row below already shows.
+                         Listing it here as well would label it "Others", which
+                         is only the column it is stored in and not something
+                         the requestor chose. -->
+                    <ng-container *ngIf="item.Job_Related !== false">
+                        <ng-container *ngFor="let field of breakdownFields">
+                            <div class="advance-row" *ngIf="item[field.key] > 0">
+                                <span class="k">{{field.label}}</span>
+                                <span class="v">RM {{item[field.key]}}</span>
+                            </div>
+                        </ng-container>
+                    </ng-container>
                     <div class="advance-row total"><span class="k">Amount (RM)</span><span class="v amount">RM {{item.Total_Requested}}</span></div>
                 </div>
             </div>

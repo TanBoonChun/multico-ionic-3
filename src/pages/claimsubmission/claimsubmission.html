@@ -207,6 +207,78 @@
         </div>
       </ion-item>
 
+      <!-- The machine the claim is for. The model list is narrowed to the
+           brand picked above - see filterModels(). -->
+      <ion-item>
+        <ion-label
+          class="required"
+          stacked
+          color="primary"
+          [class.required]="signupform.controls.Brand.invalid"
+          >Brand</ion-label
+        >
+        <ion-select
+          [(ngModel)]="Brand"
+          (ngModelChange)="brandChanged()"
+          [multiple]="false"
+          placeholder="Please select"
+          formControlName="Brand"
+          [class.error1]="!signupform.controls.Brand.valid && signupform.controls.Brand.dirty"
+        >
+          <ion-option
+            *ngFor="let brand of brands"
+            value="{{ decodeEntities(brand.Option) }}"
+            >{{decodeEntities(brand.Option)}}</ion-option
+          >
+        </ion-select>
+      </ion-item>
+      <ion-item
+        no-lines
+        *ngIf="( signupform.get('Brand').hasError('required') ) && signupform.get('Brand').touched"
+      >
+        <div class="error">
+          Please select your brand
+        </div>
+      </ion-item>
+
+      <!-- Which machine, within that brand. "Common" spans several brands and
+           so names no one machine - the field goes while it is chosen. -->
+      <ion-item *ngIf="!isCommonBrand()">
+        <ion-label
+          class="required"
+          stacked
+          color="primary"
+          [class.required]="signupform.controls.Model.invalid"
+          >Model</ion-label
+        >
+        <ion-select
+          [(ngModel)]="Model"
+          [multiple]="false"
+          placeholder="Please select"
+          formControlName="Model"
+          [class.error1]="!signupform.controls.Model.valid && signupform.controls.Model.dirty"
+        >
+          <ion-option
+            *ngFor="let model of models"
+            value="{{ decodeEntities(model.Option) }}"
+            >{{decodeEntities(model.Option)}}</ion-option
+          >
+        </ion-select>
+      </ion-item>
+      <ion-item no-lines *ngIf="Brand && !isCommonBrand() && models.length == 0">
+        <div class="error">
+          No model has been set up for this brand yet
+        </div>
+      </ion-item>
+      <ion-item
+        no-lines
+        *ngIf="( signupform.get('Model').hasError('required') ) && signupform.get('Model').touched"
+      >
+        <div class="error">
+          Please select your model
+        </div>
+      </ion-item>
+
       <!-- Outstation meal allowance: one claim line for whichever meals are
            ticked, the total summed from their rates by the server. -->
       <ng-container *ngIf="!hideMealComponents">
@@ -221,6 +293,191 @@
         </ion-item>
         <ion-item no-lines *ngIf="tickedMeals().length == 0">
           <div class="error">Please tick at least one meal</div>
+        </ion-item>
+      </ng-container>
+
+      <!-- Laundry and the overseas allowances run over a trip, so they are
+           claimed for a range of dates rather than a single day. The server
+           prices them from these two, and for laundry it also checks the
+           claimant's attendance across them. -->
+      <ng-container *ngIf="isTripDateType(Expenses_Type)">
+        <!-- Where an overseas trip went. The daily subsistence rate depends on
+             nothing else - the policy pays every staff level alike - so the
+             claim cannot be priced until this is answered. Laundry is an
+             outstation trip rather than an overseas one and has no
+             destination. -->
+        <ng-container *ngIf="isOverseasAllowance(Expenses_Type)">
+          <ion-item>
+            <ion-label stacked color="primary" class="required">Destination</ion-label>
+            <ion-select
+              [(ngModel)]="Trip_Region"
+              (ngModelChange)="onTripRegionChange()"
+              [multiple]="false"
+              placeholder="Please select"
+              formControlName="Trip_Region"
+              [class.error1]="!signupform.controls.Trip_Region.valid && signupform.controls.Trip_Region.dirty"
+            >
+              <ion-option
+                *ngFor="let region of tripRegionOptions"
+                [value]="region.value"
+                >{{ region.label }}</ion-option
+              >
+            </ion-select>
+          </ion-item>
+          <ion-item no-lines *ngIf="!Trip_Region">
+            <div class="error">Please select where the trip went</div>
+          </ion-item>
+        </ng-container>
+
+        <ion-item-divider color="light">Trip Dates</ion-item-divider>
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Start Date</ion-label>
+          <ion-datetime
+            displayFormat="MMM DD YYYY"
+            placeholder="Tap to pick"
+            [(ngModel)]="Start_Date"
+            formControlName="Start_Date"
+            (ngModelChange)="onTripDateChange()"
+          ></ion-datetime>
+        </ion-item>
+        <ion-item>
+          <ion-label stacked color="primary" class="required">End Date</ion-label>
+          <ion-datetime
+            displayFormat="MMM DD YYYY"
+            placeholder="Tap to pick"
+            [(ngModel)]="End_Date"
+            formControlName="End_Date"
+            (ngModelChange)="onTripDateChange()"
+          ></ion-datetime>
+        </ion-item>
+        <ion-item no-lines *ngIf="!Start_Date || !End_Date">
+          <div class="error">Please pick the start and end date of the trip</div>
+        </ion-item>
+
+        <!-- The attendance the laundry decision was made on. Shown so a refusal
+             explains itself - the claimant can see which days are missing
+             instead of being told only that the trip is too short. -->
+        <ng-container *ngIf="isLaundryClaim(Expenses_Type) && Start_Date && End_Date">
+          <ion-item-divider color="light">Your Attendance</ion-item-divider>
+          <ion-item no-lines *ngIf="isPricingPolicyClaim">
+            <div class="note">Checking your timesheet...</div>
+          </ion-item>
+          <ion-item no-lines *ngIf="!isPricingPolicyClaim && policyTimesheet.length == 0">
+            <div class="note">No timesheet found for these dates.</div>
+          </ion-item>
+          <ion-item
+            *ngFor="let day of policyTimesheet"
+            class="timesheet-row"
+          >
+            <ion-label>
+              <h2>{{ day.Date }}</h2>
+              <p>{{ day.attendance_type || 'No attendance type' }}</p>
+              <p>{{ day.Time_In || '-' }} &ndash; {{ day.Time_Out || '-' }}</p>
+            </ion-label>
+          </ion-item>
+        </ng-container>
+
+        <ion-item no-lines *ngIf="policyLimit">
+          <div class="note">{{ policyLimit }}</div>
+        </ion-item>
+        <!-- A limit somebody only fell under because their level was never
+             filled in is one they should be told about. -->
+        <ion-item no-lines *ngIf="policyLevelNotice">
+          <div class="note">{{ policyLevelNotice }}</div>
+        </ion-item>
+        <ion-item no-lines *ngIf="policyError">
+          <div class="error">{{ policyError }}</div>
+        </ion-item>
+      </ng-container>
+
+      <!-- Lodging. The policy's two halves are different claims: with a hotel
+           receipt the claimant is reimbursed what the room cost, up to a
+           per-night cap for their staff level; without one they draw a flat
+           rate per person per night, so the amount is worked out for them. -->
+      <ng-container *ngIf="isLodgingClaim(Expenses_Type)">
+        <ion-item-divider color="light">Lodging</ion-item-divider>
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Hotel Receipt</ion-label>
+          <ion-select
+            [(ngModel)]="Has_Receipt"
+            (ngModelChange)="onLodgingChange()"
+            [multiple]="false"
+            formControlName="Has_Receipt"
+          >
+            <ion-option value="1">With receipt (sharing room)</ion-option>
+            <ion-option value="0">Without receipt (per pax)</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label stacked color="primary" class="required">No of Nights</ion-label>
+          <ion-input
+            type="number"
+            min="1"
+            placeholder="0"
+            [(ngModel)]="Lodging_Nights"
+            (ngModelChange)="onLodgingChange()"
+            formControlName="Lodging_Nights"
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label stacked color="primary" class="required">No of Pax</ion-label>
+          <ion-input
+            type="number"
+            min="1"
+            placeholder="1"
+            [(ngModel)]="Pax"
+            (ngModelChange)="onLodgingChange()"
+            formControlName="Pax"
+          ></ion-input>
+        </ion-item>
+        <ion-item no-lines *ngIf="!(Lodging_Nights > 0)">
+          <div class="error">Please enter how many nights the stay was</div>
+        </ion-item>
+
+        <ion-item no-lines *ngIf="policyLimit">
+          <div class="note">{{ policyLimit }}</div>
+        </ion-item>
+        <ion-item no-lines *ngIf="policyLevelNotice">
+          <div class="note">{{ policyLevelNotice }}</div>
+        </ion-item>
+        <ion-item no-lines *ngIf="policyError">
+          <div class="error">{{ policyError }}</div>
+        </ion-item>
+      </ng-container>
+
+      <!-- Taxi / e-hailing. The policy only accepts a Grab app or Airport Taxi
+           Counter receipt, and it has to show both ends of the trip. Typed for
+           now - no map lookup. -->
+      <ng-container *ngIf="isTransportClaim(Expenses_Type)">
+        <ion-item-divider color="light">Trip</ion-item-divider>
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Pick-up Location</ion-label>
+          <ion-input
+            type="text"
+            placeholder="Where you were picked up"
+            [(ngModel)]="Pickup_Location"
+            formControlName="Pickup_Location"
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label stacked color="primary" class="required">Drop-off Location</ion-label>
+          <ion-input
+            type="text"
+            placeholder="Where you were dropped off"
+            [(ngModel)]="Dropoff_Location"
+            formControlName="Dropoff_Location"
+          ></ion-input>
+        </ion-item>
+        <ion-item no-lines *ngIf="!Pickup_Location || !Dropoff_Location">
+          <div class="error">
+            Please enter where you were picked up and dropped off
+          </div>
+        </ion-item>
+        <ion-item no-lines>
+          <div class="note">
+            Only a Grab app or Airport Taxi Counter receipt is accepted, showing
+            the date, time, both locations and the fare.
+          </div>
         </ion-item>
       </ng-container>
 
@@ -757,7 +1014,10 @@
     </div>
 
     <div class="submit-wrap">
-      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid">
+      <!-- policyError is the server's own refusal (a trip too short for laundry,
+           say). It is checked again on save; disabling here just stops the
+           claimant filling the rest in for nothing. -->
+      <button ion-button block color="primary" type="submit" [disabled]="signupform.invalid || policyError">
         Create
       </button>
     </div>

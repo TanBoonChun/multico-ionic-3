@@ -63,6 +63,13 @@ export class ClaimeditPage {
   Depart_From: any = "";
   Destination: any = "";
   Expenses_Type: any = "";
+  // The machine the claim was raised against; the model list is narrowed to
+  // whichever brand is chosen - see filterModels().
+  Brand: any = "";
+  Model: any = "";
+  brands: any = [];
+  models: any = [];
+  allModels: any = [];
   Id: any = "";
   JV_Description: any = "";
   Mileage: any = "";
@@ -235,6 +242,8 @@ export class ClaimeditPage {
     this.Depart_From = this.navParams.get("Depart_From");
     this.Destination = this.navParams.get("Destination");
     this.Expenses_Type = this.navParams.get("Expenses_Type");
+    this.Brand = this.navParams.get("Brand") || "";
+    this.Model = this.navParams.get("Model") || "";
     this.Id = this.navParams.get("Id");
     this.JV_Description = this.navParams.get("JV_Description");
     this.Mileage = this.navParams.get("Mileage");
@@ -339,6 +348,8 @@ export class ClaimeditPage {
       No_Of_Night: new FormControl("", []),
       Destination: new FormControl("", []),
       Expenses_Type: new FormControl("", [Validators.required]),
+      Brand: new FormControl("", [Validators.required]),
+      Model: new FormControl("", [Validators.required]),
       Total_Expenses: new FormControl("", []),
       Advance: new FormControl("", []),
       Remarks: new FormControl("", [Validators.required]),
@@ -895,7 +906,17 @@ export class ClaimeditPage {
       data.subscribe((result) => {
         console.log(result);
         let expenses = new Array();
+        let brands = new Array();
+        this.allModels = new Array();
         for (let res of result) {
+          if (res.Field == "Brand") {
+            brands.push(res);
+          }
+          // A model carries the brand it belongs to in Parent_Option; one with
+          // no brand on its option row is offered under every brand.
+          if (res.Field == "Model") {
+            this.allModels.push(res);
+          }
           if (res.Field == "Expenses_Type") {
             expenses.push(res);
             this.expenses_code[res.Option] = [
@@ -907,6 +928,12 @@ export class ClaimeditPage {
           }
         }
         this.expenses = expenses;
+        this.brands = brands;
+        // The options arrive after the claim is loaded, so the model list is
+        // narrowed once they are in - keeping whatever model the claim carries.
+        this.filterModels();
+        // A claim already booked to "Common" opens with no Model asked for.
+        this.applyModelValidator();
         // The options arrive after the claim is loaded, so lock the amount now
         // if the claim being edited already uses a fixed-rate type - or is a
         // meal allowance, which is priced from the meals ticked rather than
@@ -1130,6 +1157,8 @@ export class ClaimeditPage {
           this.formData.append("Destination", this.Destination);
           this.formData.append("Mileage", this.Mileage);
           this.formData.append("Expenses_Type", this.Expenses_Type);
+          this.formData.append("Brand", this.Brand);
+          this.formData.append("Model", this.Model);
           this.formData.append("Code", this.getExpenseCode(this.Expenses_Type));
           this.formData.append("Total_Expenses", this.Total_Expenses);
           this.formData.append("Advance", this.Advance);
@@ -1214,6 +1243,59 @@ export class ClaimeditPage {
         );
       });
     });
+  }
+
+  /**
+   * Narrows the model dropdown to the chosen brand, dropping a model that no
+   * longer belongs to it.
+   */
+  filterModels() {
+    let brand = this.Brand;
+
+    this.models = this.isCommonBrand()
+      ? []
+      : (this.allModels || []).filter((model) => {
+          return !brand || !model.Parent_Option || model.Parent_Option == brand;
+        });
+
+    let stillListed = this.models.some((model) => model.Option == this.Model);
+
+    if (!stillListed) {
+      this.Model = "";
+      if (this.signupform && this.signupform.get("Model")) {
+        this.signupform.get("Model").setValue("");
+      }
+    }
+  }
+
+  brandChanged() {
+    this.filterModels();
+    this.applyModelValidator();
+  }
+
+  /**
+   * "Common" is not a brand of its own but the answer for a claim covering
+   * several of them, so there is no one machine to name: the Model field is
+   * taken off the form while it is chosen.
+   */
+  isCommonBrand() {
+    return String(this.Brand || "").toLowerCase() == "common";
+  }
+
+  /**
+   * Model is required with every brand but "Common", which does not ask for
+   * one - left required, the form would never validate with the field off
+   * screen.
+   */
+  applyModelValidator() {
+    let model = this.signupform ? this.signupform.get("Model") : null;
+
+    if (!model) {
+      return;
+    }
+
+    model.setValidators(this.isCommonBrand() ? [] : [Validators.required]);
+    model.updateValueAndValidity();
   }
 
   getExpenseCode(Expenses_Type) {
