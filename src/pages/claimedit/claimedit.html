@@ -79,7 +79,7 @@
       </div>
       <ion-list no-lines>
         <ion-item>
-          <ion-label stacked color="primary" class="required">Project Code</ion-label>
+          <ion-label stacked color="primary" class="required">Branch</ion-label>
 
           <ionic-selectable item-content [(ngModel)]="Project_Code" (ngModelChange)="siteCode()" [items]="items" formControlName="Project_Code"
 
@@ -89,7 +89,7 @@
         </ion-item>
         <ion-item no-lines *ngIf="( signupform.get('Project_Code').hasError('required') ) && signupform.get('Project_Code').touched">
           <div class="error" *ngIf="signupform.get('Project_Code').hasError('required') && signupform.get('Project_Code').touched">
-            Please select your project code
+            Please select your branch
           </div>
         </ion-item>
 
@@ -347,6 +347,12 @@
           </div>
         </ion-item>
 
+        <ion-item>
+          <ion-label stacked color="primary">Payment Method</ion-label>
+          <ion-select [(ngModel)]="Payment_Method" formControlName="Payment_Method" placeholder="Please select" cancelText="Cancel" okText="OK">
+            <ion-option *ngFor="let method of paymentMethods" [value]="method">{{ method }}</ion-option>
+          </ion-select>
+        </ion-item>
         <ion-item class="total-payable">
           <ion-label stacked color="primary" >Total Payable</ion-label>
           <ion-input type="number" placeholder="0.00" value="0" readonly="true" value="{{ calculateTotal() }}"></ion-input>

@@ -62,6 +62,8 @@ export class ClaimsubmissionPage {
   public Brand: any = "";
   public Model: any = "";
   public brands: any = [];
+  public Payment_Method: string = "";
+  public paymentMethods: any[] = [];
   public models: any = [];
   public allModels: any = [];
   public Total_Expenses: any = "";
@@ -250,6 +252,7 @@ export class ClaimsubmissionPage {
       Expenses_Type: new FormControl("", [Validators.required]),
       Brand: new FormControl("", [Validators.required]),
       Model: new FormControl("", [Validators.required]),
+      Payment_Method: new FormControl("", []),
       Total_Expenses: new FormControl("", []),
       Advance: new FormControl("", []),
       Remarks: new FormControl("", [Validators.required]),
@@ -666,8 +669,12 @@ export class ClaimsubmissionPage {
         console.log(result);
         let expenses = new Array();
         let brands = new Array();
+        this.paymentMethods = [];
         this.allModels = new Array();
         for (let res of result) {
+          if (res.Field == "Payment_Method") {
+            this.paymentMethods.push(res.Option);
+          }
           if (res.Field == "Brand") {
             brands.push(res);
           }
@@ -872,6 +879,7 @@ export class ClaimsubmissionPage {
           this.formData.append("Expenses_Type", this.Expenses_Type);
           this.formData.append("Brand", this.Brand);
           this.formData.append("Model", this.Model);
+          this.formData.append("Payment_Method", this.Payment_Method || "");
           this.formData.append("Code", this.getExpenseCode(this.Expenses_Type));
           this.formData.append("Total_Expenses", this.Total_Expenses);
           this.formData.append("Advance", this.Advance);

@@ -52,7 +52,7 @@
     <div class="detail-divider"></div>
 
     <div *ngIf="item.Expenses_Type != 'Mileage'">
-      <div class="detail-row"><span class="k">Project Code</span><span class="v">{{ item.project_code }}</span></div>
+      <div class="detail-row"><span class="k">Branch</span><span class="v">{{ item.project_code }}</span></div>
       <div class="detail-row" *ngIf="item.Company_Name"><span class="k">Company Name</span><span class="v">{{ item.Company_Name }}</span></div>
       <div class="detail-row" *ngIf="item.Company_No"><span class="k">Company No.</span><span class="v">{{ item.Company_No }}</span></div>
       <div class="detail-row" *ngIf="item.SST_No"><span class="k">SST No.</span><span class="v">{{ item.SST_No }}</span></div>
@@ -65,7 +65,7 @@
     </div>
 
     <div *ngIf="item.Expenses_Type == 'Mileage'">
-      <div class="detail-row"><span class="k">Project Code</span><span class="v">{{ item.project_code }}</span></div>
+      <div class="detail-row"><span class="k">Branch</span><span class="v">{{ item.project_code }}</span></div>
       <div class="detail-row"><span class="k">Transport Type</span><span class="v">{{ item.Transport_Type }}</span></div>
       <div class="detail-row"><span class="k">From</span><span class="v">{{ item.Depart_From }}</span></div>
       <div class="detail-row"><span class="k">To</span><span class="v">{{ item.Destination }}</span></div>

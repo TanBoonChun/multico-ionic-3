@@ -68,6 +68,8 @@ export class ClaimeditPage {
   Brand: any = "";
   Model: any = "";
   brands: any = [];
+  public Payment_Method: string = "";
+  public paymentMethods: any[] = [];
   models: any = [];
   allModels: any = [];
   Id: any = "";
@@ -244,6 +246,7 @@ export class ClaimeditPage {
     this.Expenses_Type = this.navParams.get("Expenses_Type");
     this.Brand = this.navParams.get("Brand") || "";
     this.Model = this.navParams.get("Model") || "";
+    this.Payment_Method = this.navParams.get("Payment_Method") || "";
     this.Id = this.navParams.get("Id");
     this.JV_Description = this.navParams.get("JV_Description");
     this.Mileage = this.navParams.get("Mileage");
@@ -350,6 +353,7 @@ export class ClaimeditPage {
       Expenses_Type: new FormControl("", [Validators.required]),
       Brand: new FormControl("", [Validators.required]),
       Model: new FormControl("", [Validators.required]),
+      Payment_Method: new FormControl("", []),
       Total_Expenses: new FormControl("", []),
       Advance: new FormControl("", []),
       Remarks: new FormControl("", [Validators.required]),
@@ -907,8 +911,12 @@ export class ClaimeditPage {
         console.log(result);
         let expenses = new Array();
         let brands = new Array();
+        this.paymentMethods = [];
         this.allModels = new Array();
         for (let res of result) {
+          if (res.Field == "Payment_Method") {
+            this.paymentMethods.push(res.Option);
+          }
           if (res.Field == "Brand") {
             brands.push(res);
           }
@@ -1159,6 +1167,7 @@ export class ClaimeditPage {
           this.formData.append("Expenses_Type", this.Expenses_Type);
           this.formData.append("Brand", this.Brand);
           this.formData.append("Model", this.Model);
+          this.formData.append("Payment_Method", this.Payment_Method || "");
           this.formData.append("Code", this.getExpenseCode(this.Expenses_Type));
           this.formData.append("Total_Expenses", this.Total_Expenses);
           this.formData.append("Advance", this.Advance);

@@ -27,8 +27,8 @@ import { SERVER_URL } from '../../environment';
  * those are asked for on the form.
  *
  * How the advance is paid follows from the total rather than from a choice:
- * below the petty cash limit it is handed over at the counter, from the limit
- * upwards it is transferred, and only a transfer needs a bank account.
+ * up to the petty cash limit it is handed over at the counter, above the limit
+ * it is transferred, and only a transfer needs a bank account.
  */
 @IonicPage()
 
@@ -44,6 +44,9 @@ export class AdvancesitePage {
    * show the requestor which way their request is going.
    */
   pettyCashLimit: number = 300;
+
+  /** The unsettled advance warning is shown once, not on every re-entry. */
+  unsettledShown: boolean = false;
 
   images = [];
   imagesO = [];
@@ -242,7 +245,7 @@ export class AdvancesitePage {
       total = 0;
     }
 
-    return this.Need_Advance && total >= this.pettyCashLimit;
+    return this.Need_Advance && total > this.pettyCashLimit;
   }
 
   private applyBankAccountRule() {
@@ -389,6 +392,17 @@ export class AdvancesitePage {
         if (result && result.pettyCashLimit) {
           this.pettyCashLimit = Number.parseFloat(result.pettyCashLimit);
           this.applyBankAccountRule();
+        }
+
+        // An earlier advance is still waiting on its claim. The requestor is
+        // told before raising another, it does not stop the request.
+        if (result && result.unsettledWarning && !this.unsettledShown) {
+          this.unsettledShown = true;
+          this.alertCtrl.create({
+            title: 'Advance Not Settled',
+            subTitle: result.unsettledWarning,
+            buttons: ['OK']
+          }).present();
         }
       },
       (err) => {

@@ -81,8 +81,6 @@ export class AttendancemainPage {
   allModels: any[] = [];
   brandsMultiple: boolean = false;
 
-  // Office - the department's offices, each a button that times in against it.
-  officeLocations: any[] = [];
   isWorkFromHome: boolean = false;
 
   // Project - the project code the time is booked to, and the site under it
@@ -285,13 +283,8 @@ export class AttendancemainPage {
       Brand: this.isBrandRequired(),
       Customer: this.isSales(),
       Customer_Name: this.isSales() && this.isOtherCustomer(),
-      // Model is only ever as required as the brand it hangs off, and only
-      // once that brand has models filed under it. "Common" has none - the
-      // field is not on screen for it.
-      Model:
-        this.isBrandRequired() &&
-        !this.isCommonBrand() &&
-        this.models.length > 0,
+      // A Sales visit is booked to the brand only, so Model is never asked for.
+      Model: false,
       Department: this.isProject(),
       // Not every project code has sites under it. Where there are none there
       // is nothing to pick, and holding the form to a required empty dropdown
@@ -388,7 +381,6 @@ export class AttendancemainPage {
     this.loadBrands();
     this.loadWorkOrders();
     this.loadCustomers();
-    this.loadOfficeLocations();
     this.loadProjectCodes();
   }
 
@@ -525,19 +517,6 @@ export class AttendancemainPage {
     };
   }
 
-  loadOfficeLocations() {
-    this.storage.get("token").then((val) => {
-      this.http.get(SERVER_URL + "/getradius1?token=" + val.token).subscribe(
-        (result: any) => {
-          this.officeLocations = result || [];
-        },
-        (err) => {
-          console.log(err);
-          this.officeLocations = [];
-        }
-      );
-    });
-  }
 
   // ---------------------------------------------------------------------------
   // Pickers
@@ -770,7 +749,6 @@ export class AttendancemainPage {
         this.Longitude_In = pos.coords.longitude;
         loading.dismiss();
         this.loadWorkOrders();
-        this.loadOfficeLocations();
         this.presentToast("Location refreshed");
       };
 
@@ -985,7 +963,6 @@ export class AttendancemainPage {
                 this.Branch ? this.Branch.Branch : ""
               );
               this.formData.append("Brand", this.Brand || "");
-              this.formData.append("Model", this.Model || "");
 
               // A customer that is not in the CRM has no id to send, only the
               // name the user typed.
@@ -1022,14 +999,14 @@ export class AttendancemainPage {
   }
 
   /**
-   * Times in at one of the department's offices. Each office is a button of its
-   * own because that tap is the whole answer - there is nothing else to fill in
-   * once the office is chosen.
+   * Times in at the office. There is nothing to pick - the branch, brand,
+   * product/model and department are the staff member's own - so the one tap is
+   * the whole answer.
    */
-  officeTimeIn(office) {
+  officeTimeIn() {
     const confirm = this.alertCtrl.create({
       title: "Time in",
-      message: "Time in at " + office.Location_Name + "?",
+      message: "Time in at the office?",
       buttons: [
         {
           text: "Cancel",
@@ -1038,7 +1015,7 @@ export class AttendancemainPage {
         {
           text: "Time in",
           handler: () => {
-            this.submitOfficeTimeIn(office);
+            this.submitOfficeTimeIn();
           },
         },
       ],
@@ -1047,7 +1024,7 @@ export class AttendancemainPage {
     confirm.present();
   }
 
-  submitOfficeTimeIn(office) {
+  submitOfficeTimeIn() {
     let loading = this.loadingCtrl.create({
       content: "Time in...",
       spinner: "crescent",
@@ -1083,8 +1060,9 @@ export class AttendancemainPage {
               "Check_In_Type",
               this.isWorkFromHome ? "Work From Home" : "On Duty"
             );
-            this.formData.append("Site_Name", office.Location_Name);
-            this.formData.append("ProjectId", office.Id);
+            // Branch, brand, product/model and the department are the staff
+            // member's own, set from their profile on the server.
+            this.formData.append("Site_Name", (this.user && this.user.Department) || "");
             this.formData.append("Leader_Member", "");
             this.formData.append("Next_Person", "");
             this.formData.append("State", "");

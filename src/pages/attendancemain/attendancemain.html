@@ -163,7 +163,7 @@
           <ion-checkbox [(ngModel)]="isWorkFromHome" [ngModelOptions]="{standalone: true}"></ion-checkbox>
         </ion-item>
         <div class="hint">
-          Tick this when you are working away from the office - it lifts the check that you are at one.
+          Tick this when you are working away from the office.
         </div>
       </div>
 
@@ -259,7 +259,8 @@
 
         <!-- Which machine, within that brand. "Common" spans several brands
              and so names no one machine - the field goes while it is chosen. -->
-        <div *ngIf="!isCommonBrand()">
+        <!-- A Sales visit is booked to the brand only, no model. -->
+        <div *ngIf="!isCommonBrand() && !isSales()">
           <ion-item class="field">
             <ion-label stacked color="primary">Model</ion-label>
             <ionic-selectable item-content [(ngModel)]="Model" [items]="models" formControlName="Model"
@@ -312,22 +313,22 @@
       </ion-item>
     </div>
 
-    <!-- Office times in per office, so its buttons are the submit. -->
+    <!-- Office times in as the staff member's own branch, brand, product/model
+         and cost centre, so there is nothing to pick - its button is the submit. -->
     <div class="card office-card" *ngIf="isOffice()">
       <div class="card-heading">
-        <span>Where are you?</span>
+        <span>Time in as</span>
       </div>
 
-      <div *ngIf="officeLocations.length">
-        <button ion-button block outline color="primary" type="button" text-wrap class="office-button"
-          *ngFor="let office of officeLocations" (click)="officeTimeIn(office)">
-          {{ office.Location_Name }}
-        </button>
-      </div>
+      <p><strong>Branch:</strong> {{ user?.Branch || "-" }}</p>
+      <p><strong>Cost Centre (Department):</strong> {{ user?.Department || "-" }}</p>
+      <p><strong>Brand:</strong> {{ user?.Brand || "-" }}</p>
+      <p><strong>Product/Model:</strong> {{ user?.Product_Model || "-" }}</p>
 
-      <div class="hint" *ngIf="officeLocations.length == 0">
-        No office has been set up for your department yet - ask the office to add one.
-      </div>
+      <button ion-button block color="primary" type="button" text-wrap class="office-button"
+        (click)="officeTimeIn()">
+        Time in
+      </button>
     </div>
 
     <div class="submit-area" *ngIf="hasTimeInButton()">
