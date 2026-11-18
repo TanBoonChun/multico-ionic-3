@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Find asset</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <div class="svt-card" text-center>
+    <ion-icon name="qr-scanner" style="font-size: 54px; color: #2563eb;"></ion-icon>
+    <button class="svt-btn svt-btn-blue" (click)="scan()">Scan asset QR code</button>
+    <p class="svt-muted">Point the camera at the code on the machine</p>
+  </div>
+
+  <div class="svt-muted" text-center style="margin: 6px 0; font-weight: 700;">OR SEARCH</div>
+
+  <div class="svt-card">
+    <span class="svt-label" style="margin-top: 0;">Brand</span>
+    <div class="svt-chips">
+      <span class="svt-chip" [class.active]="type === ''" (click)="pickType('')">All</span>
+      <span class="svt-chip" *ngFor="let t of types" [class.active]="type === t" (click)="pickType(t)">{{ t }}</span>
+    </div>
+
+    <span class="svt-label">Search</span>
+    <input class="svt-input" type="search" [(ngModel)]="q" (input)="typing()" (keyup.enter)="search()" placeholder="Model, serial no, chassis no...">
+    <p class="svt-muted" style="margin: 6px 0 8px;">Model, serial no, chassis no or customer</p>
+  </div>
+
+  <div class="svt-card">
+    <div *ngIf="busy" class="svt-empty">Loading...</div>
+    <div *ngIf="!busy && message" class="svt-empty">{{ message }}</div>
+
+    <div class="svt-row" *ngFor="let a of assets" (click)="open(a)">
+      <div class="svt-thumb" style="background: #ffedd5; color: #e67e22;"><ion-icon name="construct"></ion-icon></div>
+      <div class="grow">
+        <b>{{ a.machinery_no || a.barcode }}</b>
+        <small>{{ a.type }}<span *ngIf="a.model"> · {{ a.model }}</span></small><br>
+        <small>{{ a.customer_name || '-' }}</small>
+      </div>
+      <span class="svt-pill svt-pill-green" *ngIf="a.under_warranty">Warranty</span>
+      <ion-icon name="arrow-forward" style="color: #9ca3af;" *ngIf="!a.under_warranty"></ion-icon>
+    </div>
+  </div>
+
+</ion-content>

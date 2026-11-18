@@ -2,8 +2,27 @@ import { Component } from '@angular/core';
 import { IonicPage, NavParams, ModalController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { HttpClient } from '@angular/common/http';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { SERVER_URL } from '../../environment';
+import { SvtProvider, SvtUtil } from '../../providers/svt/svt';
 
+/**
+ * Service Complete Details: a read-only summary of a finished ticket.
+ *
+ *  - header: ticket, status, customer, asset, location
+ *  - work period: Start / End task and Start / End travel (the time-in/out the technician logged)
+ *  - Completion Report: overall status, work performed, recommendation, hour meter, parts used,
+ *    inspection checklist results, failures, notes, signatures and the signed PDF
+ *
+ * Every section after the work period is hidden when there is nothing to show, so a ticket that
+ * was completed before the Completion Report existed does not look empty or broken.
+ *
+ * API used:
+ *   GET getstartendtask/{serviceId}, gettravellog/{id}     work period (as before)
+ *   GET serviceticket/completion/{id}                      report, parts, checklist, signatures
+ *   GET gensetnote/{id}  (+ gensetnote/details/{noteId})   failures and notes (+ photos)
+ *   GET serviceticket/completion/{id}/pdf                  signed PDF (opened in the browser)
+ */
 @IonicPage()
 @Component({
   selector: 'page-gensetcompletedetails',
@@ -13,39 +32,46 @@ export class GensetcompletedetailsPage {
 
   private id: any;
   private serId: any;
-  public type: string;
-  public service_id: any;
-  public genset: any;
-  public siteName: string;
-  public latitude: any;
-  public longitude: any;
-  public model: string;
-  public capacity: string;
-  public status: string;
-  public serviceDate: string;
+  public t: any = {};
 
   public atask: any = [];
   public atraveltask: any = [];
-  public notes: any = [];
+
+  public loaded = false;
+  public hasReport = false;
+  public report: any = {};          // completion header (svt_completions)
+  public customer = '';
+  public asset: any = {};
+  public location = '';
+  public parts: any[] = [];
+  public checks: any[] = [];        // answered checklist items only
+  public checkTemplate = '';
+  public checkSummary = { pass: 0, fail: 0, na: 0 };
+  public failures: any[] = [];
+  public notes: any[] = [];
+  public closed = false;
+  public techSigned = false;
+  public custSigned = false;
+  public techImg = '';
+  public custImg = '';
 
   constructor(
     private navParam: NavParams,
     private storage: Storage,
     private http: HttpClient,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private iab: InAppBrowser,
+    private svt: SvtProvider,
   ) {
     this.id = this.navParam.get('Id');
     this.serId = this.navParam.get('serviceId');
-    this.type = this.navParam.get('service_type');
-    this.service_id = this.navParam.get('service_id');
-    this.genset = this.navParam.get('genset_no');
-    this.siteName = this.navParam.get('Loc_Name');
-    this.latitude = this.navParam.get('Lat');
-    this.longitude = this.navParam.get('Long');
-    this.model = this.navParam.get('model');
-    this.capacity = this.navParam.get('capacity');
-    this.status = this.navParam.get('Status');
-    this.serviceDate = this.navParam.get('service_date');
+    this.t = {
+      service_id: this.navParam.get('service_id'),
+      service_type: this.navParam.get('service_type'),
+      service_date: this.navParam.get('service_date'),
+      genset_no: this.navParam.get('genset_no'),
+      Status: this.navParam.get('Status'),
+    };
   }
 
   ionViewWillEnter() {
@@ -65,18 +91,85 @@ export class GensetcompletedetailsPage {
       ).subscribe((result) => {
         this.atraveltask = result;
       });
-
-      this.http.get(
-        SERVER_URL + '/gensetnote/' + this.id + '?token=' + val.token
-      ).subscribe((result) => {
-        this.notes = result;
-      });
     });
+
+    this.loadReport();
+    this.loadNotes();
+  }
+
+  private loadReport() {
+    this.svt.get('/serviceticket/completion/' + this.id).then((res) => {
+      this.loaded = true;
+      if (!res) { return; }
+
+      const c = res.completion || null;
+      this.hasReport = !!c;
+      this.report = c || {};
+      this.customer = res.customer || '';
+      this.asset = res.asset || {};
+      this.location = res.location || '';
+      this.closed = !!res.closed;
+      this.techSigned = !!res.techSigned;
+      this.custSigned = !!res.customerSigned;
+      this.techImg = c && c.TechSignatureImg ? this.svt.fileUrl(c.TechSignatureImg) : '';
+      this.custImg = c && c.CustomerSignatureImg ? this.svt.fileUrl(c.CustomerSignatureImg) : '';
+
+      this.parts = (res.parts || []).map((p) => ({ PartNo: p.PartNo, Particulars: p.Particulars, Qty: Number(p.Qty) || 0 }));
+
+      const list = res.checklist || {};
+      this.checkTemplate = list.template ? list.template.Name : '';
+      this.checks = (list.items || [])
+        .filter((it) => it.Result || it.Status)
+        .map((it) => ({
+          Item: it.Item, Result: it.Result || '', Status: it.Status || '', Unit: it.Unit || '',
+          Photo: it.Photo ? this.svt.fileUrl(it.Photo) : '',
+        }));
+      this.checkSummary = {
+        pass: this.checks.filter((c2) => c2.Status === 'Pass').length,
+        fail: this.checks.filter((c2) => c2.Status === 'Fail').length,
+        na: this.checks.filter((c2) => c2.Status === 'N/A').length,
+      };
+    }, () => {
+      // the report could not be loaded: the ticket details above still show
+      this.loaded = true;
+    });
+  }
+
+  private loadNotes() {
+    this.svt.get('/gensetnote/' + this.id).then((res) => {
+      const all = Array.isArray(res) ? res : [];
+      this.failures = all.filter((n) => n.Type === 'Failure');
+      this.notes = all.filter((n) => n.Type !== 'Failure');
+      this.failures.forEach((f) => {
+        this.svt.get('/gensetnote/details/' + f.Id).then((d) => { f.images = d && d.images ? d.images : []; }, () => { f.images = []; });
+      });
+    }, () => { this.failures = []; this.notes = []; });
+  }
+
+  thumb(f: any): string {
+    return f.images && f.images.length ? this.svt.fileUrl(f.images[0].Image_Path) : '';
+  }
+
+  pretty(v: any): string {
+    return SvtUtil.pretty(v);
+  }
+
+  /** "Pass" / "Fail" / "N/A" pill colour of a checklist result. */
+  checkClass(status: string): string {
+    if (status === 'Pass') { return 'svt-pill-green'; }
+    if (status === 'Fail') { return 'svt-pill-red'; }
+    return 'svt-pill-grey';
   }
 
   openNote(note) {
     const modal = this.modalCtrl.create('GensetnoteviewPage', { noteId: note.Id });
     modal.present();
+  }
+
+  exportPdf() {
+    this.svt.pdfUrl(this.id).then((url) => {
+      this.iab.create(url, '_system');
+    });
   }
 
   // Formats a MySQL "YYYY-MM-DD HH:MM:SS" string as "DD-Mon-YYYY h:mm AM/PM",

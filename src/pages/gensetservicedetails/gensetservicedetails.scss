@@ -139,3 +139,11 @@ page-gensetservicedetails {
   }
 
 }
+
+.svt-log { font-size: 13px; }
+.svt-log-head { font-weight: 700; color: #6b7280; margin: 6px 0 2px; font-size: 12px; text-transform: uppercase; }
+.svt-log-empty { color: #9ca3af; padding: 2px 0; }
+.svt-log-row { display: flex; padding: 3px 0; border-bottom: 1px solid #f3f4f6; }
+.svt-log-row span { flex: 0 0 auto; margin-right: 8px; }
+.svt-log-row span:first-child { color: #9ca3af; width: 24px; }
+.svt-log-open { color: #e67e22; font-weight: 700; }

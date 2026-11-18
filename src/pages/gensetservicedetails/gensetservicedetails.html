@@ -1,168 +1,124 @@
-
 <ion-header>
-
-  <ion-navbar>
-    <ion-title style="font-size: 12px;">Service Management Details</ion-title>
+  <ion-navbar color="primary">
+    <ion-title>Service Details</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="Call()"><ion-icon name="call"></ion-icon></button>
+    </ion-buttons>
   </ion-navbar>
-
 </ion-header>
 
-<ion-content padding class="ion-content-body">
-  <div class="ion-item-body">
-    <ion-list no-lines>
-    <ion-item no-lines style="border: none;">
-      <div class="body">
-        <h4 class="apply">{{ serviceId }}</h4>
+<ion-content class="svt-content" padding>
+
+  <!-- header card -->
+  <div class="svt-card">
+    <div class="svt-ticket-top">
+      <span class="svt-ticket-no">{{ t.service_id }}</span>
+      <span class="svt-pill" [ngClass]="t.Status === 'In-Progress' ? 'svt-pill-orange' : 'svt-pill-blue'">{{ t.Status === 'In-Progress' ? 'In progress' : (t.Status === 'Pending' ? 'Assigned' : t.Status) }}</span>
+    </div>
+    <p class="svt-sub">{{ t.service_type }} · {{ pretty(t.service_date) }}</p>
+
+    <span class="svt-pill svt-pill-green" *ngIf="underWarranty">Under warranty</span>
+    <span class="svt-pill svt-pill-grey" *ngIf="!underWarranty">No warranty</span>
+    <span class="svt-pill svt-pill-purple" *ngIf="t.job_type">{{ t.job_type }}</span>
+    <span class="svt-pill svt-pill-blue" *ngIf="t.order_type">{{ t.order_type }}</span>
+    <span class="svt-pill svt-pill-grey" *ngIf="t.sla_days">SLA {{ t.sla_days }} days</span>
+    <div class="svt-sla" [class.danger]="sla.level === 'danger'" *ngIf="sla">{{ sla.text }}</div>
+
+    <div class="svt-steps">
+      <div class="svt-step" *ngFor="let s of steps" [ngClass]="s.state">
+        <div class="dot"><ion-icon [name]="s.icon"></ion-icon></div>
+        {{ s.label }}
       </div>
-      <div >
-        <div class="row">
-          
-          <div class="col col-title">Service ID</div>
-          <div class="col col-details">: {{ serviceId }}</div>
-        </div>
-        <div class="row">
-          
-          <div class="col col-title">Service Type</div>
-          <div class="col col-details">: {{ type }}</div>
-        </div>
-        <div class="row">
-          <div class="col col-title">Asset No</div>
-          <div class="col col-details">: {{ genset }}</div>
-        </div>
-        <div class="row">
-          <div class="col col-title">Site Name</div>
-          <div class="col col-details">: {{ siteName }}</div>
-        </div>
-
-        <div class="row">
-          <div class="col col-title">Site Latitude  </div>
-          <div class="col col-details">: {{ latitude }}</div>
-        </div>
-
-        <div class="row">
-          <div class="col col-title">Site Longitude</div>
-          <div class="col col-details">: {{ longitude }}</div>
-        </div>
-
-        <!-- <div class="row">
-          <div class="col col-title">Model</div>
-          <div class="col col-details">: {{ model }}</div>
-        </div>
-
-        <div class="row">
-          <div class="col col-title">KVA</div>
-          <div class="col col-details">: {{ capacity }}</div>
-        </div> -->
-      </div>
-    </ion-item>
-    <ion-item no-lines>
-      <ion-label >
-        Remarks
-      </ion-label>
-      <ion-input type="text" [(ngModel)]='remarks' placeholder="Enter remarks"></ion-input>
-    </ion-item>
-    <!-- <ion-item text-center no-lines>
-        <ion-col>
-          <button ion-button [hidden]='hideRequest'  (click)='request()' small>Request Item</button>
-          <button ion-button (click)='request()' small>Request Item</button>
-        </ion-col>
-        <ion-col>
-          <button ion-button small navPush='GensetrequestconfirmationPage' [navParams]='req' [hidden]='hideConfirm'>Confirm Item</button>
-          <button ion-button small (click)="confirmItem()" [hidden]='hideConfirm'>Confirm Item</button>
-
-        </ion-col>
-    </ion-item> -->
-  </ion-list>
+    </div>
   </div>
 
-  <div class="ion-item-body buttons" *ngIf="atask.length > 0">
-    <ion-item class="ion-item-item">
-      <div class="row">
-        <div class="col col-display title">Start Task</div>
-        <div class="col col-display title">End Task</div>
-      </div>  
-      <hr>
-      <div *ngFor="let a of atask">
-        <div class="row">
-          <div class="col col-display" style="border-right: rgb(211, 211, 211) solid 1px;">{{a.Time_In}}</div>
-          <div class="col col-display">{{a.Time_Out}}</div>
-        </div>
+  <!-- asset information -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="construct"></ion-icon> Asset information <span class="svt-new">NEW</span></div>
+    <div class="svt-kv">
+      <div><small>Asset no</small><b>{{ t.genset_no || '-' }}</b></div>
+      <div><small>Model</small><b>{{ (asset && asset.model) || t.model || '-' }}</b></div>
+      <div><small>MCM status</small><b>{{ t.mcm_status || (asset && asset.mcm_status) || '-' }}</b></div>
+      <div><small>Brand</small><b>{{ t.brand || (asset && asset.brand) || '-' }}</b></div>
+      <div><small>Chassis no</small><b>{{ t.chassis_no || (asset && asset.chassis_no) || '-' }}</b></div>
+      <div><small>Serial no</small><b>{{ t.engine_no || (asset && asset.engine_no) || '-' }}</b></div>
+      <div><small>Delivery date</small><b>{{ pretty(t.delivery_date || (asset && asset.delivery_date)) }}</b></div>
+      <div><small>Commissioning</small><b>{{ pretty(t.commissioning_date || (asset && asset.commissioning_date)) }}</b></div>
+    </div>
+    <div class="svt-row" style="border-top: 1px solid #f1f5f9;">
+      <div class="grow">
+        <small>Last hour meter<span *ngIf="lastHour"> · {{ pretty(lastHour.ReadingDate) }}</span></small>
+        <b style="font-size: 20px;">{{ lastHour ? (lastHour.Hours | number:'1.0-1') + ' hrs' : '-' }}</b>
       </div>
-    </ion-item>
+      <button ion-button outline small (click)="logReading()">+ Log reading</button>
+    </div>
   </div>
 
-  <div class="ion-item-body buttons" *ngIf="atraveltask.length > 0">
-    <ion-item class="ion-item-item">
-      <div class="row">
-        <div class="col col-display title">Start Travel</div>
-        <div class="col col-display title">End Travel</div>
+  <!-- site -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="pin"></ion-icon> Site</div>
+    <b>{{ t.Loc_Name || '-' }}</b>
+    <p class="svt-muted" *ngIf="contact">Contact: {{ contact.Name }} · {{ contact.Contact_No_1 || '-' }}</p>
+    <div class="svt-two" style="margin-top: 8px;">
+      <div><button class="svt-btn svt-btn-outline" style="margin: 0;" (click)="navme()"><ion-icon name="navigate"></ion-icon> Navigate</button></div>
+      <div><button class="svt-btn svt-btn-outline" style="margin: 0;" (click)="Call()"><ion-icon name="call"></ion-icon> Call</button></div>
+    </div>
+  </div>
+
+  <!-- failure log -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="alert"></ion-icon> Failure log <span class="svt-new">NEW</span>
+      <span class="svt-add" (click)="addFailure()">+ Add</span></div>
+    <div class="svt-empty" *ngIf="failures.length === 0">No failures recorded</div>
+    <div class="svt-row" *ngFor="let f of failures" (click)="editFailure(f)">
+      <div class="svt-thumb"><img *ngIf="thumb(f)" [src]="thumb(f)"><ion-icon *ngIf="!thumb(f)" name="image"></ion-icon></div>
+      <div class="grow">
+        <b>{{ f.Title || 'Failure' }}</b>
+        <small>{{ f.images ? f.images.length : 0 }} photo{{ f.images && f.images.length === 1 ? '' : 's' }}</small>
       </div>
-      <hr>
-      <div *ngFor="let t of atraveltask">
-        <div class="row">
-          <div class="col col-display" style="border-right: rgb(211, 211, 211) solid 1px;">{{formatDate(t.Start_Time)}}</div>
-          <div class="col col-display">{{formatDate(t.End_Time)}}</div>
-        </div>
+      <ion-icon name="create" style="color: #9ca3af;"></ion-icon>
+    </div>
+    <div style="text-align: right;"><a class="svt-muted" (click)="notes()">General visit notes</a></div>
+  </div>
+
+  <!-- parts used -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="cube"></ion-icon> Parts used
+      <span class="svt-add" (click)="addPart()">+ Add</span></div>
+    <div class="svt-empty" *ngIf="parts.length === 0">No parts recorded</div>
+    <div class="svt-row" *ngFor="let p of parts">
+      <div class="grow"><b>{{ p.PartNo }} {{ p.Particulars }}</b></div>
+      <b>x{{ p.Qty | number:'1.0-2' }}</b>
+    </div>
+  </div>
+
+  <!-- time log -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="time"></ion-icon> Time log</div>
+    <div class="svt-log">
+      <div class="svt-log-head">Travel</div>
+      <div *ngIf="!travelRows.length" class="svt-log-empty">No travel yet</div>
+      <div class="svt-log-row" *ngFor="let r of travelRows; let i = index">
+        <span>#{{ i + 1 }}</span><span>{{ r.start }}</span><span>&rarr;</span><span [class.svt-log-open]="r.open">{{ r.open ? 'on the way' : r.end }}</span>
       </div>
-    </ion-item>
+      <div class="svt-log-head">Task</div>
+      <div *ngIf="!taskRows.length" class="svt-log-empty">No task yet</div>
+      <div class="svt-log-row" *ngFor="let r of taskRows; let i = index">
+        <span>#{{ i + 1 }}</span><span>{{ r.start }}</span><span>&rarr;</span><span [class.svt-log-open]="r.open">{{ r.open ? 'working' : r.end }}</span>
+      </div>
+    </div>
   </div>
 
 </ion-content>
-<ion-footer>
-  <ion-row>
-    <ion-item text-center color="primary" [hidden]="false">
-      <div>Latitude: {{ Latitude_In }}
-        <input type="text" readonly="true" hidden="false" [(ngModel)]="Latitude_In">
-      </div>
-      <div>Longitude: {{ Longitude_In }}
-        <input type="text" readonly="true" hidden="false" [(ngModel)]="Longitude_In">
-      </div>
-    </ion-item>
-  </ion-row>
-  <ion-row class="buttons" text-center>
-    <ion-col>
-      <button ion-button small style="background-color: green;" class="footer-btn" (click)="starttravel()">Start Travel</button>
-    </ion-col>
-    <ion-col>
-      <button ion-button small style="background-color: red;" class="footer-btn" (click)="endtravel()">End Travel</button>
-    </ion-col>
-  </ion-row>
-  <ion-row class="buttons" text-center>
-    
-      <ion-col>
-        <button ion-button class="footer-btn" (click)="start()">Start Task</button>
-      </ion-col>
-      <ion-col>
-        <button ion-button style="background-color: red;"  class="footer-btn" (click)="endTask()" >End Task</button>
-      </ion-col>
-      <br>
-      <ion-col>
-        <button ion-button style="background-color: green;" class="footer-btn" (click)="complete()" >Complete</button>
-      </ion-col>
-  </ion-row>
-  <ion-row>
-      <!-- <button class="box-button-menu" small (click)="replacement()">
-        <img src="assets/icon/switch.png">
-      </button>
 
-      <button class="box-button-menu" small (click)="sparepart()">
-        <img src="assets/icon/wrench.png">
-      </button> -->
-
-      <button class="box-button-menu" small (click)=navme()>
-        <img src="assets/icon/map.png">
-      </button>
-
-      <button class="box-button-menu" small (click)="Call()">
-        <img src="assets/icon/telephone.png">
-      </button>
-
-      <button class="box-button-menu" small (click)="notes()">
-        <img src="assets/icon/notes.png">
-      </button>
-<!--
-      <button class="box-button-menu" small (click)="release()">
-        <img src="assets/icon/recycling-bin.png">
-      </button> -->
-  </ion-row>
+<ion-footer class="svt-foot">
+  <div class="svt-foot-grid">
+    <button *ngIf="!travelRunning" class="half svt-bg-green" [disabled]="busy || !travelLoaded" (click)="starttravel()">Start travel</button>
+    <button *ngIf="travelRunning" class="half svt-bg-red" [disabled]="busy || !travelLoaded" (click)="endtravel()">End travel</button>
+    <button *ngIf="!taskRunning" class="half svt-bg-orange" [disabled]="busy || !taskLoaded" (click)="start()">Start task</button>
+    <button *ngIf="taskRunning" class="half svt-bg-red" [disabled]="busy || !taskLoaded" (click)="endTask()">End task</button>
+  </div>
+  <div class="svt-foot-grid">
+    <button class="svt-bg-blue" (click)="complete()">Complete</button>
+  </div>
 </ion-footer>

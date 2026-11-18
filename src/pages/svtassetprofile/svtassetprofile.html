@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Asset Profile</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="scan()"><ion-icon name="qr-scanner"></ion-icon></button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <div class="svt-card svt-empty" *ngIf="!profile && !error">Loading...</div>
+  <div class="svt-card" *ngIf="error"><div class="svt-banner amber">{{ error }}</div></div>
+
+  <div *ngIf="profile">
+
+    <div class="svt-card" text-center>
+      <div class="svt-thumb" style="width: 72px; height: 72px; margin: 6px auto 8px; background: linear-gradient(135deg, #fdba74, #e67e22); font-size: 36px;">
+        <ion-icon name="construct"></ion-icon>
+      </div>
+      <h2 style="margin: 4px 0; font-weight: 800;">{{ profile.asset.machinery_no || profile.asset.barcode }}</h2>
+      <p class="svt-sub" style="margin: 0 0 8px;">{{ profile.asset.model }}<span *ngIf="profile.asset.brand"> · {{ profile.asset.brand }}</span></p>
+      <span class="svt-pill svt-pill-green" *ngIf="profile.under_warranty">Under warranty</span>
+      <span class="svt-pill svt-pill-grey" *ngIf="!profile.under_warranty">No warranty</span>
+      <span class="svt-pill svt-pill-blue" *ngIf="profile.asset.mcm_status">{{ profile.asset.mcm_status }}</span>
+    </div>
+
+    <div class="svt-card">
+      <div class="svt-card-title"><ion-icon name="information-circle"></ion-icon> Specifications</div>
+      <div class="svt-kv">
+        <div><small>Chassis no</small><b>{{ profile.asset.chassis_no || '-' }}</b></div>
+        <div><small>Serial no</small><b>{{ profile.asset.engine_no || '-' }}</b></div>
+        <div><small>Delivery date</small><b>{{ pretty(profile.asset.delivery_date) }}</b></div>
+        <div><small>Commissioning</small><b>{{ pretty(profile.asset.commissioning_date) }}</b></div>
+        <div><small>Client</small><b>{{ profile.asset.customer_name || '-' }}</b></div>
+        <div><small>Site</small><b>{{ profile.asset.site_name || '-' }}</b></div>
+      </div>
+    </div>
+
+    <div class="svt-card">
+      <div class="svt-card-title"><ion-icon name="speedometer"></ion-icon> Hour meter history</div>
+      <div class="svt-empty" *ngIf="bars.length === 0">No readings yet</div>
+      <div class="svt-chart" *ngIf="bars.length > 0">
+        <div class="col" *ngFor="let b of bars">
+          <div style="height: 90px; display: flex; align-items: flex-end;"><div class="bar" [style.height.px]="b.height" style="width: 100%;"></div></div>
+          <div>{{ b.label }}</div>
+          <b>{{ b.value }}</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="svt-card">
+      <div class="svt-card-title"><ion-icon name="ribbon"></ion-icon> Warranty</div>
+      <div class="svt-empty" *ngIf="!profile.warranty || profile.warranty.length === 0">No warranty on file</div>
+      <div class="svt-row" *ngFor="let w of profile.warranty">
+        <div class="grow">
+          <b>{{ w.PartDescription }}</b>
+          <small>{{ pretty(w.WarrantyStart) }} to {{ pretty(w.WarrantyExpiry) }}</small>
+        </div>
+        <span class="svt-pill" [ngClass]="w.Active ? 'svt-pill-green' : 'svt-pill-grey'">{{ w.Active ? 'Active' : 'Expired' }}</span>
+      </div>
+    </div>
+
+    <div class="svt-card">
+      <div class="svt-card-title"><ion-icon name="time"></ion-icon> Service history</div>
+      <div class="svt-empty" *ngIf="!profile.history || profile.history.length === 0">No service history</div>
+      <div class="svt-row" *ngFor="let t of profile.history">
+        <div class="grow">
+          <b>{{ t.service_id }}</b>
+          <small>{{ t.service_type }}<span *ngIf="t.job_type"> · {{ t.job_type }}</span></small>
+        </div>
+        <span class="svt-pill" [ngClass]="isOpen(t) ? 'svt-pill-orange' : 'svt-pill-green'">{{ isOpen(t) ? 'Open' : 'Closed' }}</span>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
+
+<ion-footer *ngIf="profile" class="svt-foot">
+  <button class="svt-btn svt-btn-primary" style="margin: 0;" (click)="createTicket()">Create ticket for this asset</button>
+</ion-footer>

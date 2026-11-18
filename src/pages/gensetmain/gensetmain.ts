@@ -1,16 +1,16 @@
-import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Observable } from 'rxjs/Observable';
-import { CalendarComponent } from 'ng-fullcalendar';
-import { HttpClient } from '@angular/common/http';
-import { Storage } from '@ionic/storage';
-import { SERVER_URL } from '../../environment';
+import { Component } from '@angular/core';
+import { IonicPage, NavController } from 'ionic-angular';
+import { SvtProvider, SvtUtil } from '../../providers/svt/svt';
 
 /**
- * Generated class for the GensetmainPage page.
+ * Service Management list (redesign section 2): the home of the Service Management part of
+ * the app. Replaces the calendar with ticket cards that show the classification, warranty
+ * cover, SLA and progress without opening the ticket.
  *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
+ * The server has no "all my tickets" endpoint, so the list is built from
+ *   GET serviceticket/getServiceDatetest   (one row per service date that still has open tickets)
+ *   GET serviceticket/getService?date=...  (the tickets of one date)
+ * which are the two calls the old calendar and day list already used.
  */
 @IonicPage()
 @Component({
@@ -19,153 +19,119 @@ import { SERVER_URL } from '../../environment';
 })
 export class GensetmainPage {
 
-  calendarOptions: any;
-  @ViewChild(CalendarComponent) ucCalendar: CalendarComponent;
+  filter: string = 'today';     // today | week | overdue | all
+  tickets: any[] = [];
+  groups: any[] = [];
+  overdueCount = 0;
+  loading = false;
+  failed = false;
 
-  public userImage: string;
-  public Name: string = '';
-  public Position: string = '';
-  public user: any = '';
-  public Staff_ID: string = '';
-  public team_leader: string = '';
+  progress = SvtUtil.progress;
+  sla = SvtUtil.sla;
+  statusLabel = SvtUtil.statusLabel;
+  statusClass = SvtUtil.statusClass;
+  isWarranty = SvtUtil.isWarranty;
 
-  public taskBadgeCount: any;
+  constructor(private nav: NavController, private svt: SvtProvider) {}
 
-  constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private http: HttpClient,
-    private storage: Storage
-  ) {
+  ionViewWillEnter() {
+    this.load();
+  }
 
-    this.calendarOptions = {
-      header: {
-        left: 'title',
-        right: 'month,agendaFourDay,'
-      },
-      footer: {
-        right: 'today prev,next',
-      },
-      views: {
-        agendaFourDay: {
-          type: 'listYear',
-          buttonText: 'All'
+  refresh(refresher: any) {
+    this.load(() => refresher.complete());
+  }
+
+  load(done?: () => void) {
+    this.loading = true;
+    this.failed = false;
+
+    this.svt.get('/serviceticket/getServiceDatetest').then((rows) => {
+      const dates: string[] = [];
+      for (const r of (Array.isArray(rows) ? rows : [])) {
+        if (r.service_date && dates.indexOf(r.service_date) < 0) { dates.push(r.service_date); }
+      }
+      return Promise.all(dates.map((d) =>
+        this.svt.get('/serviceticket/getService', { date: d }).then((res) => (res && res.service) ? res.service : [], () => [])));
+    }).then((lists) => {
+      const seen: any = {};
+      const all: any[] = [];
+      for (const list of lists) {
+        for (const t of list) {
+          if (!seen[t.Id]) { seen[t.Id] = true; all.push(t); }
         }
-      },
-      fixedWeekCount: false,
-      defaultDate: (new Date()).toISOString(),
-      defaultView: 'agendaFourDay',
-      allDay: true,
-      events: [],
-    };
-
-    this.taskBadgeCount = 0;
-
-    let data: Observable<any>;
-
-    this.storage.get('token').then((val) => {
-      data = this.http.get(SERVER_URL + '/getuser?token=' + val.token);
-      data.subscribe(result => {
-        console.log(result, 'GENSET');
-        this.user = result;
-      });
-    });
-
-    this.storage.get('user').then((val) => {
-      this.userImage = val.Web_Path;
-      this.Name = val.Name;
-      this.Position = val.Position;
-      this.Staff_ID = val.Staff_ID;
-      this.team_leader = val.team_leader;
+      }
+      this.tickets = all;
+      this.overdueCount = all.filter((t) => SvtUtil.isOverdue(t)).length;
+      this.applyFilter();
+      this.loading = false;
+      if (done) { done(); }
+    }, () => {
+      this.loading = false;
+      this.failed = true;
+      if (done) { done(); }
     });
   }
 
-  // -------------------------------------------------------------------------
-  // CALENDAR
-  // -------------------------------------------------------------------------
-  ngOnInit() {
-    this.calendarOptions = {
-      header: {
-        left: 'title',
-        right: 'month,agendaFourDay,'
-      },
-      footer: {
-        right: 'today prev,next',
-      },
-      views: {
-        agendaFourDay: {
-          type: 'listYear',
-          buttonText: 'All'
-        }
-      },
-      fixedWeekCount: false,
-      defaultDate: (new Date()),
-      defaultView: 'agendaFourDay',
-      allDay: true,
-      events: [],
-    };
+  setFilter(f: string) {
+    this.filter = f;
+    this.applyFilter();
   }
 
-  test(e) {
-    console.log(e);
+  private sameWeek(d: Date): boolean {
+    const t = SvtUtil.today();
+    const start = new Date(t.getFullYear(), t.getMonth(), t.getDate() - ((t.getDay() + 6) % 7));
+    const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+    return d >= start && d <= end;
   }
 
-  isObject(variable) {
-    return typeof variable === 'object';
+  private applyFilter() {
+    const visible = this.tickets.filter((t) => {
+      const d = SvtUtil.parseDate(t.service_date);
+      if (this.filter === 'all') { return true; }
+      if (this.filter === 'overdue') { return SvtUtil.isOverdue(t); }
+      if (!d) { return false; }
+      if (this.filter === 'today') { return SvtUtil.daysFromToday(d) === 0; }
+      return this.sameWeek(d);
+    });
+
+    visible.sort((a, b) => {
+      const da = SvtUtil.parseDate(a.service_date);
+      const db = SvtUtil.parseDate(b.service_date);
+      return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
+    });
+
+    const groups: any[] = [];
+    for (const t of visible) {
+      const d = SvtUtil.parseDate(t.service_date);
+      const heading = SvtUtil.heading(d);
+      let g = groups.length ? groups[groups.length - 1] : null;
+      if (!g || g.heading !== heading) {
+        g = { heading: heading, items: [] };
+        groups.push(g);
+      }
+      g.items.push(t);
+    }
+    this.groups = groups;
+  }
+
+  open(t: any) {
+    if (t.service_type === 'Delivery' && (t.Status === 'In-Progress' || t.Status === 'Completed')) {
+      this.nav.push('GensetdeliveryPage', t);
+    } else {
+      this.nav.push('GensetserviceDetailsPage', t);
+    }
+  }
+
+  create() {
+    this.nav.push('SvtCreatePage');
   }
 
   completed() {
-    this.navCtrl.push('GensetcompletePage');
+    this.nav.push('GensetcompletePage');
   }
 
-  eventClick(e, t) {
-    console.log(e);
-    let date = new Date(e.event.start._d);
-    let month = date.toLocaleDateString("en-us", { month: "short" });
-    let dateFormat = date.getDate() + "-" + month + "-" + date.getFullYear();
-    console.log(dateFormat);
-    // GensetservicePage dipanggil guna string (lazy load) — tak perlu import
-    this.navCtrl.push('GensetservicePage', this.myFunction(date));
-  }
-
-  myFunction(date) {
-    var d = new Date(date);
-
-    var monthNames = [
-      "Jan", "Feb", "Mar",
-      "Apr", "May", "Jun", "Jul",
-      "Aug", "Sep", "Oct",
-      "Nov", "Dec"
-    ];
-
-    var day = ('0' + d.getDate()).slice(-2);
-    var monthIndex = d.getMonth();
-    var year = d.getFullYear();
-
-    return day + '-' + monthNames[monthIndex] + '-' + year;
-  }
-
-  ionViewWillEnter() {
-    let date = [];
-    this.storage.get('token').then(data => {
-      this.http.get(SERVER_URL + '/serviceticket/getServiceDatetest?token=' + data.token).subscribe(
-        (result: any) => {
-          this.ucCalendar.fullCalendar('removeEvents');
-          for (var y = 0, i = result.length; y < i; y++) {
-            date.push({
-              id: new Date(result[y]['service_date']),
-              className: new Date(result[y]['service_date']),
-              title: (result[y]['service_type']) + ' (' + (result[y]['service_date']) + ')',
-              start: new Date(result[y]['service_date']),
-              end: new Date(result[y]['service_date']),
-              allDay: true,
-              backgroundColor: "#F22613", //red
-              borderColor: "#F22613", //red
-            });
-          }
-          this.ucCalendar.fullCalendar('addEventSource', date);
-        }
-      );
-    });
+  scanAsset() {
+    this.nav.push('SvtFindassetPage');
   }
 }

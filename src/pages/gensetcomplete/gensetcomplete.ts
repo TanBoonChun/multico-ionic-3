@@ -3,6 +3,7 @@ import { IonicPage, NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { HttpClient } from '@angular/common/http';
 import { SERVER_URL } from '../../environment';
+import { SvtUtil } from '../../providers/svt/svt';
 
 @IonicPage()
 @Component({
@@ -23,6 +24,8 @@ export class GensetcompletePage {
   public startDate: string = '';
   public endDate: string = '';
   public selectedTypes: string[] = [];
+  public searched = false;   // nothing is listed until a filter has been applied
+  public loading = false;
 
   constructor(
     private storage: Storage,
@@ -31,7 +34,27 @@ export class GensetcompletePage {
   ) {}
 
   ionViewWillEnter() {
-    this.load();
+    // coming back from a ticket: refresh the current results, but never list everything on first open
+    if (this.searched) {
+      this.load();
+    }
+  }
+
+  pretty(v: any): string {
+    return SvtUtil.pretty(v);
+  }
+
+  isSelected(type: string): boolean {
+    return this.selectedTypes.indexOf(type) >= 0;
+  }
+
+  toggleType(type: string) {
+    const i = this.selectedTypes.indexOf(type);
+    if (i >= 0) { this.selectedTypes.splice(i, 1); } else { this.selectedTypes.push(type); }
+  }
+
+  get hasFilter(): boolean {
+    return !!(this.startDate || this.endDate || this.selectedTypes.length > 0);
   }
 
   // Converts an ion-datetime ISO value (YYYY-MM-DD) into the "DD-Mon-YYYY"
@@ -49,6 +72,12 @@ export class GensetcompletePage {
   }
 
   applyFilter() {
+    if (!this.hasFilter) {
+      this.searched = false;
+      this.items = [];
+      return;
+    }
+    this.searched = true;
     this.load();
   }
 
@@ -56,10 +85,12 @@ export class GensetcompletePage {
     this.startDate = '';
     this.endDate = '';
     this.selectedTypes = [];
-    this.load();
+    this.searched = false;
+    this.items = [];
   }
 
   load() {
+    this.loading = true;
     this.storage.get('token').then((val) => {
       const params: any = { token: val.token };
 
@@ -76,6 +107,10 @@ export class GensetcompletePage {
       this.http.get(SERVER_URL + '/serviceticket/getCompleted', { params: params })
         .subscribe((result: any) => {
           this.items = result;
+          this.loading = false;
+        }, () => {
+          this.items = [];
+          this.loading = false;
         });
     });
   }

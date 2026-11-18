@@ -1,45 +1,56 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title style="font-size: 12px;">Service Complete</ion-title>
+  <ion-navbar color="primary">
+    <ion-title>Service Complete</ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding class="ion-content-body">
+<ion-content class="svt-content" padding>
 
-  <div class="filter-panel">
-    <ion-item no-lines>
-      <ion-label>Start Date</ion-label>
-      <ion-datetime displayFormat="DD-MMM-YYYY" [(ngModel)]="startDate" placeholder="Start"></ion-datetime>
-    </ion-item>
+  <!-- filter -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="funnel"></ion-icon> Find completed tickets</div>
 
-    <ion-item no-lines>
-      <ion-label>End Date</ion-label>
-      <ion-datetime displayFormat="DD-MMM-YYYY" [(ngModel)]="endDate" placeholder="End"></ion-datetime>
-    </ion-item>
-
-    <ion-item no-lines>
-      <ion-label>Service Type</ion-label>
-      <ion-select multiple="true" [(ngModel)]="selectedTypes">
-        <ion-option *ngFor="let type of serviceTypeOptions" [value]="type">{{type}}</ion-option>
-      </ion-select>
-    </ion-item>
-
-    <div text-center style="padding-top:10px;">
-      <button ion-button (click)="applyFilter()">OK</button>
+    <div class="svt-two">
+      <div><span class="svt-label" style="margin-top: 0;">Start date</span><input class="svt-input" type="date" [(ngModel)]="startDate"></div>
+      <div><span class="svt-label" style="margin-top: 0;">End date</span><input class="svt-input" type="date" [(ngModel)]="endDate"></div>
     </div>
+
+    <span class="svt-label">Service type</span>
+    <div class="svt-chips">
+      <span class="svt-chip" *ngFor="let type of serviceTypeOptions" [class.active]="isSelected(type)" (click)="toggleType(type)">{{ type }}</span>
+    </div>
+
+    <button class="svt-btn svt-btn-primary" (click)="applyFilter()" [disabled]="!hasFilter">Show tickets</button>
+    <button class="svt-btn svt-btn-outline" *ngIf="hasFilter || searched" (click)="clearFilter()">Clear</button>
   </div>
 
-  <div *ngIf="items && items.length < 1" class="ion-item-body">
-    <p class="none">No record found</p>
+  <!-- states -->
+  <div *ngIf="!searched" class="svt-card">
+    <div class="svt-empty">Choose a date or service type, then tap Show tickets to see completed tickets.</div>
   </div>
 
-  <div *ngFor="let item of items;" class="ion-item-body" (click)="page(item)">
-    <ion-item class="ion-item-item">
-      <h3 class="title"><b>{{item.service_id}} ({{item.service_type}})</b></h3>
-      <p class="date">{{item.genset_no}}</p>
-      <p class="date">{{item.Loc_Name}}</p>
-      <p class="date">{{item.service_date}}</p>
-    </ion-item>
+  <div *ngIf="searched && loading" class="svt-card svt-empty">Loading...</div>
+
+  <div *ngIf="searched && !loading && items && items.length < 1" class="svt-card">
+    <div class="svt-empty">No record found</div>
+  </div>
+
+  <!-- results -->
+  <div *ngIf="searched && !loading && items && items.length > 0">
+    <p class="svt-muted" style="margin: 0 4px 8px;">{{ items.length }} completed ticket<span *ngIf="items.length !== 1">s</span></p>
+
+    <div class="svt-card" *ngFor="let item of items" (click)="page(item)">
+      <div class="svt-ticket-top">
+        <span class="svt-ticket-no">{{ item.service_id }}</span>
+        <span class="svt-pill svt-pill-green">Completed</span>
+      </div>
+      <p class="svt-sub">{{ item.service_type }}<span *ngIf="item.job_type"> · {{ item.job_type }}</span> · {{ pretty(item.service_date) }}</p>
+      <div class="svt-customer" *ngIf="item.customer_name">{{ item.customer_name }}</div>
+      <div class="svt-asset-line">
+        <ion-icon name="construct"></ion-icon> {{ item.genset_no || '-' }}<span *ngIf="item.model"> · {{ item.model }}</span>
+        <span *ngIf="item.Loc_Name"> · {{ item.Loc_Name }}</span>
+      </div>
+    </div>
   </div>
 
 </ion-content>

@@ -14,6 +14,7 @@ import { Geolocation } from "@ionic-native/geolocation";
 import { Camera } from "@ionic-native/camera";
 import { HTTP } from "@ionic-native/http";
 import { AuthProvider } from "../providers/auth/auth";
+import { SvtProvider } from "../providers/svt/svt";
 import { UnauthorizedInterceptor } from "../providers/auth/unauthorized.interceptor";
 import { Toast } from "@ionic-native/toast";
 import { FileOpener } from "@ionic-native/file-opener";
@@ -139,6 +140,7 @@ import { HAMMER_GESTURE_CONFIG } from "@angular/platform-browser";
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     Camera,
     AuthProvider,
+    SvtProvider,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: UnauthorizedInterceptor,

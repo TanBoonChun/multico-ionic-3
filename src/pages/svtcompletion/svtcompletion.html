@@ -1,0 +1,162 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Completion Report</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <div class="svt-card svt-empty" *ngIf="!loaded">Loading...</div>
+
+  <div *ngIf="loaded">
+
+    <div class="svt-card">
+      <div class="svt-ticket-top">
+        <div><small class="svt-muted">Report no</small><br><b style="font-size: 16px;">{{ reportNo || 'Not saved yet' }}</b></div>
+        <span class="svt-pill" [ngClass]="closed ? 'svt-pill-green' : (techSigned && custSigned ? 'svt-pill-blue' : 'svt-pill-orange')">{{ statusText }}</span>
+      </div>
+    </div>
+
+    <!-- service report details -->
+    <div class="svt-card">
+      <div class="svt-card-title"><ion-icon name="document"></ion-icon> Service report details <span class="svt-new">NEW</span></div>
+      <div class="svt-two">
+        <div><span class="svt-label" style="margin-top: 0;">Vehicle no.</span><input class="svt-input" type="text" [(ngModel)]="f.VehicleNo" [disabled]="closed"></div>
+        <div><span class="svt-label" style="margin-top: 0;">Job no.</span><input class="svt-input" type="text" [value]="jobNo" disabled></div>
+      </div>
+      <div class="svt-two">
+        <div><span class="svt-label">Mileage from</span><input class="svt-input" type="number" [(ngModel)]="f.MileageFrom" [disabled]="closed"></div>
+        <div><span class="svt-label">Mileage to</span><input class="svt-input" type="number" [(ngModel)]="f.MileageTo" [disabled]="closed"></div>
+      </div>
+      <div class="svt-two">
+        <div><span class="svt-label">Hour meter</span><input class="svt-input" type="number" step="0.1" [(ngModel)]="f.HourMeter" [disabled]="closed"></div>
+        <div><span class="svt-label">Next service at</span><input class="svt-input" type="number" step="0.1" [(ngModel)]="f.NextServiceHour" [disabled]="closed"></div>
+      </div>
+
+      <span class="svt-label">Time entries <span style="text-transform: none; font-weight: 400;">(from Start / End task)</span></span>
+      <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 0 10px;">
+        <div class="svt-empty" *ngIf="times.length === 0">No time entries yet</div>
+        <div class="svt-row" *ngFor="let r of times">
+          <div class="grow"><b>{{ dateOf(r) }} {{ r.StartTime }} - {{ r.StopTime }}</b></div>
+          <input class="svt-input" style="width: 90px;" type="text" [(ngModel)]="r.Description" placeholder="TS" [disabled]="closed">
+        </div>
+      </div>
+
+      <span class="svt-label">Parts used</span>
+      <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 0 10px;">
+        <div class="svt-empty" *ngIf="parts.length === 0">No parts recorded</div>
+        <div class="svt-row" *ngFor="let p of parts">
+          <div class="grow"><b>{{ p.PartNo }} {{ p.Particulars }}</b></div><b>x{{ p.Qty }}</b>
+        </div>
+      </div>
+
+      <span class="svt-label">Service recommendation</span>
+      <textarea class="svt-input" [(ngModel)]="f.Recommendation" [disabled]="closed"></textarea>
+    </div>
+
+    <!-- inspection checklist -->
+    <div class="svt-card">
+      <!-- the checklist is only shown when a template (Operation > Checklist Templates on the web) applies to this ticket -->
+      <div class="svt-card-title" *ngIf="checks.length > 0"><ion-icon name="clipboard"></ion-icon> Inspection checklist <span class="svt-new">NEW</span></div>
+      <div class="svt-card-title" *ngIf="checks.length === 0"><ion-icon name="document"></ion-icon> Work summary</div>
+      <div *ngIf="checks.length > 0">
+        <div class="svt-field" style="margin-bottom: 4px;">{{ templateName }} ({{ checks.length }} items)</div>
+        <p class="svt-muted">Loaded from the asset type. {{ answered }} of {{ checks.length }} done.</p>
+
+        <div class="svt-check-item" *ngFor="let c of checks">
+          <div class="head">
+            <span>{{ c.Item }}<span style="color: #dc2626;" *ngIf="c.Required"> *</span></span>
+          </div>
+
+          <!-- each item shows only the control its template item asks for: Pass/Fail, Value (+ unit), Text or Choice -->
+          <div class="svt-seg" style="margin: 6px 0;" *ngIf="c.Kind === 'passfail'">
+            <button [class.on]="c.Status === 'Pass'" (click)="!closed && setStatus(c, 'Pass')">Pass</button>
+            <button [class.on]="c.Status === 'Fail'" [class.fail]="c.Status === 'Fail'" (click)="!closed && setStatus(c, 'Fail')">Fail</button>
+            <button [class.on]="c.Status === 'N/A'" [class.warn]="c.Status === 'N/A'" (click)="!closed && setStatus(c, 'N/A')">N/A</button>
+          </div>
+
+          <div style="display: flex; align-items: center;" [style.justify-content]="c.Kind === 'passfail' ? 'flex-end' : null" *ngIf="c.Kind !== 'passfail' || showsPhoto(c)">
+            <ion-item class="svt-sel" no-lines style="flex: 1;" *ngIf="c.Kind === 'choice'">
+              <ionic-selectable item-content [(ngModel)]="c.ChoiceSel" [items]="c.ChoiceItems" itemValueField="value" itemTextField="label"
+                [canSearch]="true" [canClear]="true" [isEnabled]="!closed" placeholder="Select" searchPlaceholder="Search" closeButtonText="Close" (onChange)="choiceChanged(c)"></ionic-selectable>
+            </ion-item>
+            <input class="svt-input" *ngIf="c.Kind === 'text' || c.Kind === 'value'" [type]="c.Kind === 'value' ? 'number' : 'text'" step="any" [(ngModel)]="c.Result" [disabled]="closed" style="flex: 1;" placeholder="Result">
+            <span *ngIf="c.Kind === 'value' && c.Unit" style="margin-left: 8px; color: #6b7280;">{{ c.Unit }}</span>
+            <button class="svt-icon-btn" *ngIf="showsPhoto(c) && !closed" (click)="checkPhoto(c)"><ion-icon name="camera" [style.color]="needsPhoto(c) && !c.PhotoNew && !c.PhotoOld ? '#dc2626' : '#e67e22'"></ion-icon></button>
+          </div>
+          <div class="svt-photos" *ngIf="c.PhotoNew || c.PhotoOld" style="margin-top: 6px;">
+            <div class="svt-photo"><img [src]="c.PhotoNew || c.PhotoOld"></div>
+          </div>
+          <span class="svt-muted" *ngIf="needsPhoto(c) && !c.PhotoNew && !c.PhotoOld">Photo required</span>
+        </div>
+      </div>
+
+      <span class="svt-label">Overall status</span>
+      <div class="svt-seg">
+        <button *ngFor="let o of overallOptions" [class.on]="f.OverallStatus === o.value" [ngClass]="o.css" (click)="!closed && (f.OverallStatus = o.value)">{{ o.label }}</button>
+      </div>
+
+      <span class="svt-label">Work performed</span>
+      <textarea class="svt-input" [(ngModel)]="f.WorkPerformed" [disabled]="closed"></textarea>
+      <span class="svt-label">Customer comment</span>
+      <textarea class="svt-input" [(ngModel)]="f.CustomerComment" placeholder="Optional" [disabled]="closed"></textarea>
+    </div>
+
+    <!-- signatures -->
+    <div class="svt-card">
+      <div class="svt-card-title"><ion-icon name="create"></ion-icon> Signatures</div>
+
+      <span class="svt-label" style="margin-top: 0;">Technician</span>
+      <div *ngIf="techSigned">
+        <img *ngIf="techImg" [src]="techImg" style="width: 100%; border: 2px solid #86efac; border-radius: 12px; background: #f0fdf4;">
+        <p class="svt-muted" style="color: #166534;">Signed ✓</p>
+        <a class="svt-muted" *ngIf="!closed" (click)="resignTech()">Sign again</a>
+      </div>
+      <div *ngIf="!techSigned">
+        <signature-pad #techSig [height]="140" (changed)="techDrawn = $event"></signature-pad>
+        <a class="svt-muted" (click)="techSig && techSig.clear()">Clear</a>
+      </div>
+
+      <span class="svt-label">Customer representative</span>
+      <div *ngIf="custSigned">
+        <img *ngIf="custImg" [src]="custImg" style="width: 100%; border: 2px solid #86efac; border-radius: 12px; background: #f0fdf4;">
+        <p class="svt-muted" style="color: #166534;">Signed ✓</p>
+        <a class="svt-muted" *ngIf="!closed" (click)="resignCust()">Sign again</a>
+      </div>
+      <div *ngIf="!custSigned">
+        <signature-pad #custSig [height]="140" (changed)="custDrawn = $event"></signature-pad>
+        <p class="svt-muted">Hand the device to the customer to sign.</p>
+        <a class="svt-muted" (click)="custSig && custSig.clear()">Clear</a>
+      </div>
+
+      <span class="svt-label">Representative name</span>
+      <input class="svt-input" type="text" [(ngModel)]="f.CustomerRep" placeholder="Enter name" [disabled]="closed">
+      <span class="svt-label">Title</span>
+      <input class="svt-input" type="text" [(ngModel)]="f.CustomerRepTitle" placeholder="e.g. Facility manager" [disabled]="closed">
+
+      <span class="svt-label">Proof of signing (optional)</span>
+      <div class="svt-photos">
+        <div class="svt-photo" *ngIf="signerPhoto || signerPhotoOld"><img [src]="signerPhoto || signerPhotoOld"></div>
+        <button class="svt-photo-add" *ngIf="!closed" (click)="signerShot()"><ion-icon name="camera"></ion-icon></button>
+      </div>
+      <p class="svt-muted">Take a photo of the customer representative while signing. You can skip this.</p>
+    </div>
+
+    <div class="svt-warn-list" *ngIf="missing.length > 0 && !closed">
+      <b>Before this ticket can close:</b>
+      <ul><li *ngFor="let m of missing">{{ m }}</li></ul>
+    </div>
+    <div class="svt-banner amber" *ngIf="!closed">A ticket can only close after both signatures. The customer is notified by email when it closes.</div>
+    <div class="svt-banner green" *ngIf="closed">This ticket is closed. The report is locked.</div>
+
+    <button class="svt-btn svt-btn-outline" *ngIf="!closed" (click)="save()">Save report</button>
+
+  </div>
+</ion-content>
+
+<ion-footer class="svt-foot" *ngIf="loaded">
+  <div class="svt-two">
+    <div><button class="svt-btn svt-btn-outline" style="margin: 0;" (click)="exportPdf()">Export PDF</button></div>
+    <div><button class="svt-btn svt-btn-primary" style="margin: 0;" [disabled]="closed" (click)="closeTicket()">Close ticket</button></div>
+  </div>
+</ion-footer>

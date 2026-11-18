@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Create Ticket</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <div class="svt-banner amber" *ngIf="optionsError">{{ optionsError }}</div>
+
+  <!-- classification -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="pricetag"></ion-icon> Classification</div>
+
+    <span class="svt-label" style="margin-top: 0;">Type</span>
+    <ion-item class="svt-sel" no-lines>
+      <ionic-selectable item-content [(ngModel)]="sel.service" [items]="tickettypeItems" itemValueField="value" itemTextField="label"
+        [canSearch]="true" [canClear]="true" placeholder="Select type" searchPlaceholder="Search" closeButtonText="Close"></ionic-selectable>
+    </ion-item>
+
+    <div class="svt-two">
+      <div>
+        <span class="svt-label">Job type <span class="svt-new">NEW</span></span>
+        <ion-item class="svt-sel" no-lines>
+          <ionic-selectable item-content [(ngModel)]="sel.job" [items]="jobItems" itemValueField="value" itemTextField="label"
+            [canSearch]="true" [canClear]="true" placeholder="Select" searchPlaceholder="Search" closeButtonText="Close" (onChange)="changeJob()"></ionic-selectable>
+        </ion-item>
+      </div>
+      <div>
+        <span class="svt-label">Sub job type <span class="svt-new">NEW</span></span>
+        <ion-item class="svt-sel" no-lines>
+          <ionic-selectable item-content [(ngModel)]="sel.sub" [items]="subItems" itemValueField="value" itemTextField="label"
+            [canSearch]="true" [canClear]="true" placeholder="Select" searchPlaceholder="Search" closeButtonText="Close"></ionic-selectable>
+        </ion-item>
+      </div>
+    </div>
+
+    <span class="svt-label">Order type <span class="svt-new">NEW</span></span>
+    <ion-item class="svt-sel" no-lines>
+      <ionic-selectable item-content [(ngModel)]="sel.order" [items]="orderItems" itemValueField="value" itemTextField="label"
+        [canSearch]="true" [canClear]="true" placeholder="Select" searchPlaceholder="Search" closeButtonText="Close"></ionic-selectable>
+    </ion-item>
+
+    <span class="svt-label">Scope of work <span class="svt-new">NEW</span></span>
+    <div class="svt-chips">
+      <span class="svt-chip" *ngFor="let s of scopes" [class.active]="f.scope_of_work === s" (click)="pickScope(s)">{{ s }}</span>
+      <span class="svt-muted" *ngIf="scopes.length === 0">No scope of work defined yet</span>
+    </div>
+  </div>
+
+  <!-- customer and asset -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="business"></ion-icon> Customer and asset</div>
+
+    <span class="svt-label" style="margin-top: 0;">Client</span>
+    <ion-item class="svt-sel" no-lines>
+      <ionic-selectable item-content [(ngModel)]="sel.client" [items]="clientItems" itemValueField="value" itemTextField="label"
+        [canSearch]="true" [canClear]="true" placeholder="Select client" searchPlaceholder="Search client" closeButtonText="Close" (onChange)="changeClient()"></ionic-selectable>
+    </ion-item>
+
+    <span class="svt-label">Branch</span>
+    <ion-item class="svt-sel" no-lines>
+      <ionic-selectable item-content [(ngModel)]="sel.dep" [items]="depItems" itemValueField="value" itemTextField="label"
+        [canSearch]="true" [canClear]="true" placeholder="Select branch" searchPlaceholder="Search" closeButtonText="Close" (onChange)="changeDep()"></ionic-selectable>
+    </ion-item>
+
+    <div class="svt-two">
+      <div>
+        <span class="svt-label">Segment</span>
+        <ion-item class="svt-sel" no-lines>
+          <ionic-selectable item-content [(ngModel)]="sel.seg" [items]="segItems" itemValueField="value" itemTextField="label"
+            [canSearch]="true" [canClear]="true" placeholder="Select" searchPlaceholder="Search" closeButtonText="Close" (onChange)="changeSeg()"></ionic-selectable>
+        </ion-item>
+      </div>
+      <div>
+        <span class="svt-label">Project code</span>
+        <ion-item class="svt-sel" no-lines>
+          <ionic-selectable item-content [(ngModel)]="sel.code" [items]="codeItems" itemValueField="value" itemTextField="label"
+            [canSearch]="true" [canClear]="true" placeholder="Select" searchPlaceholder="Search" closeButtonText="Close" (onChange)="changeCode()"></ionic-selectable>
+        </ion-item>
+      </div>
+    </div>
+    <div class="svt-banner green" *ngIf="autoJob">A new PO no and job no <b *ngIf="nextJobNo">({{ nextJobNo }})</b> will be created with this ticket.</div>
+    <p class="svt-muted">Choose Branch, Segment and Project code to create a new job no, or pick an existing job no below.</p>
+
+    <span class="svt-label">Job no</span>
+    <ion-item class="svt-sel" no-lines>
+      <ionic-selectable item-content [(ngModel)]="sel.site" [items]="siteItems" itemValueField="value" itemTextField="label"
+        [canSearch]="true" [canClear]="true" placeholder="Select job no" searchPlaceholder="Search job no" closeButtonText="Close" (onChange)="changeSite()"></ionic-selectable>
+    </ion-item>
+
+    <span class="svt-label">Asset</span>
+    <div style="display: flex; align-items: center;">
+      <input class="svt-input" type="text" [(ngModel)]="f.genset_no" (input)="typingAsset()" placeholder="Asset no or scan" style="flex: 1;">
+      <button class="svt-icon-btn" (click)="scan()"><ion-icon name="qr-scanner" style="color: #e67e22;"></ion-icon></button>
+    </div>
+
+    <div class="svt-banner green" *ngIf="assetInfo && assetInfo.under_warranty">
+      <b>Under warranty</b><span *ngIf="warrantyUntil"> until {{ warrantyUntil }}</span><br>
+      {{ assetInfo.asset.mcm_status || '-' }} · Delivered {{ pretty(assetInfo.asset.delivery_date) }} · Commissioned {{ pretty(assetInfo.asset.commissioning_date) }}
+    </div>
+    <div class="svt-banner grey" *ngIf="assetInfo && !assetInfo.under_warranty">
+      <b>No warranty on file</b><br>
+      {{ assetInfo.asset.mcm_status || '-' }} · Delivered {{ pretty(assetInfo.asset.delivery_date) }} · Commissioned {{ pretty(assetInfo.asset.commissioning_date) }}
+    </div>
+    <div class="svt-banner amber" *ngIf="assetMissing">No asset found for this code.</div>
+  </div>
+
+  <!-- schedule -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="calendar"></ion-icon> Schedule</div>
+    <div class="svt-two">
+      <div><span class="svt-label" style="margin-top: 0;">Date</span><input class="svt-input" type="date" [(ngModel)]="f.servicedate"></div>
+      <div>
+        <span class="svt-label" style="margin-top: 0;">In charge</span>
+        <ion-item class="svt-sel" no-lines>
+          <ionic-selectable item-content [(ngModel)]="sel.pic" [items]="picItems" itemValueField="value" itemTextField="label"
+            [canSearch]="true" [canClear]="true" placeholder="Select" searchPlaceholder="Search" closeButtonText="Close"></ionic-selectable>
+        </ion-item>
+      </div>
+    </div>
+    <span class="svt-label">Remarks</span>
+    <textarea class="svt-input" [(ngModel)]="f.serviceremark" placeholder="Describe the problem..."></textarea>
+  </div>
+
+</ion-content>
+
+<ion-footer class="svt-foot">
+  <button class="svt-btn svt-btn-primary" style="margin: 0;" (click)="submit()">Submit ticket</button>
+</ion-footer>

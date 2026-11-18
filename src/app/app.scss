@@ -525,3 +525,143 @@ ion-content ion-tabs[tabsPlacement=top] ion-tab > .ion-page > ion-content.status
     }
   }
 }
+
+
+// ============================================================================
+// Service Management redesign (SVO) - shared styles for the svt-* screens.
+// Everything is namespaced svt- so it cannot clash with the older pages.
+// ============================================================================
+ion-content.svt-content .scroll-content { background: #f3f4f6; }
+
+.svt-card {
+  background: #fff; border-radius: 16px; padding: 14px 14px 10px; margin: 0 0 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+.svt-card-title { display: flex; align-items: center; font-size: 15px; font-weight: 700; color: #1f2937; margin: 0 0 10px; }
+.svt-card-title ion-icon { color: #e67e22; margin-right: 8px; font-size: 20px; }
+.svt-card-title .svt-add { margin-left: auto; color: #e67e22; font-weight: 600; font-size: 13px; }
+.svt-new { display: inline-block; background: #fdebd9; color: #b45309; border: 1px solid #f6c89a; border-radius: 999px; font-size: 9px; font-weight: 700; padding: 1px 7px; margin-left: 8px; }
+
+.svt-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; color: #6b7280; text-transform: uppercase; margin: 10px 0 4px; }
+.svt-field, .svt-card input.svt-input, .svt-card textarea.svt-input, .svt-card select.svt-input {
+  width: 100%; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; font-size: 14px; background: #fff; color: #111827;
+  -webkit-appearance: none; appearance: none; box-sizing: border-box;
+}
+.svt-card textarea.svt-input { min-height: 70px; }
+.svt-two { display: flex; }
+.svt-two > div { flex: 1; }
+.svt-two > div + div { margin-left: 10px; }
+
+.svt-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; margin: 0 6px 6px 0; }
+.svt-pill-orange { background: #fdebd9; color: #b45309; }
+.svt-pill-blue { background: #dbeafe; color: #1e40af; }
+.svt-pill-green { background: #dcfce7; color: #166534; }
+.svt-pill-red { background: #fee2e2; color: #b91c1c; }
+.svt-pill-purple { background: #ede9fe; color: #5b21b6; }
+.svt-pill-grey { background: #f3f4f6; color: #4b5563; }
+
+.svt-tiles { display: flex; margin: 0 0 12px; }
+.svt-tile { flex: 1; background: #fff; border-radius: 16px; padding: 14px 6px; text-align: center; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); }
+.svt-tile + .svt-tile { margin-left: 10px; }
+.svt-tile ion-icon { font-size: 30px; color: #e67e22; }
+.svt-tile b { display: block; font-size: 14px; color: #111827; margin-top: 4px; }
+.svt-tile small { color: #6b7280; font-size: 11px; }
+
+.svt-chips { display: flex; flex-wrap: wrap; margin: 0 0 8px; }
+.svt-chip { border: 1px solid #e5e7eb; background: #fff; border-radius: 999px; padding: 7px 16px; font-size: 14px; color: #374151; margin: 0 8px 8px 0; }
+.svt-chip.active { background: #e67e22; border-color: #e67e22; color: #fff; font-weight: 600; }
+.svt-chip .svt-count { color: #dc2626; font-weight: 700; margin-left: 4px; }
+
+.svt-date-heading { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: #6b7280; margin: 14px 4px 8px; }
+.svt-ticket-no { font-size: 17px; font-weight: 800; color: #111827; }
+.svt-ticket-top { display: flex; align-items: center; justify-content: space-between; }
+.svt-customer { font-size: 17px; font-weight: 700; color: #111827; margin: 6px 0 0; }
+.svt-sub { color: #6b7280; font-size: 14px; margin: 2px 0 8px; }
+.svt-asset-line { color: #4b5563; font-size: 13px; margin: 4px 0 8px; }
+.svt-sla { font-size: 13px; margin: 6px 0 4px; color: #4b5563; }
+.svt-sla.danger { color: #dc2626; }
+
+.svt-bar { display: flex; margin: 6px 0 4px; }
+.svt-bar span { flex: 1; height: 6px; border-radius: 3px; background: #e5e7eb; }
+.svt-bar span + span { margin-left: 5px; }
+.svt-bar span.done { background: #16a34a; }
+.svt-bar span.current { background: #e67e22; }
+.svt-bar-caption { font-size: 13px; color: #b45309; margin: 2px 0 6px; }
+
+.svt-steps { display: flex; justify-content: space-between; margin: 12px 0 6px; position: relative; }
+.svt-step { flex: 1; text-align: center; font-size: 11px; color: #9ca3af; }
+.svt-step .dot { width: 34px; height: 34px; line-height: 34px; margin: 0 auto 4px; border-radius: 50%; background: #e5e7eb; color: #fff; font-size: 17px; }
+.svt-step.done .dot { background: #16a34a; }
+.svt-step.current .dot { background: #e67e22; box-shadow: 0 0 0 4px #fde7cf; }
+.svt-step.done, .svt-step.current { color: #374151; }
+.svt-step.current { color: #e67e22; font-weight: 700; }
+
+.svt-kv { display: flex; flex-wrap: wrap; }
+.svt-kv > div { width: 50%; padding: 0 6px 12px 0; box-sizing: border-box; }
+.svt-kv small { display: block; color: #6b7280; font-size: 12px; }
+.svt-kv b { display: block; color: #111827; font-size: 15px; margin-top: 2px; word-break: break-word; }
+
+.svt-row { display: flex; align-items: center; padding: 9px 0; border-bottom: 1px solid #f1f5f9; }
+.svt-row:last-child { border-bottom: 0; }
+.svt-row .grow { flex: 1; min-width: 0; }
+.svt-row .grow b { display: block; color: #111827; font-size: 14px; }
+.svt-row .grow small { color: #6b7280; font-size: 12px; }
+.svt-thumb { width: 52px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, #cbd5e1, #94a3b8); margin-right: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 22px; }
+.svt-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.svt-qty { display: flex; align-items: center; }
+.svt-qty button { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #d1d5db; background: #fff; color: #374151; font-size: 16px; line-height: 1; padding: 0; }
+.svt-qty button.plus { background: #e67e22; border-color: #e67e22; color: #fff; }
+.svt-qty b { min-width: 30px; text-align: center; font-size: 15px; }
+.svt-icon-btn { background: transparent; border: 0; font-size: 22px; color: #6b7280; padding: 4px 8px; }
+.svt-icon-btn.danger { color: #dc2626; }
+
+.svt-btn { display: block; width: 100%; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 700; border: 2px solid #e67e22; text-align: center; margin: 8px 0; }
+.svt-btn-primary { background: #e67e22; color: #fff; }
+.svt-btn-outline { background: #fff; color: #e67e22; }
+.svt-btn-blue { background: #2563eb; border-color: #2563eb; color: #fff; }
+.svt-btn[disabled] { opacity: 0.5; }
+
+.svt-foot { background: #fff; border-top: 1px solid #e5e7eb; padding: 8px 12px; }
+.svt-foot-grid { display: flex; flex-wrap: wrap; margin: 0 -4px; }
+.svt-foot-grid button { flex: 1 1 30%; margin: 4px; border: 0; border-radius: 10px; padding: 12px 4px; color: #fff; font-weight: 700; font-size: 14px; }
+.svt-foot-grid button.half { flex: 1 1 40%; }
+.svt-bg-green { background: #16a34a; } .svt-bg-red { background: #dc2626; } .svt-bg-orange { background: #e67e22; } .svt-bg-blue { background: #2563eb; }
+
+.svt-banner { border-radius: 12px; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
+.svt-banner.green { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+.svt-banner.amber { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
+.svt-banner.grey { background: #f3f4f6; border: 1px solid #e5e7eb; color: #4b5563; }
+
+.svt-photos { display: flex; flex-wrap: wrap; }
+.svt-photo { position: relative; width: 70px; height: 70px; border-radius: 12px; margin: 0 8px 8px 0; overflow: hidden; background: #e5e7eb; }
+.svt-photo img { width: 100%; height: 100%; object-fit: cover; }
+.svt-photo .x { position: absolute; top: 2px; right: 2px; background: rgba(0, 0, 0, 0.55); color: #fff; border: 0; border-radius: 50%; width: 20px; height: 20px; line-height: 18px; font-size: 12px; padding: 0; }
+.svt-photo-add { width: 70px; height: 70px; border-radius: 12px; border: 2px dashed #d1d5db; color: #e67e22; font-size: 26px; background: #fff; margin: 0 8px 8px 0; }
+
+.svt-seg { display: flex; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+.svt-seg button { flex: 1; padding: 10px 4px; background: #fff; border: 0; font-size: 14px; color: #4b5563; }
+.svt-seg button.on { background: #dcfce7; color: #166534; font-weight: 700; }
+.svt-seg button.on.fail { background: #fee2e2; color: #b91c1c; }
+.svt-seg button.on.warn { background: #fef3c7; color: #92400e; }
+
+.svt-chart { display: flex; align-items: flex-end; height: 120px; margin: 6px 0; }
+.svt-chart .col { flex: 1; text-align: center; font-size: 11px; color: #6b7280; }
+.svt-chart .col .bar { background: #fdba74; border-radius: 6px 6px 0 0; margin: 0 4px; }
+.svt-chart .col:last-child .bar { background: #e67e22; }
+
+.svt-sig-canvas { width: 100%; display: block; background: #fff; border: 2px dashed #cbd5e1; border-radius: 12px; touch-action: none; }
+.svt-sig-ok { border: 2px solid #86efac; background: #f0fdf4; }
+.svt-check-item { padding: 8px 0 10px; border-bottom: 1px solid #f1f5f9; }
+.svt-check-item .head { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 14px; color: #111827; }
+.svt-muted { color: #6b7280; font-size: 12px; }
+.svt-warn-list { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 12px; padding: 10px 12px; font-size: 13px; margin: 8px 0; }
+.svt-warn-list li { margin-left: 16px; }
+.svt-empty { text-align: center; color: #9ca3af; padding: 18px 0; font-size: 14px; }
+// searchable dropdown (ionic-selectable) inside the svt cards: full width, text on the left, right under its label.
+// (ionic-selectable limits itself to 45% of the row and right-aligns it unless the item has a stacked label.)
+ion-item.svt-sel { display: block; padding: 0 !important; min-height: 44px; background: #fff !important; border: 1px solid #e5e7eb !important; border-radius: 12px !important; }
+ion-item.svt-sel .item-inner { display: block; width: 100%; padding: 0 !important; margin: 0 !important; border-bottom: 0 !important; }
+ion-item.svt-sel .input-wrapper { display: block !important; width: 100%; }
+ion-item.svt-sel ionic-selectable { display: flex; width: 100%; max-width: 100% !important; padding: 0 !important; font-size: 14px; }
+ion-item.svt-sel .ionic-selectable-value { flex: 1; min-width: 0; text-align: left; padding: 12px 6px 12px 12px !important; }
+ion-item.svt-sel .ionic-selectable-icon { margin-right: 6px; }

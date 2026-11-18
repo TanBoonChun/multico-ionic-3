@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-buttons start>
+      <button ion-button (click)="close()">Close</button>
+    </ion-buttons>
+    <ion-title>Add part</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="cube"></ion-icon> Add part</div>
+
+    <button class="svt-btn svt-btn-outline" (click)="scan()"><ion-icon name="qr-scanner"></ion-icon> Scan barcode</button>
+
+    <span class="svt-label">Or search my bag</span>
+    <input class="svt-input" type="search" [(ngModel)]="q" placeholder="Part no or name">
+
+    <div style="margin-top: 10px; border: 1px solid #e5e7eb; border-radius: 12px; padding: 0 10px;">
+      <div class="svt-empty" *ngIf="loaded && filtered().length === 0">No part found in your bag</div>
+      <div class="svt-row" *ngFor="let b of filtered()" (click)="pick(b)" [style.background]="picked && picked.InvId === b.Id ? '#fff7ed' : ''">
+        <div class="grow"><b>{{ b.barcode }} {{ b.name }}</b></div>
+        <small class="svt-muted">in bag: {{ b.Balance }}</small>
+      </div>
+    </div>
+
+    <div class="svt-banner green" *ngIf="picked" style="margin-top: 12px;">
+      Selected: <b>{{ picked.PartNo }} {{ picked.name }}</b> (in bag: {{ picked.Balance }})
+    </div>
+
+    <div class="svt-two">
+      <div><span class="svt-label">Qty</span><input class="svt-input" type="number" min="1" [(ngModel)]="qty"></div>
+      <div><span class="svt-label">Warranty</span><input class="svt-input" type="text" [(ngModel)]="warranty" placeholder="e.g. 12 months"></div>
+    </div>
+
+    <button class="svt-btn svt-btn-primary" (click)="add()">Add part</button>
+  </div>
+</ion-content>

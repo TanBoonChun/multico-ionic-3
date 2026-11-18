@@ -1,470 +1,344 @@
 import { Component } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
-import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { IonicPage, NavController, NavParams, AlertController, ModalController, LoadingController } from 'ionic-angular';
 import { Toast } from '@ionic-native/toast';
 import { Geolocation } from '@ionic-native/geolocation';
 import { CallNumber } from '@ionic-native/call-number';
-import { Observable } from 'rxjs/Observable';
 import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
 import { SERVER_URL } from '../../environment';
+import { SvtProvider, SvtUtil } from '../../providers/svt/svt';
 
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json'
   })
-}
+};
 
-
+/**
+ * Service Details (redesign section 4): the main working screen of a ticket.
+ *
+ *  - header card: warranty / job type / order type / SLA badges and the 5-step progress
+ *  - asset information, hour meter (last reading + Log reading)
+ *  - site with Navigate and Call
+ *  - failure log with photos (gensetnote Type = Failure)
+ *  - parts used (svt_completion_parts through serviceticket/completion)
+ *  - time log (travel and task times)
+ *  - pinned actions: Start/End travel, Start/End task, Complete
+ *
+ * The ticket fields arrive as navigation params from the list (the serviceTicket() query).
+ */
 @IonicPage()
 @Component({
   selector: 'page-gensetservicedetails',
   templateUrl: 'gensetservicedetails.html',
 })
 export class GensetserviceDetailsPage {
-  private data: any;
-  private id:any;
-  private type:string;
-  private serviceId:any;
-  private serId: any;
-  private siteName: string;
-  private latitude: any;
-  private longitude: any;
-  private genset: any;
-  private atraveltask: any = [];
-  private startTask:boolean=false;
-  private timeIn: any;
-  private req: any;
-  private hideConfirm: boolean = false;
-  private remarks: any;
-  public items:any='';
-  private UserId:any='';
-  private startNav: string;
-  private options:any;
+
+  t: any;                   // the ticket as sent by the list
+  id: any;                  // serviceticket.Id
+  serId: any;               // gensetservice.Id
+  steps: any[] = [];
+  sla: any = null;
+  pretty = SvtUtil.pretty;
+
+  // asset (from asset/profile)
+  asset: any = null;
+  assetWarranty = false;
+  hours: any[] = [];
+
+  failures: any[] = [];
+  parts: any[] = [];
+  closed = false;
+
+  contact: any = '';        // who to call (getcall)
+  atask: any = [];          // task start / end rows (timesheets)
+  atraveltask: any = [];    // travel rows
+  travelLoaded = false;     // buttons stay disabled until the time log has been read
+  taskLoaded = false;
+  busy = false;             // a start/end request is in flight (blocks a second tap)
+
   Latitude_In: any;
   Longitude_In: any;
   destination: string;
-  model: string;
-  capacity:string;
-  hideRequest=false;
-  reqStatus:string;
-  leader_id: any = '';
 
-  atask:any=''
-  isenabled: boolean;
   constructor(
     private storage: Storage,
-    private http:HttpClient,
-    private navParam:NavParams,
+    private http: HttpClient,
+    private navParam: NavParams,
     private nav: NavController,
-    private loading:LoadingController,
     private toast: Toast,
     public callNumber: CallNumber,
-    private alertCtrl:AlertController,
+    private alertCtrl: AlertController,
+    private modalCtrl: ModalController,
+    private loadingCtrl: LoadingController,
     private launchNavigator: LaunchNavigator,
-    public navCtrl: NavController,
     public geo: Geolocation,
-
-  ){
-    this.id=this.navParam.get('Id');
-    this.type=this.navParam.get('service_type');
-    this.serviceId=this.navParam.get('service_id');
-    this.serId = this.navParam.get('serviceId');
-    this.siteName=this.navParam.get('Loc_Name');
-    this.latitude = this.navParam.get('Lat');
-    this.longitude = this.navParam.get('Long');
-    this.genset = this.navParam.get('genset_no');
-    this.timeIn = this.navParam.get('timeIn');
-    this.req = this.navParam.get('reqId');
-    this.UserId = this.navParam.get('UserId');
-    this.model= this.navParam.get('model');
-    this.capacity = this.navParam.get('capacity');
-    this.leader_id = this.navParam.get('leader_id');
-    
-    if(this.timeIn) this.startTask=true;
-
-    this.startNav = "";
-    this.destination = this.latitude + "," + this.longitude;
+    private svt: SvtProvider,
+  ) {
+    this.t = this.navParam.data || {};
+    this.id = this.t.Id;
+    this.serId = this.t.serviceId;
+    this.destination = this.t.Lat + ',' + this.t.Long;
+    this.buildHeader();
 
     this.geo
-        .getCurrentPosition()
-        .then(pos => {
-          this.Latitude_In = pos.coords.latitude;
-          this.Longitude_In = pos.coords.longitude;
-     
-          alert("Location Refreshed");
-        })
-        .catch(err => console.log(err));
+      .getCurrentPosition()
+      .then(pos => {
+        this.Latitude_In = pos.coords.latitude;
+        this.Longitude_In = pos.coords.longitude;
+      })
+      .catch(err => console.log(err));
   }
-  
-  ionViewWillEnter(){
-    this.reqStatus=this.navParam.get('reqStatus');
-    if(this.reqStatus && this.reqStatus != 'Confirmed'){
-      this.hideRequest=true;
-    }
-    if (!this.req) this.hideConfirm = true; 
 
+  ionViewWillEnter() {
     this.load();
   }
 
+  private buildHeader() {
+    const p = SvtUtil.progress(this.t);
+    const icons = ['person', 'eye', 'document', 'construct', 'checkmark'];
+    const labels = ['Assigned', 'Visit', 'Quotation', 'Repair', 'Closed'];
+    this.steps = labels.map((label, i) => ({
+      label: label,
+      icon: icons[i],
+      state: p.done[i] ? 'done' : (p.current === i ? 'current' : ''),
+    }));
+    this.sla = SvtUtil.sla(this.t);
+  }
+
+  get underWarranty(): boolean {
+    return SvtUtil.isWarranty(this.t) || this.assetWarranty;
+  }
+
   load() {
-    let data:Observable<any>;
-    this.storage.get('token').then((val) => {
-      data = this.http.get(SERVER_URL + '/getcall?token=' + val.token,{
-        params:{
-          UserId:this.UserId
-        }
-      } );
-      data.subscribe(result => {
-        this.items = result;
-      })
-    })
+    // who to call
+    this.svt.get('/getcall', { UserId: this.t.UserId }).then((res) => { this.contact = res || ''; }, () => {});
 
-    this.storage.get("token").then((val) => {
-      data = this.http.get(
-        SERVER_URL + "/getstartendtask/" + this.serId + "?token=" + val.token
-      );
-      data.subscribe((result) => {
-        this.atask = result;
+    // time log rows
+    this.svt.get('/getstartendtask/' + this.serId).then((res) => { this.atask = res || []; this.taskLoaded = true; }, () => { this.taskLoaded = true; });
+    this.svt.get('/gettravellog/' + this.id).then((res) => { this.atraveltask = res || []; this.travelLoaded = true; }, () => { this.travelLoaded = true; });
+
+    this.loadAsset();
+    this.loadFailures();
+    this.loadParts();
+  }
+
+  /** Asset record, warranty flag and hour meter readings. */
+  private loadAsset() {
+    if (!this.t.genset_no) { return; }
+    this.svt.get('/asset/profile/' + encodeURIComponent(this.t.genset_no)).then((res) => {
+      this.asset = res.asset;
+      this.assetWarranty = !!res.under_warranty;
+      this.hours = res.hour_meter || [];
+    }, () => { this.asset = null; });
+  }
+
+  private loadFailures() {
+    this.svt.get('/gensetnote/' + this.id, { type: 'Failure' }).then((res) => {
+      this.failures = Array.isArray(res) ? res : [];
+      // the list has no photos, so fetch each note once for its thumbnail and count
+      this.failures.forEach((f) => {
+        this.svt.get('/gensetnote/details/' + f.Id).then((d) => {
+          f.images = d && d.images ? d.images : [];
+        }, () => { f.images = []; });
       });
-
-      this.http.get(
-        SERVER_URL + "/gettravellog/" + this.id + "?token=" + val.token
-      ).subscribe((result) => {
-        this.atraveltask = result;
-      });
-
-      this.http.get(
-        SERVER_URL + "/RepairOption?token=" + val.token
-      ).subscribe((result) => {
-        this.options = result;
-      });
-
-    });
-
-  }
-  replacement(){
-
-    this.nav.push('GensetreplacementPage',{id:this.id,gensetNo:this.genset});
-    
+    }, () => { this.failures = []; });
   }
 
-  sparepart(){
-    this.nav.push('GensetsparepartPage', {serId:this.serId,reqId:this.req});
+  private loadParts() {
+    this.svt.get('/serviceticket/completion/' + this.id).then((res) => {
+      this.parts = res && res.parts ? res.parts : [];
+      this.closed = !!(res && res.closed);
+    }, () => { this.parts = []; });
   }
 
-  notes(){
-    this.nav.push('GensetnotePage', {serviceId:this.id});
+  thumb(f: any): string {
+    return f.images && f.images.length ? this.svt.fileUrl(f.images[0].Image_Path) : '';
   }
 
-  // Formats a MySQL "YYYY-MM-DD HH:MM:SS" string as "DD-Mon-YYYY h:mm AM/PM",
-  // matching the Start/End Task display format. Done here (not stored this way
-  // in the DB) because the column is a real DATETIME and only accepts that format.
-  formatDate(value: string): string {
-    if (!value) {
-      return '';
+  timeOf(value: string): string {
+    if (!value) { return '-'; }
+    const m = /(\d{1,2}):(\d{2})(:\d{2})?(\s?[AP]M)?/i.exec(String(value));
+    if (!m) { return value; }
+    if (m[4]) { return m[1] + ':' + m[2] + m[4]; }
+    return (m[1].length === 1 ? '0' : '') + m[1] + ':' + m[2];
+  }
+
+  /** One line per trip / per task: start and end time ("-" while it is still running). */
+  get travelRows(): any[] {
+    return this.atraveltask.map((r) => ({ start: this.timeOf(r.Start_Time), end: r.End_Time ? this.timeOf(r.End_Time) : '-', open: !r.End_Time }));
+  }
+  get taskRows(): any[] {
+    return this.atask.filter((r) => r.Time_In).map((r) => ({ start: this.timeOf(r.Time_In), end: r.Time_Out ? this.timeOf(r.Time_Out) : '-', open: !r.Time_Out }));
+  }
+
+  /** Start shows first; after Start only End shows, and after End Start shows again. */
+  get travelRunning(): boolean { return this.atraveltask.some((r) => !r.End_Time); }
+  get taskRunning(): boolean { return this.atask.some((r) => r.Time_In && !r.Time_Out); }
+
+  // ---------------------------------------------------------------- hour meter
+
+  get lastHour(): any {
+    return this.hours.length ? this.hours[0] : null;
+  }
+
+  logReading() {
+    if (!this.asset) {
+      this.alertCtrl.create({ title: 'Hour meter', subTitle: 'This ticket has no asset on file.', buttons: ['OK'] }).present();
+      return;
     }
-
-    const parts = value.split(' ');
-    if (parts.length < 2) {
-      return value;
-    }
-
-    const [datePart, timePart] = parts;
-    const dateBits = datePart.split('-');
-    const timeBits = timePart.split(':');
-    if (dateBits.length < 3 || timeBits.length < 2) {
-      return value;
-    }
-
-    const [year, month, day] = dateBits;
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const monthName = months[parseInt(month, 10) - 1] || month;
-
-    let hour = parseInt(timeBits[0], 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12;
-    if (hour === 0) {
-      hour = 12;
-    }
-
-    return day + '-' + monthName + '-' + year + ' ' + hour + ':' + timeBits[1] + ' ' + ampm;
-  }
-
-  confirmItem(){
-    this.nav.push('GensetrequestconfirmationPage',{
-      serId:this.serId,
-      reqId:this.req
-    })
-  }
-
-  endTask(){
-
-    const confirm = this.alertCtrl.create({
-      title: "Confirmation",
-      subTitle: "Want to end task?",
+    this.alertCtrl.create({
+      title: 'Log hour meter',
+      inputs: [{ name: 'hours', type: 'number', placeholder: 'Hours now (e.g. 7347.9)' }],
       buttons: [
+        { text: 'Cancel', role: 'cancel' },
         {
-          role:'cancel',
-          text:"Cancel"
-        },
-        {
-          text: 'Yes',
-          handler: () => {
-            this.storage.get('token').then(val => {
-              this.http.post(SERVER_URL + '/serviceticket/endTask?token=' + val.token, {id:this.serId}, {})
-                .subscribe(result => {
-                  if (result > 0) {
-                    this.toast.show('Success', '5000', 'center').subscribe();
-                    this.load();
-                  }
-                  else this.toast.show('Fail to end the task', '5000', 'center').subscribe();
-                 }) ;
-            })
-          }
-        }
-      ]
-    })
-    confirm.present();
-
-  }
-  request() {
-    this.nav.push('GensetrequestPage', {serId:this.serId,reqId:this.req});
-  }
-  complete() {
-    const alert=this.alertCtrl.create({
-      title:"Error",
-      subTitle:"Please input remarks before complete.",
-      buttons:[
-        'OK'
-      ]
-    });
-
-    if(!this.remarks)
-      return alert.present();
-
-    if(this.atask.length === 0 && this.atraveltask.length === 0){
-      const confirm = this.alertCtrl.create({
-        title: "Confirmation",
-        subTitle: "Are you sure want to complete the task without start/end the travel or task?",
-        buttons: [
-          {
-            role: 'cancel',
-            text: "No"
+          text: 'Save',
+          handler: (data) => {
+            const hours = parseFloat(data.hours);
+            if (isNaN(hours) || hours < 0) { return false; }
+            this.svt.post('/asset/hourMeter/save', {
+              InventoryId: this.asset.Id, ServiceId: this.id, ReadingDate: SvtUtil.ymd(new Date()), Hours: hours,
+            }).then(() => {
+              this.toast.show('Reading saved', '3000', 'center').subscribe();
+              this.loadAsset();
+            }, (err) => {
+              this.toast.show(this.svt.errorMessage(err, 'Could not save the reading'), '5000', 'center').subscribe();
+            });
           },
-          {
-            text: 'Yes',
-            handler: () => {
-              this.submitComplete();
-            }
-          }
-        ]
-      });
-      return confirm.present();
+        },
+      ],
+    }).present();
+  }
+
+  // ---------------------------------------------------------------- failures
+
+  addFailure() {
+    const modal = this.modalCtrl.create('SvtFailurePage', { serviceId: this.id });
+    modal.onDidDismiss((saved) => { if (saved) { this.loadFailures(); } });
+    modal.present();
+  }
+
+  editFailure(f: any) {
+    const modal = this.modalCtrl.create('SvtFailurePage', { serviceId: this.id, noteId: f.Id });
+    modal.onDidDismiss((saved) => { if (saved) { this.loadFailures(); } });
+    modal.present();
+  }
+
+  notes() {
+    this.nav.push('GensetnotePage', { serviceId: this.id });
+  }
+
+  // ---------------------------------------------------------------- parts used
+
+  addPart() {
+    if (this.closed) {
+      this.alertCtrl.create({ title: 'Parts', subTitle: 'This ticket is closed.', buttons: ['OK'] }).present();
+      return;
     }
-
-    this.submitComplete();
-  }
-
-  submitComplete() {
-    const loader= this.loading.create({
-      content: "Please wait...",
-      duration: 3000
+    const modal = this.modalCtrl.create('SvtPartPage');
+    modal.onDidDismiss((part) => {
+      if (!part) { return; }
+      const label = part.Warranty ? part.Particulars + ' (warranty ' + part.Warranty + ')' : part.Particulars;
+      const next = this.parts.map((p) => ({ PartNo: p.PartNo, Particulars: p.Particulars, Qty: p.Qty }));
+      next.push({ PartNo: part.PartNo, Particulars: label, Qty: part.Qty });
+      this.saveParts(next);
     });
+    modal.present();
+  }
+
+  private saveParts(parts: any[]) {
+    const loader = this.loadingCtrl.create({ content: 'Saving...' });
     loader.present();
-    this.storage.get('token').then(val => {
-
-        this.http.post(SERVER_URL + '/serviceticket/updateService?token=' + val.token, {
-          id: this.id,
-          serId:this.serId,
-          status: 'completed',
-          remarks:this.remarks ? this.remarks : '',
-          type:this.type
-        },
-        {})
-          .finally(() => {
-            loader.dismiss();
-          })
-        .subscribe(
-          (res: any) => {
-            if (res > 0) {
-              this.navCtrl.popTo(this.navCtrl.getByIndex(this.navCtrl.length()-3));
-              this.toast.show(`Completed`, '5000', 'center').subscribe(
-                toast => {}
-              );
-            } else {
-              this.toast.show('Fail', '5000', 'center').subscribe();
-            }
-
-        })
-    })
+    this.svt.post('/serviceticket/completion/save', { ServiceId: this.id, parts: parts }).then(() => {
+      loader.dismiss();
+      this.loadParts();
+    }, (err) => {
+      loader.dismiss();
+      this.toast.show(this.svt.errorMessage(err, 'Could not save the part'), '5000', 'center').subscribe();
+    });
   }
+
+  // ---------------------------------------------------------------- actions
+
+  complete() {
+    this.nav.push('SvtCompletePage', { ticket: this.t, asset: this.asset });
+  }
+
+  private confirmThen(subTitle: string, run: () => void) {
+    if (this.busy) { return; }
+    this.alertCtrl.create({
+      title: 'Confirmation',
+      subTitle: subTitle,
+      buttons: [
+        { role: 'cancel', text: 'Cancel' },
+        { text: 'Yes', handler: () => { run(); } },
+      ],
+    }).present();
+  }
+
+  /** Posts a time log action, keeps the buttons locked until it answers, then reloads the log. */
+  private submit(path: string, body: any, failMsg: string) {
+    if (this.busy) { return; }
+    this.busy = true;
+    this.storage.get('token').then(val => {
+      this.http.post(SERVER_URL + path + '?token=' + val.token, body, httpOptions).subscribe((result: any) => {
+        this.busy = false;
+        if (result && result.reason) {
+          this.toast.show(result.reason, '5000', 'center').subscribe();
+        } else if (result === -1) {
+          this.toast.show('Finish your other in-progress ticket first', '5000', 'center').subscribe();
+        } else if (result === 100) {
+          this.toast.show('Already up to date', '3000', 'center').subscribe();
+        } else if (result > 0) {
+          this.toast.show('Success', '3000', 'center').subscribe();
+        } else {
+          this.toast.show(failMsg, '5000', 'center').subscribe();
+        }
+        this.load();
+      }, () => {
+        this.busy = false;
+        this.toast.show(failMsg, '5000', 'center').subscribe();
+        this.load();
+      });
+    }, () => { this.busy = false; });
+  }
+
   start() {
-    const confirm = this.alertCtrl.create({
-      title: "Confirmation",
-      subTitle: "Start task before replacing",
-      buttons: [
-        {
-          role:'cancel',
-          text:"Cancel"
-        },
-        {
-          text: 'Yes',
-          handler: () => {
-            this.storage.get('token').then(val => {
-              this.http.post(SERVER_URL + '/serviceticket/startTask2?token=' + val.token, {id:this.serId}, {})
-                .subscribe(result => {
-                  if (result > 0) {
-                    this.toast.show('Success', '5000', 'center').subscribe();
-                    this.load();
-                  }
-                  else this.toast.show('Fail to start the task', '5000', 'center').subscribe();
-                 }) ;
-            })
-            // this.nav.push('GensetreplacementPage',{id:this.id,gensetNo:this.genset});
-
-          }
-        }
-      ]
-    })
-    confirm.present();
+    this.confirmThen('Start task?', () => this.submit('/serviceticket/startTask2', { id: this.serId }, 'Fail to start the task'));
   }
 
-  Call(){
-    this.callNumber.callNumber(this.items.Contact_No_1, true)
-    .then(() => console.log('Launched dialer!'))
-    .catch(() => console.log('Error launching dialer'));
-    console.log(this.items.Contact_No_1)
-  }
-
-  navme(){
-    let options: LaunchNavigatorOptions = {
-      start : this.startNav
-    };
-  
-   
-    this.launchNavigator.navigate(this.destination, options).then(
-      success => alert('Launched'),
-      error => alert('Error' + error)
-      
-    )
-  console.log(this.startNav)
-
-  }
-
-  confirmRelease(){
-    this.storage.get('token').then(val => {
-      this.http.post(SERVER_URL + '/serviceticket/releaseTicket?token=' + val.token,
-      {
-        serviceticket_id:this.id,
-        leader_id: this.leader_id,
-        note: 'Released',
-        service_id : this.serviceId
-      }
-      ,{})
-      .subscribe(
-        (result: any) =>{
-          this.nav.pop();
-          this.toast.show('Success', '5000', 'center').subscribe();
-        }, (error) => {
-          this.toast.show('Error! Please try again.', '5000', 'center').subscribe();
-        }
-      )
-    })
-  }
-
-  release(){
-    const confirm = this.alertCtrl.create({
-      title: "Release",
-      message: "Are you sure you want to release this?",
-      buttons: [
-        {
-          text: "Cancel",
-          role:'cancel'
-        },
-        {
-          text: "Yes",
-          handler: () => {
-            this.confirmRelease();
-          }
-        }
-      ]
-    })
-    confirm.present();
+  endTask() {
+    this.confirmThen('Want to end task?', () => this.submit('/serviceticket/endTask', { id: this.serId }, 'Fail to end the task'));
   }
 
   starttravel() {
-    const confirm = this.alertCtrl.create({
-      title: "Confirmation",
-      subTitle: "Start to travel?",
-      buttons: [
-        {
-          role:'cancel',
-          text:"Cancel"
-        },
-        {
-          text: 'Yes',
-          handler: () => {
-            this.storage.get('token').then(val => {
-              this.http.post(SERVER_URL + '/serviceticket/starttravel?token=' + val.token, {
-                id:this.id,
-                Latitude: this.Latitude_In,
-              Longitude: this.Longitude_In},httpOptions)
-                .subscribe(result => {
-                  if (result > 0)
-                  {
-                    this.toast.show('Success', '5000', 'center').subscribe();
-                    this.isenabled=true;
-                    this.load();
-                  }
-
-                  else this.toast.show('Fail to start travel!', '5000', 'center').subscribe();
-                 }) ;
-            })
-            // this.nav.push('GensetreplacementPage',{id:this.id,gensetNo:this.genset});
-
-          }
-        }
-      ]
-    })
-    confirm.present();
+    this.confirmThen('Start to travel?', () => this.submit('/serviceticket/starttravel', {
+      id: this.id, Latitude: this.Latitude_In, Longitude: this.Longitude_In,
+    }, 'Fail to start travel!'));
   }
 
   endtravel() {
-    const confirm = this.alertCtrl.create({
-      title: "Confirmation",
-      subTitle: "Arrived?",
-      buttons: [
-        {
-          role:'cancel',
-          text:"Cancel"
-        },
-        {
-          text: 'Yes',
-          handler: () => {
-            this.storage.get('token').then(val => {
-              this.http.post(SERVER_URL + '/serviceticket/endtravel?token=' + val.token, {
-                id:this.id,
-                Latitude: this.Latitude_In,
-                Longitude: this.Longitude_In},httpOptions)
-                .subscribe(result => {
-                  if (result > 0)
-                  {
-                    this.toast.show('Success', '5000', 'center').subscribe();
-                    this.isenabled=false;
-                    this.load();
-                  }
-
-                  else this.toast.show('Fail to end travel!', '5000', 'center').subscribe();
-                 }) ;
-            })
-            // this.nav.push('GensetreplacementPage',{id:this.id,gensetNo:this.genset});
-
-          }
-        }
-      ]
-    })
-    confirm.present();
+    this.confirmThen('Arrived?', () => this.submit('/serviceticket/endtravel', {
+      id: this.id, Latitude: this.Latitude_In, Longitude: this.Longitude_In,
+    }, 'Fail to end travel!'));
+  }
+  Call() {
+    if (!this.contact || !this.contact.Contact_No_1) {
+      this.toast.show('No phone number on file', '3000', 'center').subscribe();
+      return;
+    }
+    this.callNumber.callNumber(this.contact.Contact_No_1, true)
+      .then(() => console.log('Launched dialer!'))
+      .catch(() => console.log('Error launching dialer'));
   }
 
+  navme() {
+    const options: LaunchNavigatorOptions = { start: '' };
+    this.launchNavigator.navigate(this.destination, options).then(
+      success => console.log('Launched navigator'),
+      error => this.toast.show('Could not open navigation: ' + error, '5000', 'center').subscribe()
+    );
+  }
 }

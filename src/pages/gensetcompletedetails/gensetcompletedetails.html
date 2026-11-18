@@ -1,109 +1,163 @@
-
 <ion-header>
-
-  <ion-navbar>
-    <ion-title style="font-size: 12px;">Service Complete Details</ion-title>
+  <ion-navbar color="primary">
+    <ion-title>Service Complete Details</ion-title>
   </ion-navbar>
-
 </ion-header>
 
-<ion-content padding class="ion-content-body">
-  <div class="ion-item-body">
-    <ion-list no-lines>
-      <ion-item class="ion-item-item" no-lines style="border: none;">
-        <div class="body">
-          <h4 class="apply">{{ service_id }}</h4>
-        </div>
-        <div >
-          <div class="row">
-            <div class="col col-title">Service Type:</div>
-            <div class="col col-details">{{ type }}</div>
-          </div>
-          <div class="row">
-            <div class="col col-title">Status:</div>
-            <div class="col col-details">{{ status }}</div>
-          </div>
-          <div class="row">
-            <div class="col col-title">Service Date:</div>
-            <div class="col col-details">{{ serviceDate }}</div>
-          </div>
-          <div class="row">
-            <div class="col col-title">Genset No:</div>
-            <div class="col col-details">{{ genset }}</div>
-          </div>
-          <div class="row">
-            <div class="col col-title">Site Name:</div>
-            <div class="col col-details">{{ siteName }}</div>
-          </div>
+<ion-content class="svt-content" padding>
 
-          <div class="row">
-            <div class="col col-title">Site Latitude:  </div>
-            <div class="col col-details">{{ latitude }}</div>
-          </div>
+  <!-- header -->
+  <div class="svt-card">
+    <div class="svt-ticket-top">
+      <span class="svt-ticket-no">{{ t.service_id }}</span>
+      <span class="svt-pill" [ngClass]="closed ? 'svt-pill-green' : 'svt-pill-blue'">{{ closed ? 'Closed' : (t.Status || 'Completed') }}</span>
+    </div>
+    <p class="svt-sub">{{ t.service_type }} · {{ pretty(t.service_date) }}</p>
 
-          <div class="row">
-            <div class="col col-title">Site Longitude:  </div>
-            <div class="col col-details">{{ longitude }}</div>
-          </div>
-
-          <!-- <div class="row">
-            <div class="col col-title">Model :   </div>
-            <div class="col col-details">{{ model }}</div>
-          </div>
-
-          <div class="row">
-            <div class="col col-title">KVA :   </div>
-            <div class="col col-details">{{ capacity }}</div>
-          </div> -->
-        </div>
-      </ion-item>
-    </ion-list>
+    <div class="svt-kv">
+      <div *ngIf="customer"><small>Customer</small><b>{{ customer }}</b></div>
+      <div><small>Asset no</small><b>{{ t.genset_no || asset.no || '-' }}</b></div>
+      <div *ngIf="asset.model"><small>Model</small><b>{{ asset.model }}</b></div>
+      <div *ngIf="location"><small>Location</small><b>{{ location }}</b></div>
+      <div *ngIf="report.ReportNo"><small>Report no</small><b>{{ report.ReportNo }}</b></div>
+    </div>
   </div>
 
-  <div class="ion-item-body buttons" *ngIf="atask.length > 0">
-    <ion-item class="ion-item-item">
-      <div class="row">
-        <div class="col col-display title">Start Task</div>
-        <div class="col col-display title">End Task</div>
-      </div>
-      <hr>
-      <div *ngFor="let a of atask">
-        <div class="row">
-          <div class="col col-display" style="border-right: rgb(211, 211, 211) solid 1px;">{{a.Time_In}}</div>
-          <div class="col col-display">{{a.Time_Out}}</div>
-        </div>
-      </div>
-    </ion-item>
+  <!-- work period -->
+  <div class="svt-card" *ngIf="atask.length > 0">
+    <div class="svt-card-title"><ion-icon name="time"></ion-icon> Work period</div>
+    <div class="svt-two">
+      <div><small class="svt-muted">Start task</small></div>
+      <div><small class="svt-muted">End task</small></div>
+    </div>
+    <div class="svt-two" *ngFor="let a of atask" style="margin-top: 4px;">
+      <div><b>{{ a.Time_In }}</b></div>
+      <div><b>{{ a.Time_Out }}</b></div>
+    </div>
   </div>
 
-  <div class="ion-item-body buttons" *ngIf="atraveltask.length > 0">
-    <ion-item class="ion-item-item">
-      <div class="row">
-        <div class="col col-display title">Start Travel</div>
-        <div class="col col-display title">End Travel</div>
-      </div>
-      <hr>
-      <div *ngFor="let t of atraveltask">
-        <div class="row">
-          <div class="col col-display" style="border-right: rgb(211, 211, 211) solid 1px;">{{formatDate(t.Start_Time)}}</div>
-          <div class="col col-display">{{formatDate(t.End_Time)}}</div>
-        </div>
-      </div>
-    </ion-item>
+  <div class="svt-card" *ngIf="atraveltask.length > 0">
+    <div class="svt-card-title"><ion-icon name="car"></ion-icon> Travel</div>
+    <div class="svt-two">
+      <div><small class="svt-muted">Start travel</small></div>
+      <div><small class="svt-muted">End travel</small></div>
+    </div>
+    <div class="svt-two" *ngFor="let t2 of atraveltask" style="margin-top: 4px;">
+      <div><b>{{ formatDate(t2.Start_Time) }}</b></div>
+      <div><b>{{ formatDate(t2.End_Time) }}</b></div>
+    </div>
   </div>
 
-  <div class="ion-item-body buttons">
-    <ion-item class="ion-item-item">
-      <div class="row">
-        <div class="col col-display title">Notes</div>
+  <div class="svt-card svt-empty" *ngIf="!loaded">Loading the completion report...</div>
+
+  <div *ngIf="loaded && !hasReport" class="svt-banner amber">No completion report was saved for this ticket.</div>
+
+  <div *ngIf="loaded && hasReport">
+
+    <!-- report summary -->
+    <div class="svt-card">
+      <div class="svt-card-title"><ion-icon name="document"></ion-icon> Completion report</div>
+      <div class="svt-kv">
+        <div *ngIf="report.OverallStatus"><small>Overall status</small><b>{{ report.OverallStatus }}</b></div>
+        <div *ngIf="report.HourMeter !== null && report.HourMeter !== ''"><small>Hour meter</small><b>{{ report.HourMeter }}</b></div>
+        <div *ngIf="report.NextServiceHour !== null && report.NextServiceHour !== ''"><small>Next service hour</small><b>{{ report.NextServiceHour }}</b></div>
+        <div *ngIf="report.NextServiceDate"><small>Next service date</small><b>{{ pretty(report.NextServiceDate) }}</b></div>
       </div>
-      <hr>
-      <div *ngIf="notes.length < 1">
-        <p class="none">No notes found</p>
+
+      <div *ngIf="report.WorkPerformed">
+        <span class="svt-label">Work performed</span>
+        <p style="white-space: pre-line; margin: 4px 0;">{{ report.WorkPerformed }}</p>
       </div>
-      <button ion-item *ngFor="let n of notes" (click)="openNote(n)">
-        {{ n.Title || 'Untitled' }} - {{ formatDate(n.created_at) }}
-      </button>
-    </ion-item>
+      <div *ngIf="report.Recommendation">
+        <span class="svt-label">Recommendation</span>
+        <p style="white-space: pre-line; margin: 4px 0;">{{ report.Recommendation }}</p>
+      </div>
+      <div *ngIf="report.CustomerComment">
+        <span class="svt-label">Customer comment</span>
+        <p style="white-space: pre-line; margin: 4px 0;">{{ report.CustomerComment }}</p>
+      </div>
+    </div>
+
+    <!-- parts used -->
+    <div class="svt-card" *ngIf="parts.length > 0">
+      <div class="svt-card-title"><ion-icon name="build"></ion-icon> Parts used</div>
+      <div class="svt-row" *ngFor="let p of parts">
+        <div class="grow">
+          <b>{{ p.Particulars }}</b>
+          <small *ngIf="p.PartNo">{{ p.PartNo }}</small>
+        </div>
+        <span class="svt-pill svt-pill-grey">x {{ p.Qty }}</span>
+      </div>
+    </div>
+
+    <!-- checklist -->
+    <div class="svt-card" *ngIf="checks.length > 0">
+      <div class="svt-card-title"><ion-icon name="clipboard"></ion-icon> Inspection checklist</div>
+      <p class="svt-muted" style="margin-top: 0;">
+        <span *ngIf="checkTemplate">{{ checkTemplate }} · </span>{{ checkSummary.pass }} pass · {{ checkSummary.fail }} fail · {{ checkSummary.na }} N/A
+      </p>
+      <div class="svt-row" *ngFor="let c of checks">
+        <div class="grow">
+          <b>{{ c.Item }}</b>
+          <small *ngIf="c.Result">{{ c.Result }}<span *ngIf="c.Unit"> {{ c.Unit }}</span></small>
+          <div class="svt-photos" *ngIf="c.Photo" style="margin-top: 6px;"><div class="svt-photo"><img [src]="c.Photo"></div></div>
+        </div>
+        <span class="svt-pill" *ngIf="c.Status" [ngClass]="checkClass(c.Status)">{{ c.Status }}</span>
+      </div>
+    </div>
+
   </div>
+
+  <!-- failures -->
+  <div class="svt-card" *ngIf="failures.length > 0">
+    <div class="svt-card-title"><ion-icon name="warning"></ion-icon> Failures</div>
+    <div class="svt-row" *ngFor="let f of failures" (click)="openNote(f)">
+      <div class="svt-thumb" *ngIf="thumb(f)"><img [src]="thumb(f)" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;"></div>
+      <div class="grow">
+        <b>{{ f.Title || 'Untitled' }}</b>
+        <small>{{ formatDate(f.created_at) }}</small>
+      </div>
+      <ion-icon name="arrow-forward" style="color: #9ca3af;"></ion-icon>
+    </div>
+  </div>
+
+  <!-- notes -->
+  <div class="svt-card" *ngIf="notes.length > 0">
+    <div class="svt-card-title"><ion-icon name="create"></ion-icon> Notes</div>
+    <div class="svt-row" *ngFor="let n of notes" (click)="openNote(n)">
+      <div class="grow">
+        <b>{{ n.Title || 'Untitled' }}</b>
+        <small>{{ formatDate(n.created_at) }}</small>
+      </div>
+      <ion-icon name="arrow-forward" style="color: #9ca3af;"></ion-icon>
+    </div>
+  </div>
+
+  <div class="svt-card" *ngIf="loaded && failures.length === 0 && notes.length === 0 && !hasReport">
+    <div class="svt-empty">No notes found</div>
+  </div>
+
+  <!-- signatures + PDF -->
+  <div *ngIf="loaded && hasReport">
+    <div class="svt-card">
+      <div class="svt-card-title"><ion-icon name="create"></ion-icon> Signatures</div>
+      <div class="svt-two">
+        <div>
+          <span class="svt-label" style="margin-top: 0;">Technician</span>
+          <img *ngIf="techImg" [src]="techImg" style="width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff;">
+          <p class="svt-muted" [style.color]="techSigned ? '#166534' : '#b45309'">{{ techSigned ? 'Signed ✓' : 'Not signed' }}</p>
+          <small class="svt-muted" *ngIf="report.TechSignedAt">{{ pretty(report.TechSignedAt) }}</small>
+        </div>
+        <div>
+          <span class="svt-label" style="margin-top: 0;">Customer<span *ngIf="report.CustomerRep"> · {{ report.CustomerRep }}</span></span>
+          <img *ngIf="custImg" [src]="custImg" style="width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff;">
+          <p class="svt-muted" [style.color]="custSigned ? '#166534' : '#b45309'">{{ custSigned ? 'Signed ✓' : 'Not signed' }}</p>
+          <small class="svt-muted" *ngIf="report.CustomerSignedAt">{{ pretty(report.CustomerSignedAt) }}</small>
+        </div>
+      </div>
+    </div>
+
+    <button class="svt-btn svt-btn-blue" (click)="exportPdf()"><ion-icon name="document"></ion-icon> Export PDF</button>
+  </div>
+
 </ion-content>

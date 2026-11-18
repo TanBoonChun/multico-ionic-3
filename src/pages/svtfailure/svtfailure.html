@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-buttons start>
+      <button ion-button (click)="close()">Close</button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Edit failure' : 'Add failure' }}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="alert"></ion-icon> Failure</div>
+
+    <span class="svt-label" style="margin-top: 0;">Failure title</span>
+    <input class="svt-input" type="text" [(ngModel)]="title" placeholder="e.g. Front light relay burnt">
+
+    <span class="svt-label">Description</span>
+    <textarea class="svt-input" [(ngModel)]="note" placeholder="What happened?"></textarea>
+
+    <span class="svt-label">Photos</span>
+    <div class="svt-photos">
+      <div class="svt-photo" *ngFor="let p of oldPhotos; let i = index">
+        <img [src]="p.url"><button class="x" (click)="removeOld(i)">x</button>
+      </div>
+      <div class="svt-photo" *ngFor="let p of newPhotos; let i = index">
+        <img [src]="p"><button class="x" (click)="removeNew(i)">x</button>
+      </div>
+      <button class="svt-photo-add" (click)="addPhoto()"><ion-icon name="camera"></ion-icon></button>
+    </div>
+
+    <button class="svt-btn svt-btn-primary" (click)="save()">Save failure</button>
+  </div>
+</ion-content>

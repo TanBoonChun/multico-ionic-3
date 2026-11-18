@@ -1,0 +1,107 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Service Complete</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <div class="svt-card">
+    <div class="svt-ticket-top">
+      <div>
+        <span class="svt-ticket-no" style="font-size: 16px;">{{ t.service_id }}</span>
+        <p class="svt-sub" style="margin: 2px 0 6px;">{{ t.service_type }} · {{ t.genset_no }}</p>
+      </div>
+      <span class="svt-pill svt-pill-green" *ngIf="isWarrantyOrder">Warranty</span>
+    </div>
+  </div>
+
+  <!-- work period -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="time"></ion-icon> Work period
+      <span class="svt-add" style="color: #6b7280; font-weight: 400;">from Start / End task</span></div>
+    <div class="svt-empty" *ngIf="times.length === 0">No Start task / End task recorded yet</div>
+    <div class="svt-row" *ngFor="let r of times">
+      <div class="grow"><b>{{ r.StartTime }} to {{ r.StopTime }}</b></div>
+      <span class="svt-muted">{{ duration(r) }}</span>
+    </div>
+    <div class="svt-row" style="border-top: 1px solid #f1f5f9;">
+      <div class="grow">Total on site</div><b style="font-size: 17px;">{{ totalOnSite }}</b>
+    </div>
+    <p class="svt-muted">Every Start task and End task is recorded automatically. Nothing to key in.</p>
+
+    <span class="svt-label">Service type</span>
+    <div class="svt-field">{{ t.service_type }}</div>
+  </div>
+
+  <!-- work summary -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="list"></ion-icon> Work summary <span class="svt-new">NEW</span></div>
+
+    <span class="svt-label" style="margin-top: 0;">Scope of work performed</span>
+    <div class="svt-chips">
+      <span class="svt-chip" *ngFor="let s of scopes" [class.active]="scope === s" (click)="pickScope(s)">{{ s }}</span>
+    </div>
+
+    <span class="svt-label">Failures ({{ failures.length }})
+      <span style="float: right; color: #e67e22; text-transform: none;" (click)="addFailure()">+ Add failure</span></span>
+    <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 0 10px;">
+      <div class="svt-empty" *ngIf="failures.length === 0">No failures recorded</div>
+      <div class="svt-row" *ngFor="let f of failures">
+        <div class="svt-thumb"><img *ngIf="thumb(f)" [src]="thumb(f)"><ion-icon *ngIf="!thumb(f)" name="image"></ion-icon></div>
+        <div class="grow"><b>{{ f.Title || 'Failure' }}</b><small>{{ f.images ? f.images.length : 0 }} photo{{ f.images && f.images.length === 1 ? '' : 's' }}</small></div>
+        <button class="svt-icon-btn" (click)="editFailure(f)"><ion-icon name="create"></ion-icon></button>
+        <button class="svt-icon-btn danger" (click)="deleteFailure(f)"><ion-icon name="trash"></ion-icon></button>
+      </div>
+    </div>
+
+    <span class="svt-label">Parts used ({{ parts.length }})
+      <span style="float: right; color: #e67e22; text-transform: none;" (click)="addPart()">Scan · + Add part</span></span>
+    <div style="border: 1px solid #e5e7eb; border-radius: 12px; padding: 0 10px;">
+      <div class="svt-empty" *ngIf="parts.length === 0">No parts recorded</div>
+      <div class="svt-row" *ngFor="let p of parts; let i = index">
+        <div class="grow"><b>{{ p.PartNo }} {{ p.Particulars }}</b></div>
+        <div class="svt-qty">
+          <button (click)="qtyDown(p)">-</button><b>{{ p.Qty }}</b><button class="plus" (click)="qtyUp(p)">+</button>
+        </div>
+        <button class="svt-icon-btn danger" (click)="removePart(i)"><ion-icon name="trash"></ion-icon></button>
+      </div>
+    </div>
+    <p class="svt-muted">Parts come from the technician bag.</p>
+
+    <span class="svt-label">Service recommendation</span>
+    <textarea class="svt-input" [(ngModel)]="recommendation" placeholder="Enter recommendation..."></textarea>
+  </div>
+
+  <!-- hour meter -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="speedometer"></ion-icon> Hour meter and next service <span class="svt-new">NEW</span></div>
+    <div class="svt-two">
+      <div><span class="svt-label" style="margin-top: 0;">Hour meter now</span><input class="svt-input" type="number" step="0.1" [(ngModel)]="hourNow"></div>
+      <div><span class="svt-label" style="margin-top: 0;">Next service at</span><input class="svt-input" type="number" step="0.1" [(ngModel)]="nextHour"></div>
+    </div>
+    <span class="svt-label">Next service date (customer reminder)</span>
+    <input class="svt-input" type="date" [(ngModel)]="nextDate">
+  </div>
+
+  <!-- warranty claim -->
+  <div class="svt-card" *ngIf="isWarrantyOrder" style="border: 2px solid #86efac;">
+    <div class="svt-card-title"><ion-icon name="ribbon"></ion-icon> Warranty claim <span class="svt-new">NEW</span>
+      <span class="svt-pill svt-pill-green" style="margin: 0 0 0 auto;">Order type: WARRANTY</span></div>
+    <span class="svt-label" style="margin-top: 0;">Claim covers</span>
+    <div class="svt-seg">
+      <button [class.on]="claimCovers === 'Parts'" (click)="claimCovers = 'Parts'">Parts</button>
+      <button [class.on]="claimCovers === 'Whole unit'" (click)="claimCovers = 'Whole unit'">Whole unit</button>
+    </div>
+    <span class="svt-label">Items claimed</span>
+    <div class="svt-field">{{ parts.length ? parts.length + ' part(s) from the list above' : 'No parts added yet' }}</div>
+    <span class="svt-label">Reason / failure</span>
+    <textarea class="svt-input" [(ngModel)]="claimReason" placeholder="Describe why this is a warranty case..."></textarea>
+    <p class="svt-muted">The warranty claim is not sent to the server yet (no API for it).</p>
+  </div>
+
+</ion-content>
+
+<ion-footer class="svt-foot">
+  <button class="svt-btn svt-btn-primary" style="margin: 0;" (click)="continue()">Continue to completion report →</button>
+</ion-footer>
