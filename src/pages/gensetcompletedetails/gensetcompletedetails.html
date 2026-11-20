@@ -48,6 +48,18 @@
     </div>
   </div>
 
+  <div class="svt-card" *ngIf="arepair.length > 0">
+    <div class="svt-card-title"><ion-icon name="build"></ion-icon> Repair Attendance Log</div>
+    <div class="svt-two">
+      <div><small class="svt-muted">Time in</small></div>
+      <div><small class="svt-muted">Time out</small></div>
+    </div>
+    <div class="svt-two" *ngFor="let r of arepair" style="margin-top: 4px;">
+      <div><b>{{ stamp(r.TimeIn) }}</b></div>
+      <div><b>{{ stamp(r.TimeOut) }}</b></div>
+    </div>
+  </div>
+
   <div class="svt-card svt-empty" *ngIf="!loaded">Loading the completion report...</div>
 
   <div *ngIf="loaded && !hasReport" class="svt-banner amber">No completion report was saved for this ticket.</div>

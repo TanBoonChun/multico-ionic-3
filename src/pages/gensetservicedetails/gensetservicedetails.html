@@ -32,6 +32,44 @@
     </div>
   </div>
 
+  <!-- repair attendance: Time in when you arrive to repair, Time out when you leave (a log only, nothing else starts or stops) -->
+  <div class="svt-card">
+    <div class="svt-card-title"><ion-icon name="build"></ion-icon> Repair attendance <span class="svt-new">NEW</span></div>
+
+    <!-- where the phone is (a time in must be within 500 m of the site) -->
+    <div class="svt-row" style="border-bottom: 0; padding-bottom: 0;">
+      <div class="grow"><small style="text-transform: uppercase; letter-spacing: 0.5px;">Location</small></div>
+      <span class="svt-pill" [ngClass]="Latitude_In ? 'svt-pill-green' : 'svt-pill-orange'" style="margin: 0;">{{ Latitude_In ? 'Ready' : 'Not available' }}</span>
+    </div>
+    <div class="svt-kv" style="padding-top: 8px;">
+      <div><small>Latitude</small><b>{{ Latitude_In ? (Latitude_In | number:'1.5-7') : '-' }}</b></div>
+      <div><small>Longitude</small><b>{{ Longitude_In ? (Longitude_In | number:'1.5-7') : '-' }}</b></div>
+    </div>
+    <button class="svt-btn svt-btn-outline svt-press" [class.svt-working]="refreshing" style="margin: 0 0 12px; padding: 10px; font-size: 14px;" [disabled]="busy || refreshing || repairWorking" (click)="refreshLocation()">
+      <ion-spinner *ngIf="refreshing" name="crescent" class="svt-spin"></ion-spinner>
+      <ion-icon *ngIf="!refreshing" name="locate"></ion-icon>
+      {{ refreshing ? 'Getting location...' : 'Refresh location' }}
+    </button>
+
+    <!-- Time in shows first; after Time in only Time out shows (same as Start / End task) -->
+    <button *ngIf="!repairRunning" class="svt-btn svt-bg-green svt-press" [class.svt-working]="repairWorking" style="margin: 0; color: #fff; border-color: #16a34a;" [disabled]="busy || !repairLoaded || repairWorking || refreshing" (click)="repairTimeIn()">
+      <ion-spinner *ngIf="repairWorking" name="crescent" class="svt-spin"></ion-spinner>
+      {{ repairWorking ? (locating ? 'Getting location...' : 'Saving...') : 'Time in' }}
+    </button>
+    <button *ngIf="repairRunning" class="svt-btn svt-bg-red svt-press" [class.svt-working]="repairWorking" style="margin: 0; color: #fff; border-color: #dc2626;" [disabled]="busy || !repairLoaded || repairWorking || refreshing" (click)="repairTimeOut()">
+      <ion-spinner *ngIf="repairWorking" name="crescent" class="svt-spin"></ion-spinner>
+      {{ repairWorking ? (locating ? 'Getting location...' : 'Saving...') : 'Time out' }}
+    </button>
+
+    <!-- Repair Attendance Log: my own time in / time out on this ticket -->
+    <div class="svt-log" style="margin-top: 12px;">
+      <div class="svt-log-head">Repair Attendance Log</div>
+      <div *ngIf="!repairLogRows.length" class="svt-log-empty">No time in yet</div>
+      <div class="svt-log-row" *ngFor="let r of repairLogRows; let i = index">
+        <span>#{{ i + 1 }}</span><span>{{ r.start }}</span><span>&rarr;</span><span [class.svt-log-open]="r.open">{{ r.open ? 'on site' : r.end }}</span>
+      </div>
+    </div>
+  </div>
   <!-- asset information -->
   <div class="svt-card">
     <div class="svt-card-title"><ion-icon name="construct"></ion-icon> Asset information <span class="svt-new">NEW</span></div>

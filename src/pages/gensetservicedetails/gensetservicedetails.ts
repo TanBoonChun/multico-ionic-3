@@ -56,6 +56,11 @@ export class GensetserviceDetailsPage {
   atraveltask: any = [];    // travel rows
   travelLoaded = false;     // buttons stay disabled until the time log has been read
   taskLoaded = false;
+  repairRows: any = [];     // my repair attendance rows (time in / time out)
+  repairLoaded = false;
+  refreshing = false;       // Refresh location is waiting for the GPS
+  locating = false;         // a time in / time out is waiting for the GPS
+  repairWorking = false;    // a time in / time out is in progress (GPS, then the request)
   busy = false;             // a start/end request is in flight (blocks a second tap)
 
   Latitude_In: any;
@@ -118,6 +123,7 @@ export class GensetserviceDetailsPage {
     // time log rows
     this.svt.get('/getstartendtask/' + this.serId).then((res) => { this.atask = res || []; this.taskLoaded = true; }, () => { this.taskLoaded = true; });
     this.svt.get('/gettravellog/' + this.id).then((res) => { this.atraveltask = res || []; this.travelLoaded = true; }, () => { this.travelLoaded = true; });
+    this.svt.get('/serviceticket/repairattendance/' + this.id).then((res) => { this.repairRows = Array.isArray(res) ? res : []; this.repairLoaded = true; this.repairWorking = false; }, () => { this.repairLoaded = true; this.repairWorking = false; });
 
     this.loadAsset();
     this.loadFailures();
@@ -176,6 +182,22 @@ export class GensetserviceDetailsPage {
   /** Start shows first; after Start only End shows, and after End Start shows again. */
   get travelRunning(): boolean { return this.atraveltask.some((r) => !r.End_Time); }
   get taskRunning(): boolean { return this.atask.some((r) => r.Time_In && !r.Time_Out); }
+
+  /** "2026-11-20 14:43:00" -> "20 Nov 14:43". */
+  stamp(value: string): string {
+    const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(String(value || ''));
+    if (!m) { return value || '-'; }
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return parseInt(m[3], 10) + ' ' + months[parseInt(m[2], 10) - 1] + ' ' + m[4] + ':' + m[5];
+  }
+
+  /** Repair Attendance Log: one line per time in / time out of mine on this ticket. */
+  get repairLogRows(): any[] {
+    return this.repairRows.map((r) => ({ start: this.stamp(r.TimeIn), end: r.TimeOut ? this.stamp(r.TimeOut) : '-', open: !r.TimeOut }));
+  }
+
+  /** Time in shows first; after Time in only Time out shows, and after Time out Time in shows again. */
+  get repairRunning(): boolean { return this.repairRows.some((r) => !r.TimeOut); }
 
   // ---------------------------------------------------------------- hour meter
 
@@ -279,8 +301,8 @@ export class GensetserviceDetailsPage {
   }
 
   /** Posts a time log action, keeps the buttons locked until it answers, then reloads the log. */
-  private submit(path: string, body: any, failMsg: string) {
-    if (this.busy) { return; }
+  private submit(path: string, body: any, failMsg: string, done?: () => void) {
+    if (this.busy) { if (done) { done(); } return; }
     this.busy = true;
     this.storage.get('token').then(val => {
       this.http.post(SERVER_URL + path + '?token=' + val.token, body, httpOptions).subscribe((result: any) => {
@@ -302,7 +324,7 @@ export class GensetserviceDetailsPage {
         this.toast.show(failMsg, '5000', 'center').subscribe();
         this.load();
       });
-    }, () => { this.busy = false; });
+    }, () => { this.busy = false; if (done) { done(); } });
   }
 
   start() {
@@ -324,6 +346,46 @@ export class GensetserviceDetailsPage {
       id: this.id, Latitude: this.Latitude_In, Longitude: this.Longitude_In,
     }, 'Fail to end travel!'));
   }
+  /** Reads the position again right before a repair time in / time out (the 500 m rule needs where he is now). */
+  private withPosition(run: () => void) {
+    this.locating = true;
+    this.geo.getCurrentPosition({ timeout: 10000, enableHighAccuracy: true }).then((pos) => {
+      this.Latitude_In = pos.coords.latitude;
+      this.Longitude_In = pos.coords.longitude;
+      this.locating = false;
+      run();
+    }).catch(() => { this.locating = false; run(); });
+  }
+
+  refreshLocation() {
+    if (this.refreshing || this.repairWorking) { return; }
+    this.refreshing = true;
+    this.withPosition(() => {
+      this.refreshing = false;
+      this.toast.show(this.Latitude_In ? 'Location updated' : 'Location not available', '2000', 'center').subscribe();
+    });
+  }
+
+  repairTimeIn() {
+    if (this.repairWorking || this.refreshing) { return; }
+    this.confirmThen('Time in for the repair?', () => {
+      this.repairWorking = true;
+      this.withPosition(() => this.submit('/serviceticket/repairtimein', {
+        id: this.id, Latitude: this.Latitude_In, Longitude: this.Longitude_In,
+      }, 'Fail to time in', () => { this.repairWorking = false; }));
+    });
+  }
+
+  repairTimeOut() {
+    if (this.repairWorking || this.refreshing) { return; }
+    this.confirmThen('Time out from the repair?', () => {
+      this.repairWorking = true;
+      this.withPosition(() => this.submit('/serviceticket/repairtimeout', {
+        id: this.id, Latitude: this.Latitude_In, Longitude: this.Longitude_In,
+      }, 'Fail to time out', () => { this.repairWorking = false; }));
+    });
+  }
+
   Call() {
     if (!this.contact || !this.contact.Contact_No_1) {
       this.toast.show('No phone number on file', '3000', 'center').subscribe();

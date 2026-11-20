@@ -36,6 +36,7 @@ export class GensetcompletedetailsPage {
 
   public atask: any = [];
   public atraveltask: any = [];
+  public arepair: any = [];     // my repair attendance (time in / time out)
 
   public loaded = false;
   public hasReport = false;
@@ -93,8 +94,18 @@ export class GensetcompletedetailsPage {
       });
     });
 
+    this.svt.get('/serviceticket/repairattendance/' + this.id).then((res) => { this.arepair = Array.isArray(res) ? res : []; }, () => { this.arepair = []; });
+
     this.loadReport();
     this.loadNotes();
+  }
+
+  /** "2026-11-20 14:43:00" -> "20 Nov 14:43" ("-" when empty). */
+  stamp(value: string): string {
+    const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/.exec(String(value || ''));
+    if (!m) { return '-'; }
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return parseInt(m[3], 10) + ' ' + months[parseInt(m[2], 10) - 1] + ' ' + m[4] + ':' + m[5];
   }
 
   private loadReport() {

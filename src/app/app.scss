@@ -665,3 +665,11 @@ ion-item.svt-sel .input-wrapper { display: block !important; width: 100%; }
 ion-item.svt-sel ionic-selectable { display: flex; width: 100%; max-width: 100% !important; padding: 0 !important; font-size: 14px; }
 ion-item.svt-sel .ionic-selectable-value { flex: 1; min-width: 0; text-align: left; padding: 12px 6px 12px 12px !important; }
 ion-item.svt-sel .ionic-selectable-icon { margin-right: 6px; }
+
+/* press feedback + spinner for the slow buttons (Refresh location, Time in / Time out) */
+.svt-press { transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease; }
+.svt-press:active:not([disabled]) { transform: scale(0.96); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18); opacity: 0.9; }
+.svt-press[disabled] { transform: none; }
+.svt-btn .svt-spin { width: 18px; height: 18px; vertical-align: middle; margin: -3px 6px 0 0; }
+.svt-btn .svt-spin .spinner-crescent circle { stroke: currentColor; }
+.svt-btn.svt-working[disabled] { opacity: 0.85; }
