@@ -20,6 +20,8 @@ import { SvtProvider, SvtUtil } from '../../providers/svt/svt';
 export class GensetmainPage {
 
   filter: string = 'today';     // today | week | overdue | all
+  q: string = '';               // search text
+  resultCount = 0;
   tickets: any[] = [];
   groups: any[] = [];
   overdueCount = 0;
@@ -75,7 +77,27 @@ export class GensetmainPage {
 
   setFilter(f: string) {
     this.filter = f;
+    this.q = '';          // choosing a tab ends a search
     this.applyFilter();
+  }
+
+  /** True while the search box has text: the search looks through all open tickets, whatever tab was chosen. */
+  get searching(): boolean {
+    return this.q.trim() !== '';
+  }
+
+  clearSearch() {
+    this.q = '';
+    this.applyFilter();
+  }
+
+  /** Everything on the ticket card that a user may type: ticket no, customer, asset, site, type... Every word must match. */
+  private matches(t: any, words: string[]): boolean {
+    const hay = [
+      t.service_id, t.customer_name, t.genset_no, t.Loc_Name, t.service_type, t.job_type, t.sub_job_type, t.order_type,
+      t.scope_of_work, t.asset_type, t.model, t.brand, t.remarks, t.service_date, SvtUtil.statusLabel(t),
+    ].join(' ').toLowerCase();
+    return words.every((w) => hay.indexOf(w) >= 0);
   }
 
   private sameWeek(d: Date): boolean {
@@ -85,8 +107,10 @@ export class GensetmainPage {
     return d >= start && d <= end;
   }
 
-  private applyFilter() {
+  applyFilter() {
+    const words = this.q.toLowerCase().split(/\s+/).filter((w) => w !== '');
     const visible = this.tickets.filter((t) => {
+      if (words.length) { return this.matches(t, words); }
       const d = SvtUtil.parseDate(t.service_date);
       if (this.filter === 'all') { return true; }
       if (this.filter === 'overdue') { return SvtUtil.isOverdue(t); }
@@ -100,6 +124,8 @@ export class GensetmainPage {
       const db = SvtUtil.parseDate(b.service_date);
       return (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
     });
+
+    this.resultCount = visible.length;
 
     const groups: any[] = [];
     for (const t of visible) {

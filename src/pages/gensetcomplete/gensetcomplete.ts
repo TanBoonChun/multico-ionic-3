@@ -24,6 +24,7 @@ export class GensetcompletePage {
   public startDate: string = '';
   public endDate: string = '';
   public selectedTypes: string[] = [];
+  public q: string = '';      // search text: ticket no, company, asset, site...
   public searched = false;   // nothing is listed until a filter has been applied
   public loading = false;
 
@@ -40,6 +41,17 @@ export class GensetcompletePage {
     }
   }
 
+  /** The loaded tickets narrowed by the search text (every word must appear on the ticket). */
+  get visibleItems(): any[] {
+    const list = Array.isArray(this.items) ? this.items : [];
+    const words = this.q.toLowerCase().split(/\s+/).filter((w) => w !== '');
+    if (!words.length) { return list; }
+    return list.filter((t) => {
+      const hay = [t.service_id, t.customer_name, t.genset_no, t.Loc_Name, t.service_type, t.job_type, t.model, t.service_date].join(' ').toLowerCase();
+      return words.every((w) => hay.indexOf(w) >= 0);
+    });
+  }
+
   pretty(v: any): string {
     return SvtUtil.pretty(v);
   }
@@ -54,7 +66,7 @@ export class GensetcompletePage {
   }
 
   get hasFilter(): boolean {
-    return !!(this.startDate || this.endDate || this.selectedTypes.length > 0);
+    return !!(this.startDate || this.endDate || this.selectedTypes.length > 0 || this.q.trim());
   }
 
   // Converts an ion-datetime ISO value (YYYY-MM-DD) into the "DD-Mon-YYYY"
@@ -82,6 +94,7 @@ export class GensetcompletePage {
   }
 
   clearFilter() {
+    this.q = '';
     this.startDate = '';
     this.endDate = '';
     this.selectedTypes = [];
@@ -96,6 +109,9 @@ export class GensetcompletePage {
 
       if (this.startDate) {
         params.start_date = this.formatForApi(this.startDate);
+      } else if (this.q.trim()) {
+        // searching by text without dates looks through all completed tickets, not only last month and this month
+        params.start_date = '01-Jan-2000';
       }
       if (this.endDate) {
         params.end_date = this.formatForApi(this.endDate);

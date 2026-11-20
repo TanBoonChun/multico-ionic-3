@@ -24,16 +24,25 @@
     </div>
   </div>
 
+  <!-- search: ticket no, company, asset, site, job type... -->
+  <div class="svt-card" style="padding-bottom: 14px;">
+    <div style="display: flex; align-items: center;">
+      <input class="svt-input" type="search" [(ngModel)]="q" (input)="applyFilter()" placeholder="Search ticket, company, asset, site..." style="flex: 1;">
+      <button class="svt-icon-btn" *ngIf="searching" (click)="clearSearch()"><ion-icon name="close-circle"></ion-icon></button>
+    </div>
+    <p class="svt-muted" style="margin: 6px 0 0;" *ngIf="searching">Searching all open tickets: {{ resultCount }} found.</p>
+  </div>
+
   <div class="svt-chips">
-    <span class="svt-chip" [class.active]="filter === 'today'" (click)="setFilter('today')">Today</span>
-    <span class="svt-chip" [class.active]="filter === 'week'" (click)="setFilter('week')">This week</span>
-    <span class="svt-chip" [class.active]="filter === 'overdue'" (click)="setFilter('overdue')">Overdue <span class="svt-count" *ngIf="overdueCount">{{ overdueCount }}</span></span>
-    <span class="svt-chip" [class.active]="filter === 'all'" (click)="setFilter('all')">All</span>
+    <span class="svt-chip" [class.active]="!searching && filter === 'today'" (click)="setFilter('today')">Today</span>
+    <span class="svt-chip" [class.active]="!searching && filter === 'week'" (click)="setFilter('week')">This week</span>
+    <span class="svt-chip" [class.active]="!searching && filter === 'overdue'" (click)="setFilter('overdue')">Overdue <span class="svt-count" *ngIf="overdueCount">{{ overdueCount }}</span></span>
+    <span class="svt-chip" [class.active]="!searching && filter === 'all'" (click)="setFilter('all')">All</span>
   </div>
 
   <div class="svt-card svt-empty" *ngIf="loading && tickets.length === 0">Loading...</div>
   <div class="svt-card svt-empty" *ngIf="failed">Could not load the tickets. Pull down to try again.</div>
-  <div class="svt-card svt-empty" *ngIf="!loading && !failed && groups.length === 0">No tickets</div>
+  <div class="svt-card svt-empty" *ngIf="!loading && !failed && groups.length === 0">{{ searching ? 'No ticket matches "' + q.trim() + '"' : 'No tickets' }}</div>
 
   <div *ngFor="let g of groups">
     <div class="svt-date-heading">{{ g.heading }}</div>

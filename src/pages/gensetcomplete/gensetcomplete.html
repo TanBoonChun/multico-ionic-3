@@ -10,6 +10,10 @@
   <div class="svt-card">
     <div class="svt-card-title"><ion-icon name="funnel"></ion-icon> Find completed tickets</div>
 
+    <input class="svt-input" type="search" [(ngModel)]="q" (keyup.enter)="applyFilter()" placeholder="Search ticket, company, asset, site...">
+    <p class="svt-muted" style="margin: 4px 0 10px;">Without dates, the search looks through all completed tickets.</p>
+
+
     <div class="svt-two">
       <div><span class="svt-label" style="margin-top: 0;">Start date</span><input class="svt-input" type="date" [(ngModel)]="startDate"></div>
       <div><span class="svt-label" style="margin-top: 0;">End date</span><input class="svt-input" type="date" [(ngModel)]="endDate"></div>
@@ -26,20 +30,20 @@
 
   <!-- states -->
   <div *ngIf="!searched" class="svt-card">
-    <div class="svt-empty">Choose a date or service type, then tap Show tickets to see completed tickets.</div>
+    <div class="svt-empty">Type a search, or choose a date or service type, then tap Show tickets to see completed tickets.</div>
   </div>
 
   <div *ngIf="searched && loading" class="svt-card svt-empty">Loading...</div>
 
-  <div *ngIf="searched && !loading && items && items.length < 1" class="svt-card">
+  <div *ngIf="searched && !loading && visibleItems.length < 1" class="svt-card">
     <div class="svt-empty">No record found</div>
   </div>
 
   <!-- results -->
-  <div *ngIf="searched && !loading && items && items.length > 0">
-    <p class="svt-muted" style="margin: 0 4px 8px;">{{ items.length }} completed ticket<span *ngIf="items.length !== 1">s</span></p>
+  <div *ngIf="searched && !loading && visibleItems.length > 0">
+    <p class="svt-muted" style="margin: 0 4px 8px;">{{ visibleItems.length }} completed ticket<span *ngIf="visibleItems.length !== 1">s</span></p>
 
-    <div class="svt-card" *ngFor="let item of items" (click)="page(item)">
+    <div class="svt-card" *ngFor="let item of visibleItems" (click)="page(item)">
       <div class="svt-ticket-top">
         <span class="svt-ticket-no">{{ item.service_id }}</span>
         <span class="svt-pill svt-pill-green">Completed</span>
