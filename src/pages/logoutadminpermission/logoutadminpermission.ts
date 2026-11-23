@@ -1,92 +1,67 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController, LoadingController, IonicPage } from 'ionic-angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthProvider } from './../../providers/auth/auth';
+import { NavController, LoadingController, IonicPage } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {Platform} from 'ionic-angular';
-import { AppPreferences } from '@ionic-native/app-preferences';
-import { Toast } from '@ionic-native/toast';
+import { HttpClient } from '@angular/common/http';
+import { OneSignal } from '@ionic-native/onesignal';
 import { SERVER_URL } from '../../environment';
 
-const httpOptions = {
-  headers: new HttpHeaders({
-      'Content-Type': 'application/json'
-  })
-}
-
+/**
+ * Logout: a plain confirmation with one Logout button (no admin id / password any more).
+ * It unregisters this phone from push notifications (clearplayerid), clears the saved session and
+ * goes back to the login page. If the server cannot be reached the phone is still logged out.
+ */
 @IonicPage()
-
 @Component({
   selector: 'page-logoutadminpermission',
   templateUrl: 'logoutadminpermission.html',
 })
-
 export class LogoutadminpermissionPage {
 
-  public credentials: FormGroup;
-  StaffId : any;
-  Password : any;
+  busy = false;
 
   constructor(
     public navCtrl: NavController,
-    public navParams: NavParams,
-    public formBuilder: FormBuilder,
     public loadingCtrl: LoadingController,
-    public alertCtrl: AlertController,
     private storage: Storage,
     public http: HttpClient,
-    private appPreferences: AppPreferences,
-    private toast: Toast,
-  ) {
-      this.credentials = this.formBuilder.group({
-        StaffId: ['', [Validators.required]],
-        Password: ['', Validators.required]
-      })
+    private oneSignal: OneSignal,
+  ) {}
 
+  /** The push player id of this phone: from OneSignal, otherwise the one saved at login. */
+  private playerId(): Promise<any> {
+    let fromOneSignal: Promise<any>;
+    try {
+      fromOneSignal = this.oneSignal.getIds().then((ids) => ids.userId).catch(() => null);
+    } catch (e) {
+      fromOneSignal = Promise.resolve(null);
     }
+    return fromOneSignal.then((id) => id ? id : this.storage.get('playerid'));
+  }
 
-    login() {
-        let loading = this.loadingCtrl.create({
-            content: "Logging out...",
-            spinner: 'crescent'
-        });
+  logout() {
+    if (this.busy) { return; }
+    this.busy = true;
 
-        this.storage.get('token').then((val) => {
-            return this.http.post(SERVER_URL + '/getadmin?token=' + val.token, {
-                StaffID: this.StaffId,
-                Password: this.Password,
-            },
-            httpOptions)
-            .subscribe(
-            (res: any) =>{
-                if (res == 1){
-                    this.appPreferences.fetch('os','id').then((playerid) => {
-                        loading.present();
+    const loading = this.loadingCtrl.create({ content: 'Logging out...', spinner: 'crescent' });
+    loading.present();
 
-                        this.http.post(SERVER_URL + '/clearplayerid?token=' + val.token, {Player_Id: playerid}).finally(()=>{
-                          loading.dismiss();
+    const finish = () => {
+      this.storage.clear().then(() => {
+        loading.dismiss();
+        this.busy = false;
+        this.navCtrl.setRoot('LoginPage');
+      });
+    };
 
-                          Promise.resolve('done');
-                        }).subscribe(result => {
-                          this.navCtrl.setRoot('LoginPage');
+    this.storage.get('token').then((val) => {
+      const token = val && val.token ? val.token : '';
+      if (!token) { return null; }
+      return this.playerId().then((playerid) =>
+        this.http.post(SERVER_URL + '/clearplayerid?token=' + token, { Player_Id: playerid ? playerid : '' }).toPromise());
+    }).then(finish, finish);
+  }
 
-                        }, err => {
-                          console.log(JSON.parse(err))
-                        })
-                      }).then(() => {
-                        this.storage.clear();
-                      })
-
-                    this.navCtrl.setRoot('LoginPage');
-                }
-                else{
-                    this.toast.show(`Wrong Admin Id and Password`, '5000', 'center').subscribe(
-                        toast => {
-                        }
-                      );
-                }
-            })
-        });
-    }
+  cancel() {
+    this.navCtrl.pop();
+  }
 }
