@@ -15,6 +15,8 @@ import { Camera } from "@ionic-native/camera";
 import { HTTP } from "@ionic-native/http";
 import { AuthProvider } from "../providers/auth/auth";
 import { SvtProvider } from "../providers/svt/svt";
+import { WarehouseProvider } from "../providers/warehouse/warehouse";
+import { CountQueue } from "../providers/warehouse/count-queue";
 import { UnauthorizedInterceptor } from "../providers/auth/unauthorized.interceptor";
 import { Toast } from "@ionic-native/toast";
 import { FileOpener } from "@ionic-native/file-opener";
@@ -141,6 +143,8 @@ import { HAMMER_GESTURE_CONFIG } from "@angular/platform-browser";
     Camera,
     AuthProvider,
     SvtProvider,
+    WarehouseProvider,
+    CountQueue,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: UnauthorizedInterceptor,

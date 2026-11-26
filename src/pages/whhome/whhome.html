@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Logistics</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <div class="svt-card">
+    <div class="svt-row" (click)="stockCheck()">
+      <div class="svt-thumb" style="background: #dbeafe; color: #1e40af;"><ion-icon name="search"></ion-icon></div>
+      <div class="grow">
+        <b>Stock check</b>
+        <small>Search or scan a part to see on hand, reserved and available per location</small>
+      </div>
+      <ion-icon name="arrow-forward" style="color: #9ca3af;"></ion-icon>
+    </div>
+
+    <div class="svt-row" (click)="scanSerial()">
+      <div class="svt-thumb" style="background: #ede9fe; color: #5b21b6;"><ion-icon name="qr-scanner"></ion-icon></div>
+      <div class="grow">
+        <b>Scan serial</b>
+        <small>Scan a unit to see which part it is, where it is now and who has it</small>
+      </div>
+      <ion-icon name="arrow-forward" style="color: #9ca3af;"></ion-icon>
+    </div>
+
+    <div class="svt-row" (click)="itemHistory()">
+      <div class="svt-thumb" style="background: #ffedd5; color: #e67e22;"><ion-icon name="time"></ion-icon></div>
+      <div class="grow">
+        <b>Item history</b>
+        <small>All stock in and out of a part, with the balance after each movement</small>
+      </div>
+      <ion-icon name="arrow-forward" style="color: #9ca3af;"></ion-icon>
+    </div>
+
+    <div class="svt-row" (click)="stockTake()">
+      <div class="svt-thumb" style="background: #dcfce7; color: #166534;"><ion-icon name="clipboard"></ion-icon></div>
+      <div class="grow">
+        <b>Stock take</b>
+        <small>Count stock by location or by part number</small>
+      </div>
+      <ion-icon name="arrow-forward" style="color: #9ca3af;"></ion-icon>
+    </div>
+  </div>
+
+</ion-content>

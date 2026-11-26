@@ -198,6 +198,10 @@ export class HomePage {
     this.navCtrl.push("LogisticPage");
   }
 
+  onGoToWarehouse() {
+    this.navCtrl.push('WhhomePage');
+  }
+
   PendingApproval() {
     this.navCtrl.push("SitecodeapprovalPage");
   }

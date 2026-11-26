@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>{{ stocktake ? stocktake.doc_no : 'Stock take' }}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <div *ngIf="busy" class="svt-empty">Loading...</div>
+
+  <div *ngIf="!busy && message" class="svt-card">
+    <div class="svt-empty">{{ message }}</div>
+    <button class="svt-btn svt-btn-outline" (click)="load()">Try again</button>
+  </div>
+
+  <div *ngIf="!busy && stocktake">
+
+    <!-- header -->
+    <div class="svt-card">
+      <div class="svt-ticket-top">
+        <b style="font-size: 17px; color: #111827;">{{ stocktake.doc_no }}</b>
+        <span class="svt-pill" [ngClass]="stocktake.status === 'Posted' ? 'svt-pill-green' : (stocktake.status === 'Cancelled' ? 'svt-pill-grey' : 'svt-pill-orange')">{{ stocktake.status }}</span>
+      </div>
+      <div class="svt-sub">
+        {{ stocktake.scope === 'part' ? 'By part number' : 'By location' }}<span *ngIf="stocktake.location"> · {{ stocktake.location }}</span>
+        · {{ stocktake.count_date }}
+      </div>
+      <p class="svt-muted" style="margin: 0;"><b>{{ counted }}</b> of {{ total }} lines counted</p>
+    </div>
+
+    <div class="svt-banner" style="background: #eff6ff; color: #1e40af;" *ngIf="stocktake.round === 2 && isOpen()">
+      2nd count: count again only the lines that had a big difference.
+    </div>
+    <div class="svt-banner" style="background: #eff6ff; color: #1e40af;" *ngIf="!isOpen() && stocktake.status !== 'Cancelled'">
+      Counting is finished. This stock take is {{ stocktake.status }} and is handled on the web.
+    </div>
+
+    <div class="svt-banner" style="background: #fff7ed; color: #9a3412;" *ngIf="waiting > 0">
+      {{ waiting }} count(s) are only on this phone and not uploaded yet.
+      <a (click)="sync()" style="font-weight: 700; margin-left: 6px;">Upload now</a>
+    </div>
+
+    <!-- find a line -->
+    <div class="svt-card">
+      <button class="svt-btn svt-btn-blue" style="margin-top: 0;" (click)="scan()">Scan part label</button>
+      <input class="svt-input" type="search" [(ngModel)]="q" (input)="searchChanged()" placeholder="Part number, name or location">
+    </div>
+
+    <div class="svt-seg" style="margin-bottom: 10px; background: #fff;">
+      <button [class.on]="tab === 'todo'" (click)="pickTab('todo')">To count</button>
+      <button [class.on]="tab === 'done'" (click)="pickTab('done')">Counted</button>
+      <button [class.on]="tab === 'all'" (click)="pickTab('all')">All</button>
+    </div>
+
+    <!-- lines -->
+    <div class="svt-card">
+      <div *ngIf="matching === 0" class="svt-empty">{{ tab === 'todo' && !q ? 'Everything is counted.' : 'No line found.' }}</div>
+
+      <div class="svt-row" *ngFor="let l of shown">
+        <div class="grow">
+          <b>{{ l.item_code }}</b>
+          <small>{{ l.part_name }}</small><br>
+          <small>{{ l.location }} · system {{ l.system_qty }} {{ l.unit }}</small>
+          <div *ngIf="hasCount(l)" style="margin-top: 4px;">
+            <span class="svt-pill" [ngClass]="variance(l) === 0 ? 'svt-pill-green' : 'svt-pill-red'">
+              {{ variance(l) === 0 ? 'Matches' : (variance(l) > 0 ? '+' : '') + variance(l) }}
+            </span>
+            <span class="svt-pill svt-pill-orange" *ngIf="l.pending">Not uploaded</span>
+          </div>
+        </div>
+        <input type="number" inputmode="decimal" min="0" step="any"
+          style="width: 84px; text-align: right; border: 1px solid #d1d5db; border-radius: 10px; padding: 8px; font-size: 16px;"
+          [(ngModel)]="l.input" (change)="onCount(l)"
+          [disabled]="!isOpen() || !canCount || !l.countable" placeholder="Count">
+      </div>
+
+      <button class="svt-btn svt-btn-outline" *ngIf="matching > shown.length" (click)="more()">Show more ({{ matching - shown.length }} left)</button>
+    </div>
+
+  </div>
+
+</ion-content>
+
+<ion-footer *ngIf="!busy && stocktake && isOpen()">
+  <div class="svt-foot">
+    <button class="svt-btn svt-btn-primary" style="margin: 0;" *ngIf="canCount" [disabled]="posting" (click)="submit()">{{ posting ? 'Submitting...' : 'Submit counts' }}</button>
+    <p class="svt-muted" style="margin: 0;" *ngIf="!canCount">You can view this stock take. Only the parts team can count it.</p>
+  </div>
+</ion-footer>

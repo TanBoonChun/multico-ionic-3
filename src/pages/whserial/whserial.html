@@ -1,0 +1,103 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Scan serial</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <!-- one unit -->
+  <div *ngIf="selected">
+    <div class="svt-card">
+      <b style="font-size: 20px; color: #111827;">{{ selected.serial_no }}</b>
+      <div class="svt-sub">{{ selected.item_code }} · {{ selected.part_name }}</div>
+      <span class="svt-pill" [ngClass]="conditionClass(selected.condition)">{{ selected.condition || 'No condition' }}</span>
+      <span class="svt-pill" [ngClass]="stateClass(selected)">{{ selected.where }}</span>
+    </div>
+
+    <div class="svt-card">
+      <div class="svt-card-title">Where is it now</div>
+      <p style="margin: 0; font-size: 16px; color: #111827;"><b>{{ selected.where }}</b></p>
+      <p class="svt-muted" style="margin: 4px 0 0;" *ngIf="selected.since">
+        Since {{ when(selected.since) }}<span *ngIf="selected.detail"> · {{ selected.detail }}</span>
+      </p>
+      <p class="svt-muted" style="margin: 4px 0 0;" *ngIf="selected.state !== 'store' && selected.location">
+        Received into: {{ selected.location }}
+      </p>
+    </div>
+
+    <div class="svt-card">
+      <div class="svt-card-title">Receiving</div>
+      <div class="svt-row"><div class="grow"><small>Receiving no</small><b>{{ selected.receiving_no || '-' }}</b></div></div>
+      <div class="svt-row"><div class="grow"><small>Received on</small><b>{{ when(selected.received_at) || '-' }}</b></div></div>
+      <div class="svt-row" *ngIf="selected.company || selected.ownership || selected.segment">
+        <div class="grow">
+          <small>Company · ownership · segment</small>
+          <b>{{ selected.company || '-' }} · {{ selected.ownership || '-' }} · {{ selected.segment || '-' }}</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="svt-card">
+      <div class="svt-card-title">History</div>
+      <div *ngIf="historyBusy" class="svt-empty">Loading...</div>
+      <div *ngIf="!historyBusy && events.length === 0" class="svt-empty">No history found.</div>
+      <div class="svt-row" *ngFor="let e of events">
+        <div class="grow">
+          <span class="svt-pill" [ngClass]="eventClass(e.type)">{{ e.type }}</span>
+          <small *ngIf="e.text">{{ e.text }}</small><br>
+          <small>{{ when(e.when) }}<span *ngIf="e.by"> · by {{ e.by }}</span></small>
+          <small *ngIf="e.remarks"><br>{{ e.remarks }}</small>
+        </div>
+      </div>
+    </div>
+
+    <button class="svt-btn svt-btn-blue" (click)="openPart(selected.item_code)">Check stock of this part</button>
+    <button class="svt-btn svt-btn-outline" (click)="back()">Scan another</button>
+  </div>
+
+  <!-- scan or type -->
+  <div *ngIf="!selected">
+    <div class="svt-card" text-center>
+      <ion-icon name="qr-scanner" style="font-size: 54px; color: #2563eb;"></ion-icon>
+      <button class="svt-btn svt-btn-blue" (click)="scan()">Scan serial number</button>
+      <p class="svt-muted">Point the camera at the barcode or QR code on the unit</p>
+    </div>
+
+    <div class="svt-muted" text-center style="margin: 6px 0; font-weight: 700;">OR TYPE IT</div>
+
+    <div class="svt-card">
+      <input class="svt-input" type="search" [(ngModel)]="code" (keyup.enter)="lookup()" placeholder="Serial number">
+      <button class="svt-btn svt-btn-outline" (click)="lookup()">Look up</button>
+    </div>
+
+    <div class="svt-card" *ngIf="busy || message || serials.length > 1 || itemMatch">
+      <div *ngIf="busy" class="svt-empty">Loading...</div>
+      <div *ngIf="!busy && message" class="svt-empty">{{ message }}</div>
+
+      <!-- the same serial number on more than one part -->
+      <div *ngIf="serials.length > 1" class="svt-muted" style="margin-bottom: 6px;">This serial number belongs to {{ serials.length }} parts. Choose one:</div>
+      <div class="svt-row" *ngFor="let s of serials" (click)="open(s)">
+        <div class="grow">
+          <b>{{ s.item_code }}</b>
+          <small>{{ s.part_name }}</small><br>
+          <small>{{ s.where }}</small>
+        </div>
+        <ion-icon name="arrow-forward" style="color: #9ca3af;"></ion-icon>
+      </div>
+
+      <!-- the label of a part, not a unit -->
+      <div *ngIf="!busy && itemMatch">
+        <div class="svt-muted" style="margin-bottom: 6px;">This code is the label of a part, not a serial number.</div>
+        <div class="svt-row" (click)="openPart(itemMatch.item_code)">
+          <div class="grow">
+            <b>{{ itemMatch.item_code }}</b>
+            <small>{{ itemMatch.part_name }}</small>
+          </div>
+          <span class="svt-pill svt-pill-blue">Check stock</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

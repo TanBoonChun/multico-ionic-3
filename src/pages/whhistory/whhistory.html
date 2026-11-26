@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Item history</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <!-- the part and the totals of the current filter -->
+  <div class="svt-card">
+    <b style="font-size: 17px; color: #111827;">{{ itemCode }}</b>
+    <div class="svt-sub">{{ partName }}</div>
+
+    <div class="svt-tiles">
+      <div class="svt-tile"><b style="font-size: 18px; color: #166534;">{{ totalIn }}</b><br><small class="svt-muted">Total in</small></div>
+      <div class="svt-tile" style="margin-left: 8px;"><b style="font-size: 18px; color: #b91c1c;">{{ totalOut }}</b><br><small class="svt-muted">Total out</small></div>
+      <div class="svt-tile" style="margin-left: 8px;"><b style="font-size: 18px;">{{ closing }}</b><br><small class="svt-muted">Balance</small></div>
+    </div>
+    <p class="svt-muted" style="margin: 0;" *ngIf="from">Opening balance on {{ from }}: {{ opening }}</p>
+  </div>
+
+  <!-- filters -->
+  <div class="svt-card">
+    <span class="svt-label" style="margin-top: 0;">Location</span>
+    <select class="svt-input" [(ngModel)]="roomId" (change)="filterChanged()">
+      <option value="">All locations</option>
+      <option *ngFor="let l of locations" [ngValue]="l.id">{{ l.name }}</option>
+    </select>
+
+    <span class="svt-label">Movement</span>
+    <div class="svt-seg">
+      <button [class.on]="dir === ''" (click)="setDir('')">All</button>
+      <button [class.on]="dir === 'IN'" (click)="setDir('IN')">In</button>
+      <button [class.on]="dir === 'OUT'" (click)="setDir('OUT')">Out</button>
+    </div>
+
+    <span class="svt-label">From date</span>
+    <input class="svt-input" type="date" [(ngModel)]="from" (change)="filterChanged()">
+    <span class="svt-label">To date</span>
+    <input class="svt-input" type="date" [(ngModel)]="to" (change)="filterChanged()">
+    <button class="svt-btn svt-btn-outline" *ngIf="from || to" (click)="clearDates()">Clear dates</button>
+  </div>
+
+  <!-- movements -->
+  <div class="svt-card">
+    <div *ngIf="busy && rows.length === 0" class="svt-empty">Loading...</div>
+    <div *ngIf="!busy && message" class="svt-empty">{{ message }}</div>
+
+    <div class="svt-row" *ngFor="let r of rows">
+      <div class="grow">
+        <b>{{ r.Action }}<span *ngIf="r.DocNo"> · {{ r.DocNo }}</span></b>
+        <small>{{ when(r.Date) }}</small><br>
+        <small>{{ r.Location }}<span *ngIf="r.From || r.To"> · {{ r.From || '-' }} to {{ r.To || '-' }}</span></small><br>
+        <small *ngIf="r.CreatedBy">By {{ r.CreatedBy }}</small>
+        <small *ngIf="r.Remarks"><br>{{ r.Remarks }}</small>
+      </div>
+      <div text-right>
+        <b [style.color]="r.Direction === 'IN' ? '#166534' : (r.Direction === 'OUT' ? '#b91c1c' : '#6b7280')" style="font-size: 16px;">{{ signed(r.Quantity) }}</b><br>
+        <small class="svt-muted" *ngIf="r.Balance !== null && r.Balance !== undefined">bal {{ r.Balance }}</small>
+      </div>
+    </div>
+  </div>
+
+  <ion-infinite-scroll *ngIf="hasMore()" (ionInfinite)="more($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>

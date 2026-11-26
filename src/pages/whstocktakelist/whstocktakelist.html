@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Stock take</ion-title>
+    <ion-buttons end *ngIf="canCount">
+      <button ion-button icon-only (click)="toggleNew()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <!-- start a new stock take -->
+  <div class="svt-card" *ngIf="showNew">
+    <div class="svt-card-title">New stock take</div>
+
+    <div class="svt-seg">
+      <button [class.on]="scope === 'location'" (click)="scope = 'location'">By location</button>
+      <button [class.on]="scope === 'part'" (click)="scope = 'part'">By part number</button>
+    </div>
+
+    <span class="svt-label">Location</span>
+    <select class="svt-input" [(ngModel)]="roomId">
+      <option [ngValue]="null">Choose a location</option>
+      <option *ngFor="let l of locations" [ngValue]="l.id">{{ l.name }}</option>
+    </select>
+
+    <div *ngIf="scope === 'part'">
+      <span class="svt-label">Part numbers</span>
+      <textarea class="svt-input" [(ngModel)]="parts" placeholder="Part numbers, separated by commas"></textarea>
+      <p class="svt-muted" style="margin: 4px 0 0;">Leave the location empty to count the part in every location.</p>
+    </div>
+
+    <span class="svt-label">Remarks (optional)</span>
+    <input class="svt-input" type="text" [(ngModel)]="remarks">
+
+    <button class="svt-btn svt-btn-primary" [disabled]="creating" (click)="create()">{{ creating ? 'Starting...' : 'Start stock take' }}</button>
+  </div>
+
+  <!-- filter -->
+  <div class="svt-seg" style="margin-bottom: 10px; background: #fff;">
+    <button [class.on]="filter === TO_COUNT" (click)="pick(TO_COUNT)">To count</button>
+    <button [class.on]="filter === HANDED_IN" (click)="pick(HANDED_IN)">Handed in</button>
+    <button [class.on]="filter === ''" (click)="pick('')">All</button>
+  </div>
+
+  <div class="svt-card">
+    <div *ngIf="busy" class="svt-empty">Loading...</div>
+    <div *ngIf="!busy && message" class="svt-empty">{{ message }}</div>
+
+    <div class="svt-row" *ngFor="let s of list" (click)="open(s)">
+      <div class="grow">
+        <b>{{ s.doc_no }}</b>
+        <small>{{ s.scope === 'part' ? 'By part number' : 'By location' }}<span *ngIf="s.location"> · {{ s.location }}</span></small><br>
+        <small>{{ s.count_date }} · {{ s.counted }} of {{ s.total }} counted<span *ngIf="s.round === 2"> · 2nd count</span></small>
+      </div>
+      <span class="svt-pill" [ngClass]="statusClass(s)">{{ s.status }}</span>
+    </div>
+  </div>
+
+</ion-content>

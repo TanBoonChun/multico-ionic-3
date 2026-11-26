@@ -1,0 +1,83 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>{{ historyMode ? 'Item history' : 'Stock check' }}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="svt-content" padding>
+
+  <!-- one part -->
+  <div *ngIf="selected">
+    <div class="svt-card">
+      <b style="font-size: 17px; color: #111827;">{{ selected.item_code }}</b>
+      <div class="svt-sub">{{ selected.part_name }}</div>
+
+      <div class="svt-tiles">
+        <div class="svt-tile"><b style="font-size: 20px;">{{ selected.on_hand }}</b><br><small class="svt-muted">On hand</small></div>
+        <div class="svt-tile" style="margin-left: 8px;"><b style="font-size: 20px;">{{ selected.reserved }}</b><br><small class="svt-muted">Reserved</small></div>
+        <div class="svt-tile" style="margin-left: 8px;"><b style="font-size: 20px;" [style.color]="isLow(selected) ? '#b91c1c' : '#166534'">{{ selected.available }}</b><br><small class="svt-muted">Available</small></div>
+      </div>
+
+      <p class="svt-muted" style="margin: 0;">
+        Unit: {{ selected.unit || '-' }} · Safety level: {{ selected.safety }}
+        <span class="svt-pill svt-pill-red" *ngIf="isLow(selected)" style="margin-left: 6px;">Low</span>
+      </p>
+      <p class="svt-muted" style="margin: 4px 0 0;">
+        On order (PO): {{ selected.on_po }} · Committed to transfers, returns and assembly: {{ selected.other_committed }}
+      </p>
+    </div>
+
+    <div class="svt-card">
+      <div class="svt-card-title">On hand per location <span class="svt-muted" style="font-weight: 400;">(tap for its history)</span></div>
+      <div *ngIf="detailBusy" class="svt-empty">Loading...</div>
+      <div *ngIf="!detailBusy && locations.length === 0" class="svt-empty">No stock in any location.</div>
+      <div class="svt-row" *ngFor="let l of locations" (click)="history(selected, l.room_id)">
+        <div class="grow">
+          <b>{{ l.location }}</b>
+          <small>{{ l.type || '' }}</small>
+        </div>
+        <div text-right>
+          <b style="color: #111827;">{{ l.on_hand }}</b><small class="svt-muted"> on hand</small><br>
+          <small class="svt-muted">{{ l.available }} available</small>
+        </div>
+      </div>
+    </div>
+
+    <button class="svt-btn svt-btn-blue" (click)="history(selected, null)">View history</button>
+    <button class="svt-btn svt-btn-outline" (click)="back()">Back to results</button>
+  </div>
+
+  <!-- search -->
+  <div *ngIf="!selected">
+    <div class="svt-card" text-center>
+      <ion-icon name="qr-scanner" style="font-size: 54px; color: #2563eb;"></ion-icon>
+      <button class="svt-btn svt-btn-blue" (click)="scan()">Scan part label</button>
+      <p class="svt-muted">Point the camera at the barcode or QR code on the part</p>
+    </div>
+
+    <div class="svt-muted" text-center style="margin: 6px 0; font-weight: 700;">OR TYPE THE PART</div>
+
+    <div class="svt-card">
+      <input class="svt-input" type="search" [(ngModel)]="q" (input)="typing()" (keyup.enter)="search()" placeholder="Part number or name">
+      <p class="svt-muted" style="margin: 6px 0 8px;">Use this too when the label is damaged</p>
+    </div>
+
+    <div class="svt-card" *ngIf="busy || message || items.length > 0">
+      <div *ngIf="busy" class="svt-empty">Loading...</div>
+      <div *ngIf="!busy && message" class="svt-empty">{{ message }}</div>
+
+      <div class="svt-row" *ngFor="let i of items" (click)="open(i)">
+        <div class="grow">
+          <b>{{ i.item_code }}</b>
+          <small>{{ i.part_name }}</small>
+        </div>
+        <div text-right>
+          <b style="color: #111827;">{{ i.on_hand }}</b><br>
+          <small class="svt-muted">on hand</small>
+        </div>
+        <ion-icon name="arrow-forward" style="color: #9ca3af; margin-left: 10px;"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

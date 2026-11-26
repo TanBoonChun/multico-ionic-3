@@ -96,6 +96,21 @@
         <ion-row>
           <ion-col>
             <ion-chip>
+              <ion-label color="light">Logistics</ion-label>
+            </ion-chip>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <div class="col a" col-4 *ngIf="(isObject(user) && user.Active == 1)">
+            <button class="round-button button10" (click)='onGoToWarehouse()'>
+              <img src="assets/img/delivery-trucky.png" width="35px" height="35px">
+            </button>
+            <div class="icon-label">Logistics</div>
+          </div>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-chip>
               <ion-label color="light">Operations</ion-label>
             </ion-chip>
           </ion-col>
